@@ -1,0 +1,25 @@
+.tool-wrapper {
+    padding: 10px;
+}
+.tool-wrapper textarea {
+    width: 97%;
+    background-color: #fff;
+    padding: 10rpx;
+    height: 150rpx;
+}
+.tool-btns {
+    margin-top: 10rpx;
+}
+.tool-btns button {
+    color: #fff;
+    background-color: rgba(13, 112, 255, 0.5);
+    width: 25%;
+    display: inline-block;
+    font-size: 30rpx;
+}
+.live-container .liver {
+    display: inline-block;
+    width: 45vw;
+    margin: 0 2vw;
+    height: 45vw;
+}

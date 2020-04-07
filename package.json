@@ -1,0 +1,15 @@
+{
+  "name": "zego-express-wxmini-sample",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "miniprogram-api-promise": "^1.0.4",
+    "zego-express-engine-miniprogram": "^1.2.1"
+  }
+}

@@ -1,0 +1,35 @@
+import { ZegoAudioContext } from '../../types/index';
+import { LoggerWeb } from '../webrtc/zego.logger.webrtc';
+export declare class AudioMixUtil {
+    logger: LoggerWeb;
+    ac: ZegoAudioContext | undefined;
+    localStream: MediaStream;
+    peerConnection: RTCPeerConnection | any;
+    audioBuffer: AudioBuffer;
+    loop: boolean;
+    replace: boolean;
+    buffSource: AudioBufferSourceNode | null;
+    effectEndedCallBack: any;
+    effectEndedListener: any;
+    startTimes: number;
+    startOffset: number;
+    pauseTimes: number;
+    resumeOffset: number;
+    isMixAudio: boolean;
+    private streamSource;
+    private gainNode;
+    private mixAudio;
+    private destination;
+    private micTrack;
+    constructor(log: LoggerWeb);
+    preloadEffect(effectUrl: string, callBack: Function): void;
+    playEffect(playTime?: number, loop?: boolean, replace?: boolean, start?: Function, end?: Function): void;
+    pauseEffect(): void;
+    resumeEffect(): void;
+    mixEffect(audioBuffer: AudioBuffer, callBack: Function): void;
+    startMixingAudio(audio: any, replace?: boolean): boolean;
+    replaceTrack(): boolean;
+    stopMixingAudio(): boolean;
+    setMixingAudioVolume(volume: number): boolean;
+    effectEndedHandler(): void;
+}

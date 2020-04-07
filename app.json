@@ -1,0 +1,21 @@
+{
+  "pages": [
+    "pages/main/index",
+    "pages/base/index",
+    "pages/audio/index",
+    "pages/bgm/index",
+    "pages/customlive/index",
+    "pages/message/index",
+    "pages/mix/index",
+    "pages/native/index",
+    "pages/setting/index",
+    "pages/snapshot/index"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#e0edf9",
+    "navigationBarTitleText": "ZEGO Express",
+    "navigationBarTextStyle": "black"
+  },
+  "sitemapLocation": "sitemap.json"
+}

@@ -1,0 +1,49 @@
+/* pages/message/index.wxss */.containerBase {
+  height: 55vh;
+  padding: 10rpx;
+}
+
+live-pusher, live-player {
+  width: 45vw;
+  height: 45vw;
+  margin: 5rpx;
+}
+
+.message-view {
+  height: 20vh;
+}
+
+.message-item span {
+  color: #0d70ff;
+}
+.index-container {
+  height: 25vh;
+  border-top: 1px slategrey solid
+}
+.input-container{
+  border: none;
+  padding-left: 10rpx;
+  padding-right: 10rpx;
+}
+.button-container{
+  border-top: 1px slategrey solid
+}
+.room-input {
+  display: inline-block;
+  width: 26vw;
+  height: 8vh;
+  border-bottom:1px solid rgba(13, 112, 255, 0.5);
+  margin-right: 4vw;
+}
+.msg-input {
+  display: inline-block;
+  width: 66vw;
+  height: 8vh;
+  border-bottom:1px solid rgba(13, 112, 255, 0.3);
+}
+
+.openRoom {
+  display: inline-block;
+  margin: 7rpx;
+  font-size: 14px;
+}
