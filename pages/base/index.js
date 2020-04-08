@@ -54,11 +54,11 @@ Page ({
                 if (e.target.dataset && e.target.dataset.role == 1 && this.data.livePusherUrl === '') {
                         startPush(this);
                 }
-                console.error('role', e.target.dataset.role)
+                console.log('role', e.target.dataset.role)
                 this.setData ({
                         role: e.target.dataset.role == 1 ? 'anchor' : 'audience'
                 })
-                console.error('role', this.data.role)
+                console.log('role', this.data.role)
         },
         async logout() {
                 try {
@@ -82,7 +82,7 @@ Page ({
         },
         // live-pusher 绑定推流事件，透传推流事件给 SDK
         onPushStateChange(e) {
-                console.error('onPushStateChange', e.detail.code, e.detail.message);
+                console.log('onPushStateChange', e.detail.code, e.detail.message);
                 if (e.detail.code === 5000) {
                         this.setData({ handupStop: true })
                         // this.data.livePusher && (this.data.livePusher! as wx.LivePusherContext).stop();
@@ -124,7 +124,7 @@ Page ({
                         console.log('pushStream: ', this.data.pushStreamID, this.data.livePusherUrl, this.data.role);
                         if (this.data.role === 'anchor') {
                                 const { url } = await zg.startPublishingStream(this.data.pushStreamID);
-                                console.error('url', this.data.livePusherUrl, url);
+                                console.log('url', this.data.livePusherUrl, url);
                                 if (this.data.livePusherUrl !== url) {
                                         this.setData({
                                                 livePusherUrl: url,
@@ -139,7 +139,7 @@ Page ({
                 }
         },
         onShow() {
-                console.error('onShow: ', this.data.handupStop, this.data.connectType, server);
+                console.log('onShow: ', this.data.handupStop, this.data.connectType, server);
                 authCheck(this);
                 // if (zg && (this.data.handupStop || this.data.connectType === 0)) {
                 //         this.reLogin();
@@ -163,7 +163,7 @@ Page ({
         },
         onNetworkStatus() {
                 wx.onNetworkStatusChange(res => {
-                        console.error('net', res);
+                        console.log('net', res);
                         if (res.isConnected && this.data.connectType === 0 && zg) {
                                 console.log('connectType', this.data.connectType);
                                 this.reLogin();
