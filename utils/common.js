@@ -5,7 +5,7 @@ const app = getApp();
 let zg;
 
 export const initSDK = (context) => {
-        _checkParam(app.globalData.zegoAppID, app.globalData.server);
+        if (!_checkParam(app.globalData.zegoAppID, app.globalData.server)) return false;
         /** 初始化SDK，userID 为用户自定义ID，全局唯一 */
         zg = new ZegoExpressEngine(app.globalData.zegoAppID, app.globalData.server);
         zg.setDebugVerbose(false);

@@ -220,7 +220,7 @@ Page({
         },
         async onReady() {
                 zg = initSDK(this);
-                this.bindCallback();
+                zg && this.bindCallback();
         },
         async reLogin() {
                 try {
