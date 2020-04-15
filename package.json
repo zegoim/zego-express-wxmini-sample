@@ -10,6 +10,6 @@
   "license": "ISC",
   "dependencies": {
     "miniprogram-api-promise": "^1.0.4",
-    "zego-express-engine-miniprogram": "^1.2.1"
+    "zego-express-engine-miniprogram": "^1.3.0"
   }
 }
