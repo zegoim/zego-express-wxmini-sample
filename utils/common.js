@@ -8,11 +8,8 @@ export const initSDK = (context) => {
         if (!_checkParam(app.globalData.zegoAppID, app.globalData.server)) return false;
         /** 初始化SDK，userID 为用户自定义ID，全局唯一 */
         zg = new ZegoExpressEngine(app.globalData.zegoAppID, app.globalData.server);
+        console.log('version', zg.getVersion());
         zg.setDebugVerbose(false);
-        // zg.config({
-        //         // debug: true,
-        //         userUpdate: true
-        // })
         authCheck(context);
 
         // console.log(this);

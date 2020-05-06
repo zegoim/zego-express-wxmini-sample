@@ -1,7 +1,7 @@
 <view wx:if="{{canShow== 1}}">
   <view class="containerBase">
     <live-pusher wx:if="{{livePusherUrl}}" url="{{livePusherUrl}}" aspect="3:4" bindstatechange="onPushStateChange" bindnetstatus="onPushNetStateChange" bindbgmstart="onBgmStart" bindbgmprogress="onBgmProgress" bindbgmcomplete="onBgmComplete" binderror="onPushError" waiting-image="https://storage.zego.im/downloads/pause_publish.png"></live-pusher>
-    <live-player wx:for="{{livePlayerList}}" wx:key="{{item.streamID}}" id="{{item.streamID}}" src="{{item.url}}" mode="RTC" autoplay bindstatechange="onPlayStateChange" bindnetstatus="onPlayNetStateChange"></live-player>
+    <live-player wx:for="{{livePlayerList}}" wx:key="streamID" id="{{item.streamID}}" src="{{item.url}}" mode="RTC" autoplay bindstatechange="onPlayStateChange" bindnetstatus="onPlayNetStateChange"></live-player>
   </view>
   <view class="index-container">
     <view class='input-container'>
