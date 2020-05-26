@@ -248,7 +248,7 @@ export const authCheck = async (context) => {
         }
 };
 
-const _checkParam = (zegoAppID, server) => {
+export const _checkParam = (zegoAppID, server) => {
         if (!zegoAppID) {
                 wx.showToast({
                         title: `请在app.js中提供正确的zegoAppID`,
