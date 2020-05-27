@@ -23,7 +23,6 @@ Page ({
                 canShow: -1,
                 role: '',
                 roomUserList: [],
-                handupStop: false,
                 pushRetryCount: 0,
         },
         bindKeyInput(e) {
@@ -87,15 +86,13 @@ Page ({
         // live-pusher 绑定推流事件，透传推流事件给 SDK
         onPushStateChange(e) {
                 console.log('onPushStateChange', e.detail.code, e.detail.message);
-                if (e.detail.code === 5000) {
-                        this.setData({ handupStop: true })
-                        // this.data.livePusher && (this.data.livePusher! as wx.LivePusherContext).stop();
-                }
+
                 if (e.detail.code === -1307) {
                         this.data.pushRetryCount++;
 
                         if (this.data.pushRetryCount >= MAX_RETRY_COUNT) {
                                 zg.updatePlayerState (this.data.pushStreamID, e);
+                                // this.data.pushRetryCount = 0;
                                 return;
                         }
 
@@ -109,6 +106,7 @@ Page ({
                                 this.data.livePusher.start();
                         });
                 } else {
+                        if (e.detail.code === 1002) this.data.pushRetryCount = 0;
                         zg.updatePlayerState (this.data.pushStreamID, e);
                 }
         },
@@ -123,12 +121,13 @@ Page ({
         //live-player 绑定拉流事件，透传拉流事件给 SDK
         onPlayStateChange(e) {
                 console.log('onPlayStateChange', e.detail.code, e.detail.message);
+                const _player = this.data.livePlayerList.find(item => item.streamID === e.currentTarget.id);
+                if (!_player) {
+                        console.error('no player');
+                        return;
+                }
                 if (e.detail.code === -2301) {
-                        const _player = this.data.livePlayerList.find(item => item.streamID === e.currentTarget.id);
-                        if (!_player) {
-                                console.error('no player');
-                                return;
-                        }
+                        
                         _player.retryCount++;
                         if(_player.retryCount >= MAX_RETRY_COUNT) {
                                 zg.updatePlayerState (e.currentTarget.id, e);
@@ -144,8 +143,11 @@ Page ({
                                 _player.playerContext.stop();
                                 _player.playerContext.play();
                         })
+                } else {
+                        if (e.detail.code === 2004) _player.retryCount = 0;
+                        zg.updatePlayerState (e.currentTarget.id, e);
                 }
-                zg.updatePlayerState (e.currentTarget.id, e);
+
         },
         async onReady() {
                 console.log('onReady')
@@ -186,9 +188,7 @@ Page ({
         onShow() {
                 console.log('onShow: ', this.data.handupStop, this.data.connectType, server);
                 this.authCheck(this);
-                // if (zg && (this.data.handupStop || this.data.connectType === 0)) {
-                //         this.reLogin();
-                // }
+
                 if (zg) {
                         this.reLogin();
                 }
@@ -295,7 +295,7 @@ Page ({
                         try {
                                 let { streamID, url } = await zg.startPlayingStream(
                                         streamList[i].streamID,
-                                        { sourceType: "CDN" }
+                                        { sourceType: "BGP" }
                                 );
                                 console.log("streamID", streamID, url);
                                 this.setPlayUrl(streamID, url, context);
