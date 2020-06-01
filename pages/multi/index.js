@@ -7,7 +7,7 @@ import { wxp } from '../../app';
 let { zegoAppID, server } = getApp ().globalData;
 
 const MAX_RETRY_COUNT = 5;
-const isTest = true;
+const isTest = false;
 let zg;
 
 Page ({
@@ -88,16 +88,21 @@ Page ({
                 console.log('onPushStateChange', e.detail.code, e.detail.message);
 
                 if (e.detail.code === -1307) {
+                        if (!this.data.livePusherUrl) return;
                         this.data.pushRetryCount++;
 
+                        // console.error('retry count', this.data.pushRetryCount, MAX_RETRY_COUNT);
+                        console.error('地址 ', this.data.livePusherUrl, '连接失败');
                         if (this.data.pushRetryCount >= MAX_RETRY_COUNT) {
                                 zg.updatePlayerState (this.data.pushStreamID, e);
                                 // this.data.pushRetryCount = 0;
+                                // console.error('push retry fail');
+                                console.error('重试完全失败');
                                 return;
                         }
 
                         const url = zg.getNextUrl(this.data.pushStreamID);
-                        console.error('push retry', url);
+                        console.error('地址 ', url, '开始重试');
 
                         this.setData({
                                 livePusherUrl: this.setTestUrl(url, isTest)
@@ -106,7 +111,10 @@ Page ({
                                 this.data.livePusher.start();
                         });
                 } else {
-                        if (e.detail.code === 1002) this.data.pushRetryCount = 0;
+                        if (e.detail.code === 1002) {
+                                this.data.pushRetryCount = 0;
+                                console.error('地址 ', this.data.livePusherUrl, '连接成功');
+                        }
                         zg.updatePlayerState (this.data.pushStreamID, e);
                 }
         },
@@ -127,14 +135,17 @@ Page ({
                         return;
                 }
                 if (e.detail.code === -2301) {
-                        
                         _player.retryCount++;
+                        console.error('流 ' + _player.streamID, '地址 ', _player.url, '连接失败');
+
                         if(_player.retryCount >= MAX_RETRY_COUNT) {
                                 zg.updatePlayerState (e.currentTarget.id, e);
+                                console.error('流 ' + _player.streamID, '重试完全失败');
                                 return;
                         }
                         const url = zg.getNextUrl(e.currentTarget.id);
-                        console.error('play retry', url);
+                        // console.error('play retry', url);
+                        console.error('流 ' + _player.streamID, '地址 ', _player.url, '开始重试');
 
                         _player.url = this.setTestUrl(url, isTest);
                         this.setData({
@@ -189,7 +200,7 @@ Page ({
                 console.log('onShow: ', this.data.handupStop, this.data.connectType, server);
                 this.authCheck(this);
 
-                if (zg) {
+                if (zg && this.data.roomID) {
                         this.reLogin();
                 }
                 // 刷新全局变量
@@ -269,6 +280,9 @@ Page ({
                 });
                 zg.on("publisherStateUpdate", (result) => {
                         console.log("publishStateUpdate", result);
+                        if (result.state === 'NO_PUBLISH') {
+                                console.error('推流失败');
+                        }
                 });
                 zg.on("playerStateUpdate", (result) => {
                         console.log("playStateUpdate", result);
@@ -309,6 +323,7 @@ Page ({
                 try {
                         /** 开始推流，返回推流地址 */
                         const { url } = await zg.startPublishingStream(context.data.pushStreamID);
+                        // const res = await zg.startPublishingStream(context.data.pushStreamID);
                         console.log('>>> startPush', url);
                         context.setData(
                                 {
@@ -316,24 +331,9 @@ Page ({
                                         livePusher: wx.createLivePusherContext(),
                                 },
                                 () => {
+                                        console.error('地址 ', url, '开始连接');
+
                                         context.data.livePusher.start();
-                                        // 开始推流后，停止从CDN拉流，再从服务器拉流
-                                        // context.data.livePlayerList.forEach(async (livePlayer) => {
-                                        //         try {
-                                        //                 console.log("startPush begin", livePlayer);
-                                        //                 // zg.stopPlayingStream(livePlayer.streamID);
-                                        //                 let { streamID, url } = await zg.startPlayingStream(
-                                        //                         livePlayer.streamID,
-                                        //                         {
-                                        //                                 sourceType: "BGP",
-                                        //                         }
-                                        //                 );
-                                        //                 console.log("startPush end", streamID, url);
-                                        //                 setPlayUrl(streamID, url, context);
-                                        //         } catch (e) {
-                                        //                 console.error("startPlayingStream fail: ", e);
-                                        //         }
-                                        // });
                                 }
                         );
                 } catch (error) {

@@ -58,7 +58,7 @@ Page ({
                         },
                         {
                                 icon: "../../resource/interactionLive.png",
-                                subtitle: '多流节点',
+                                subtitle: '多节点',
                                 title: "测试",
                                 navigateTo: "../multi/index"
                         },
