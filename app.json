@@ -1,6 +1,6 @@
 {
   "pages": [
-    "pages/main/index",
+    "pages/main/main",
     "pages/base/index",
     "pages/audio/index",
     "pages/bgm/index",

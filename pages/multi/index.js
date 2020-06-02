@@ -54,14 +54,19 @@ Page ({
                         }
                 }
                 // 创建房间，开始推流
-                if (e.target.dataset && e.target.dataset.role == 1 && this.data.livePusherUrl === '') {
-                        this.startPush(this);
-                }
+                // if (e.target.dataset && e.target.dataset.role == 1 && this.data.livePusherUrl === '') {
+                //         this.startPush(this);
+                // }
                 console.log('role', e.target.dataset.role)
                 this.setData ({
                         role: e.target.dataset.role == 1 ? 'anchor' : 'audience'
                 })
                 console.log('role', this.data.role)
+        },
+        startPublish() {
+                if (this.data.role == 'anchor' && this.data.livePusherUrl === '') {
+                        this.startPush(this);
+                }
         },
         async logout() {
                 try {

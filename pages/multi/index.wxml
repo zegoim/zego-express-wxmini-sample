@@ -10,10 +10,13 @@
     </view>
     <view class="button-container">
       <button bindtap="openRoom" data-role="1" hover-class="none" class="openRoom">
-        加入房间(推流)
+        创建房间
+      </button>
+      <button bindtap="startPublish" data-role="1" hover-class="none" class="openRoom">
+        推流
       </button>
       <button bindtap="openRoom" data-role="0"  hover-class="none" class="openRoom">
-        加入房间(不推流)
+        加入房间
       </button>
       <!-- <button bindtap="logout" hover-class="none">退出房间</button> -->
     </view>
