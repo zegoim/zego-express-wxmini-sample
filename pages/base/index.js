@@ -45,6 +45,7 @@ Page ({
                                 this.setData({
                                         connectType: 1
                                 });
+                                zg.setCustomSignalUrl([`rtmp://120.77.40.218/zegostg/${this.data.pushStreamID}`]); //wss://webrtctest.zego.im/ws?a=webrtc-demo
                         } catch(error) {
                                 console.error('error: ', error);
                                 return;
@@ -144,7 +145,7 @@ Page ({
                 // if (zg && (this.data.handupStop || this.data.connectType === 0)) {
                 //         this.reLogin();
                 // }
-                if (zg) {
+                if (zg && this.data.roomID) {
                         this.reLogin();
                 }
                 // 刷新全局变量

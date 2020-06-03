@@ -7,7 +7,7 @@ import { wxp } from '../../app';
 let { zegoAppID, server } = getApp ().globalData;
 
 const MAX_RETRY_COUNT = 5;
-const isTest = false;
+const isTest = true;
 let zg;
 
 Page ({
@@ -18,15 +18,28 @@ Page ({
                 livePusherUrl: '',      // 推流地址
                 livePusher: null,       // live-pusher 的 Context，内部只有一个对象
                 userID: 'xcx-userID-' + new Date ().getTime (), // 用户ID,
+                pushConfig: {           // 推流配置项
+                        muted: false,         // 推流是否静音
+                        enableCamera: true,   // 是否开启摄像头
+                },
                 livePlayerList: [],
                 connectType: -1,  // -1为初始状态，1为连接，0断开连接
                 canShow: -1,
                 role: '',
                 roomUserList: [],
                 pushRetryCount: 0,
+                pushErrCnt: 0,
+                playErrCnt: 0,
         },
         bindKeyInput(e) {
                 this.setData ({ roomID: e.detail.value });
+        },
+        bindCount(e) {
+                if (e.target.dataset.type == 'push') {
+                        this.setData ({ pushErrCnt: e.detail.value });
+                } else {
+                        this.setData ({ playErrCnt: e.detail.value }); 
+                }
         },
         async openRoom(e) {
                 if (!this.data.roomID) {
@@ -69,6 +82,7 @@ Page ({
                 }
         },
         async logout() {
+                console.warn('logout');
                 try {
                         if (this.data.livePusherUrl) {
                                 zg.stopPublishingStream (this.data.pushStreamID);
@@ -91,26 +105,40 @@ Page ({
         // live-pusher 绑定推流事件，透传推流事件给 SDK
         onPushStateChange(e) {
                 console.log('onPushStateChange', e.detail.code, e.detail.message);
+                if (this.data.connectType == 0) {
+                        console.error('房间断开了');
+                        return;
+                }
 
                 if (e.detail.code === -1307) {
                         if (!this.data.livePusherUrl) return;
                         this.data.pushRetryCount++;
 
                         // console.error('retry count', this.data.pushRetryCount, MAX_RETRY_COUNT);
-                        console.error('地址 ', this.data.livePusherUrl, '连接失败');
+                        console.error('推流 ' + this.data.pushStreamID, '地址 ', this.data.livePusherUrl, '连接失败');
                         if (this.data.pushRetryCount >= MAX_RETRY_COUNT) {
                                 zg.updatePlayerState (this.data.pushStreamID, e);
                                 // this.data.pushRetryCount = 0;
                                 // console.error('push retry fail');
-                                console.error('重试完全失败');
+                                console.error('推流 ' + this.data.pushStreamID, '重试完全失败');
                                 return;
                         }
 
                         const url = zg.getNextUrl(this.data.pushStreamID);
-                        console.error('地址 ', url, '开始重试');
+                        console.error('推流 ' + this.data.pushStreamID, '地址 ', url, '开始重试');
+                        if (!url) {
+                                console.error('url none');
+                                return;
+                        }
+                        let _url;
+                        if (this.data.pushRetryCount >= this.data.pushErrCnt) {
+                                _url = this.setTestUrl(url, false)
+                        } else {
+                                _url = this.setTestUrl(url, true)
+                        }
 
                         this.setData({
-                                livePusherUrl: this.setTestUrl(url, isTest)
+                                livePusherUrl: _url
                         }, () => {
                                 this.data.livePusher.stop();
                                 this.data.livePusher.start();
@@ -118,21 +146,33 @@ Page ({
                 } else {
                         if (e.detail.code === 1002) {
                                 this.data.pushRetryCount = 0;
-                                console.error('地址 ', this.data.livePusherUrl, '连接成功');
+                                console.error('推流 ' + this.data.pushStreamID, '地址 ', this.data.livePusherUrl, '连接成功');
                         }
                         zg.updatePlayerState (this.data.pushStreamID, e);
                 }
         },
         // live-pusher 绑定网络状态事件，透传网络状态事件给 SDK
         onPushNetStateChange(e) {
+                if (this.data.connectType == 0) {
+                        console.error('房间断开了');
+                        return;
+                }
                 zg.updatePlayerNetStatus (this.data.pushStreamID, e);
         },
         // live-player 绑定网络状态事件，透传网络状态事件给 SDK
         onPlayNetStateChange(e) {
+                if (this.data.connectType == 0) {
+                        console.error('房间断开了');
+                        return;
+                }
                 zg.updatePlayerNetStatus (e.currentTarget.id, e);
         },
         //live-player 绑定拉流事件，透传拉流事件给 SDK
         onPlayStateChange(e) {
+                if (this.data.connectType == 0) {
+                        console.error('房间断开了');
+                        return;
+                }
                 console.log('onPlayStateChange', e.detail.code, e.detail.message);
                 const _player = this.data.livePlayerList.find(item => item.streamID === e.currentTarget.id);
                 if (!_player) {
@@ -141,18 +181,28 @@ Page ({
                 }
                 if (e.detail.code === -2301) {
                         _player.retryCount++;
-                        console.error('流 ' + _player.streamID, '地址 ', _player.url, '连接失败');
+                        console.error('拉流 ' + _player.streamID, '地址 ', _player.url, '连接失败');
 
                         if(_player.retryCount >= MAX_RETRY_COUNT) {
                                 zg.updatePlayerState (e.currentTarget.id, e);
-                                console.error('流 ' + _player.streamID, '重试完全失败');
+                                console.error('拉流 ' + _player.streamID, '重试完全失败');
                                 return;
                         }
                         const url = zg.getNextUrl(e.currentTarget.id);
                         // console.error('play retry', url);
-                        console.error('流 ' + _player.streamID, '地址 ', _player.url, '开始重试');
+                        console.error('拉流 ' + _player.streamID, '地址 ', _player.url, '开始重试');
+                        if (!url) {
+                                console.error('url none');
+                                return;
+                        }
 
-                        _player.url = this.setTestUrl(url, isTest);
+                        let _url
+                        if (_player.retryCount >= this.data.playErrCnt) {
+                                _url = this.setTestUrl(url, false)
+                        } else {
+                                _url = this.setTestUrl(url, true)
+                        }
+                        _player.url = _url;
                         this.setData({
                                 livePlayerList: this.data.livePlayerList
                         }, () => {
@@ -160,7 +210,10 @@ Page ({
                                 _player.playerContext.play();
                         })
                 } else {
-                        if (e.detail.code === 2004) _player.retryCount = 0;
+                        if (e.detail.code === 2004) {
+                                _player.retryCount = 0;
+                                console.error('拉流 ' + _player.streamID, '地址 ', _player.url, '连接成功');
+                        } 
                         zg.updatePlayerState (e.currentTarget.id, e);
                 }
 
@@ -205,22 +258,22 @@ Page ({
                 console.log('onShow: ', this.data.handupStop, this.data.connectType, server);
                 this.authCheck(this);
 
-                if (zg && this.data.roomID) {
-                        this.reLogin();
-                }
+                // if (zg && this.data.roomID) {
+                //         this.reLogin();
+                // }
                 // 刷新全局变量
                 zegoAppID = getApp ().globalData.zegoAppID;
                 server = getApp ().globalData.server;
         },
         onHide() {
-                this.logout();
+                // this.logout();
         },
         onUnload() {
                 this.logout();
         },
         onLoad() {
                 // 监听网络状态
-                this.onNetworkStatus();
+                // this.onNetworkStatus();
         },
         onNetworkStatus() {
                 wx.onNetworkStatusChange(res => {
@@ -278,9 +331,14 @@ Page ({
                 zg.on("roomStateUpdate", (roomID, state, errorCode, extendedData) => {
                         console.log("roomStateUpdate", roomID, state, errorCode, extendedData);
                         if (state === "DISCONNECTED") {
-                                context.setData({
-                                        connectType: 0,
-                                });
+                                
+                                if (errorCode !== 2001000002) {
+                                        context.setData({
+                                                connectType: 0,
+                                        });
+                                        console.error('房间断开，清空流');
+                                        this.logout();
+                                }
                         }
                 });
                 zg.on("publisherStateUpdate", (result) => {
@@ -336,7 +394,7 @@ Page ({
                                         livePusher: wx.createLivePusherContext(),
                                 },
                                 () => {
-                                        console.error('地址 ', url, '开始连接');
+                                        console.error('推流 ' + context.data.pushStreamID, '地址 ', url, '开始连接');
 
                                         context.data.livePusher.start();
                                 }
@@ -384,7 +442,7 @@ Page ({
                         streamInfo["playerContext"] = wx.createLivePlayerContext(streamID);
                         context.data.livePlayerList.push(streamInfo);
                 }
-        
+                console.error('拉流 ' + streamID, '地址 ', url, '开始连接');
                 context.setData({
                         livePlayerList: context.data.livePlayerList,
                 });
@@ -466,6 +524,18 @@ Page ({
                 }
         },
 
+        // 开关摄像头
+        toggleCamera() {
+                this.setData({
+                        "pushConfig.enableCamera": !this.data.pushConfig.enableCamera
+                })
+        },
+        // 开关麦克风
+        enableMute() {
+                this.setData({
+                        "pushConfig.muted": !this.data.pushConfig.muted
+                })
+        },
         setTestUrl(url, test) {
                 if (test) {
                         return url.replace('demo', 'dmo');

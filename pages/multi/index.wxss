@@ -27,8 +27,8 @@
   }
   .openRoom {
     display: inline-block;
-    width: 48vw;
-    margin: 7rpx;
+    margin: 1vw;
+    font-size: 20rpx;
     background: rgba(13, 112, 255, 0.5);
     color: #fff;
   }

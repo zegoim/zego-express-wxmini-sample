@@ -211,7 +211,7 @@ Page({
         onShow() {
                 console.log('server: ', server);
                 authCheck(this);
-                if (zg) {
+                if (zg && this.data.roomID) {
                         this.reLogin();
                 }
                 // 刷新全局变量
