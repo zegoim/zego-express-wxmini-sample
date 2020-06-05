@@ -45,7 +45,7 @@ Page ({
                                 this.setData({
                                         connectType: 1
                                 });
-                                zg.setCustomSignalUrl([`rtmp://120.77.40.218/zegostg/${this.data.pushStreamID}`]); //wss://webrtctest.zego.im/ws?a=webrtc-demo
+                                // zg.setCustomSignalUrl([`rtmp://120.77.40.218/zegostg/${this.data.pushStreamID}`]); //wss://webrtctest.zego.im/ws?a=webrtc-demo
                         } catch(error) {
                                 console.error('error: ', error);
                                 return;

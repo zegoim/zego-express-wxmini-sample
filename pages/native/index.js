@@ -218,6 +218,9 @@ Page({
                 zegoAppID = getApp ().globalData.zegoAppID;
                 server = getApp ().globalData.server;
         },
+        onHide() {
+                this.logout();
+        },
         onUnload() {
                 this.logout();
         },

@@ -8,26 +8,24 @@
       <input value="{{roomID}}" bindinput="bindKeyInput" placeholder="请输入房间 ID" placeholder-style='color: #b3b3b3; font-size: 14px;' class="room-input" />
       <text class="tip"></text>
     </view>
-     <input value="{{pushErrCnt}}" bindinput="bindCount" data-type="push"  placeholder="请输入推流节点" placeholder-style='color: #b3b3b3; font-size: 14px;' style="display: inline-block; width: 150px; margin-right:20px; text-align: center;" class="room-input" />
-      <input value="{{playErrCnt}}" bindinput="bindCount" data-type="play"  placeholder="请输入拉流节点" placeholder-style='color: #b3b3b3; font-size: 14px;' style="display: inline-block; width: 150px; text-align: center;" class="room-input" />
+     <!-- <input value="{{pushErrCnt}}" bindinput="bindCount" data-type="push"  placeholder="请输入推流节点" placeholder-style='color: #b3b3b3; font-size: 14px;' style="display: inline-block; width: 150px; margin-right:20px; text-align: center;" class="room-input" /> -->
+      <!-- <input value="{{playErrCnt}}" bindinput="bindCount" data-type="play"  placeholder="请输入拉流节点" placeholder-style='color: #b3b3b3; font-size: 14px;' style="display: inline-block; width: 150px; text-align: center;" class="room-input" /> -->
     <view class="button-container">
       <button bindtap="openRoom" data-role="1" hover-class="none" class="openRoom">
         创建房间
       </button>
-      <button bindtap="startPublish" data-role="1" hover-class="none" class="openRoom">
+      <!-- <button bindtap="startPublish" data-role="1" hover-class="none" class="openRoom">
         推流
-      </button>
+      </button> -->
       <button bindtap="openRoom" data-role="0"  hover-class="none" class="openRoom">
         加入房间
       </button>
-      <button bindtap="toggleCamera"  class="openRoom">
+      <!-- <button bindtap="toggleCamera"  class="openRoom">
         {{pushConfig.enableCamera?'关闭':'打开'}}摄像头
       </button>
       <button bindtap="enableMute"  class="openRoom">
         {{pushConfig.muted?'打开':'关闭'}}麦克风
-      </button>
-     
-      <!-- <button bindtap="logout" hover-class="none">退出房间</button> -->
+      </button> -->
     </view>
   </view>
 </view>
