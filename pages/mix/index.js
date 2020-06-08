@@ -94,7 +94,7 @@ Page({
                         }]
                         const outputConfig = {
                                 outputBitrate: 800 * 1000,
-                                outputFps: 15,
+                                outputFPS: 15,
                                 outputWidth: 640,
                                 outputHeight: 960,
                         }
