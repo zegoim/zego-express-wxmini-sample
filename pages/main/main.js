@@ -59,7 +59,7 @@ Page ({
                         {
                                 icon: "../../resource/interactionLive.png",
                                 subtitle: '多节点',
-                                title: "测试",
+                                title: "重试",
                                 navigateTo: "../multi/index"
                         },
                 ]

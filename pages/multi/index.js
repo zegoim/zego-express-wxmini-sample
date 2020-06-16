@@ -1,11 +1,12 @@
 // import { ZegoExpressEngine } from 'zego-express-engine-miniprogram';
-import { ZegoExpressEngine } from './libs/ZegoExpressMiniProgram-1.5.0';
+import { ZegoExpressEngine } from '../../libs/ZegoExpressMiniProgram-1.6.0';
 import { getLoginToken } from '../../utils/server';
 import {  _checkParam } from '../../utils/common';
 import { wxp } from '../../app';
 
 let { zegoAppID, server } = getApp ().globalData;
 
+// 推拉流重试次数
 const MAX_RETRY_COUNT = 5;
 const isTest = true;
 let zg;
@@ -76,11 +77,7 @@ Page ({
                 })
                 console.log('role', this.data.role)
         },
-        // startPublish() {
-        //         if (this.data.role == 'anchor' && this.data.livePusherUrl === '') {
-        //                 this.startPush(this);
-        //         }
-        // },
+
         async logout() {
                 console.warn('logout');
                 try {
@@ -118,7 +115,6 @@ Page ({
                         console.log('推流 ' + this.data.pushStreamID, '地址 ', this.data.livePusherUrl, '连接失败');
                         if (this.data.pushRetryCount >= MAX_RETRY_COUNT) {
                                 zg.updatePlayerState (this.data.pushStreamID, e);
-                                // this.data.pushRetryCount = 0;
                                 // console.error('push retry fail');
                                 console.error('推流 ' + this.data.pushStreamID, '重试完全失败');
                                 return;
@@ -130,12 +126,6 @@ Page ({
                                 console.error('url none');
                                 return;
                         }
-                        // let _url;
-                        // if (this.data.pushRetryCount >= this.data.pushErrCnt) {
-                        //         _url = this.setTestUrl(url, false)
-                        // } else {
-                        //         _url = this.setTestUrl(url, true)
-                        // }
 
                         this.setData({
                                 livePusherUrl: url

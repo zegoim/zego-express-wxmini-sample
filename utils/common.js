@@ -1,5 +1,5 @@
 // import { ZegoExpressEngine } from "zego-express-engine-miniprogram";
-import { ZegoExpressEngine } from '../pages/multi/libs/ZegoExpressMiniProgram-1.5.0';
+import { ZegoExpressEngine } from '../libs/ZegoExpressMiniProgram-1.6.0';
 
 import { wxp } from "../app.js";
 const app = getApp();

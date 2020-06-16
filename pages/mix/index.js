@@ -1,4 +1,4 @@
-import { ZegoExpressEngine } from 'zego-express-engine-miniprogram';
+
 import { wxp } from '../../app';
 import { getLoginToken } from '../../utils/server';
 import { initSDK, authCheck, startPush } from '../../utils/common';
