@@ -55,7 +55,13 @@ Page ({
                                 subtitle: '设置APPID',
                                 title: "自定义设置",
                                 navigateTo: "../setting/index"
-                        }
+                        },
+                        {
+                                icon: "../../resource/interactionLive.png",
+                                subtitle: '多节点',
+                                title: "测试",
+                                navigateTo: "../multi/index"
+                        },
                 ]
         },
         

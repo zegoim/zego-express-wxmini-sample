@@ -1,15 +1,15 @@
 {
   "pages": [
-    "pages/main/index",
+    "pages/main/main",
     "pages/base/index",
-    "pages/audio/index",
     "pages/bgm/index",
     "pages/customlive/index",
     "pages/message/index",
     "pages/mix/index",
     "pages/native/index",
     "pages/setting/index",
-    "pages/snapshot/index"
+    "pages/snapshot/index",
+    "pages/multi/index"
   ],
   "window": {
     "backgroundTextStyle": "light",

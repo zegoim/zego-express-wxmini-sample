@@ -1,4 +1,3 @@
-/* pages/audio/index.wxss */
 .containerBase {
     height: 73vh;
     padding: 10rpx;
@@ -23,10 +22,14 @@
     height: 80rpx;
     border-bottom:1px solid rgba(13, 112, 255, 0.5);
   }
+  button[type='primary'] {
+    background-color: red;
+  }
   .openRoom {
     display: inline-block;
     width: 48vw;
     margin: 7rpx;
-    background-color: rgba(13, 112, 255, 0.5);
+    background: rgba(13, 112, 255, 0.5);
+    color: #fff;
   }
   

@@ -215,10 +215,7 @@ Page({
         onShow() {
                 console.log('server: ', server);
                 authCheck(this);
-                // if (zg && (this.data.handupStop || this.data.connectType === 0)) {
-                //         this.reLogin();
-                // }
-                if (zg) {
+                if (zg && this.data.roomID) {
                         this.reLogin();
                 }
                 // 刷新全局变量
@@ -226,6 +223,9 @@ Page({
                 server = getApp ().globalData.server;
         },
         onUnload() {
+                this.logout();
+        },
+        onHide() {
                 this.logout();
         },
         onLoad() {

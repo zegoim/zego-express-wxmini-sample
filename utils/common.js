@@ -1,4 +1,6 @@
-import { ZegoExpressEngine } from "zego-express-engine-miniprogram";
+// import { ZegoExpressEngine } from "zego-express-engine-miniprogram";
+import { ZegoExpressEngine } from '../pages/multi/libs/ZegoExpressMiniProgram-1.5.0';
+
 import { wxp } from "../app.js";
 const app = getApp();
 
@@ -98,6 +100,7 @@ export const startPush = async (context) => {
         try {
                 /** 开始推流，返回推流地址 */
                 const { url } = await zg.startPublishingStream(context.data.pushStreamID);
+                console.info('startPush', url);
                 context.setData(
                         {
                                 livePusherUrl: url,
@@ -106,22 +109,22 @@ export const startPush = async (context) => {
                         () => {
                                 context.data.livePusher.start();
                                 // 开始推流后，停止从CDN拉流，再从服务器拉流
-                                context.data.livePlayerList.forEach(async (livePlayer) => {
-                                        try {
-                                                console.log("startPush begin", livePlayer);
-                                                // zg.stopPlayingStream(livePlayer.streamID);
-                                                let { streamID, url } = await zg.startPlayingStream(
-                                                        livePlayer.streamID,
-                                                        {
-                                                                sourceType: "BGP",
-                                                        }
-                                                );
-                                                console.log("startPush end", streamID, url);
-                                                setPlayUrl(streamID, url, context);
-                                        } catch (e) {
-                                                console.error("startPlayingStream fail: ", e);
-                                        }
-                                });
+                                // context.data.livePlayerList.forEach(async (livePlayer) => {
+                                //         try {
+                                //                 console.log("startPush begin", livePlayer);
+                                //                 // zg.stopPlayingStream(livePlayer.streamID);
+                                //                 let { streamID, url } = await zg.startPlayingStream(
+                                //                         livePlayer.streamID,
+                                //                         {
+                                //                                 sourceType: "BGP",
+                                //                         }
+                                //                 );
+                                //                 console.log("startPush end", streamID, url);
+                                //                 setPlayUrl(streamID, url, context);
+                                //         } catch (e) {
+                                //                 console.error("startPlayingStream fail: ", e);
+                                //         }
+                                // });
                         }
                 );
         } catch (error) {
@@ -248,7 +251,7 @@ export const authCheck = async (context) => {
         }
 };
 
-const _checkParam = (zegoAppID, server) => {
+export const _checkParam = (zegoAppID, server) => {
         if (!zegoAppID) {
                 wx.showToast({
                         title: `请在app.js中提供正确的zegoAppID`,
