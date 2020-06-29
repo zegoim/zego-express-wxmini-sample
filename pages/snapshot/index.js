@@ -197,10 +197,7 @@ Page({
         // live-pusher 绑定推流事件，透传推流事件给 SDK
         onPushStateChange(e) {
                 console.error('onPushStateChange', e.detail.code, e.detail.message);
-                if (e.detail.code === 5000) {
-                        this.setData({ handupStop: true })
-                        // this.data.livePusher && (this.data.livePusher! as wx.LivePusherContext).stop();
-                }
+
                 zg.updatePlayerState (this.data.pushStreamID, e);
         },
         // live-pusher 绑定网络状态事件，透传网络状态事件给 SDK
