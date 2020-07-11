@@ -39,7 +39,7 @@ Page ({
                                 let token = await getLoginToken (zegoAppID, this.data.userID);
                                 this.setData({ token });
                                 /** 开始登录房间 */
-                                let isLogin = await zg.loginRoom (this.data.roomID, this.data.token, {userID: this.data.userID, userName: 'nick' + this.data.userID});
+                                let isLogin = await zg.loginRoom (this.data.roomID, this.data.token, {userID: this.data.userID, userName: 'nick' + this.data.userID}, { userUpdate: true });
                                 isLogin ? console.log('login success') : console.error('login fail');
                                 this.setData({
                                         connectType: 1
