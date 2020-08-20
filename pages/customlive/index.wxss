@@ -15,7 +15,7 @@
     background-color: rgba(13, 112, 255, 0.5);
     width: 25%;
     display: inline-block;
-    font-size: 30rpx;
+    font-size: 28rpx;
 }
 .live-container .liver {
     display: inline-block;

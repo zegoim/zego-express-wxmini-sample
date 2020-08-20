@@ -53,12 +53,14 @@
     display: block;
     margin-top: 10px;
     color: #ffffff;
-    font-size: 16px;
+    font-size:32rpx;
     font-family: "PingFang SC";
 }
 
 .guide_label.sub_title {
-    font-size: 14px;
+    font-size: 28rpx;
+     color: #ffffff;
+     margin-top:2rpx;
 }
 
 .guide_nomore_label {
