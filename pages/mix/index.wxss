@@ -30,4 +30,5 @@
     display: inline-block;
     width: 48vw;
     margin: 7rpx;
+    font-size:34rpx;
   }

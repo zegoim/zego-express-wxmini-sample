@@ -42,7 +42,7 @@ export const initSDK = (context) => {
                 } else if (updateType === "ADD") {
                         userList.forEach((user) => {
                                 if (user.userID !== context.data.userID) {
-                                        roomUserList.push(...userList);
+                                        roomUserList.push(user);
                                 }
                         });
                 }
