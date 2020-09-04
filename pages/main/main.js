@@ -28,6 +28,12 @@ Page ({
                         },
                         {
                                 icon: '../../resource/interactionLive.png',
+                                subtitle: 'CDN',
+                                title: '视频直播',
+                                navigateTo: '../cdn/index'
+                        },
+                        {
+                                icon: '../../resource/interactionLive.png',
                                 subtitle: '混流',
                                 title: '视频直播',
                                 navigateTo: '../mix/index'

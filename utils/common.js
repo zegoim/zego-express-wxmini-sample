@@ -96,10 +96,10 @@ export const playAll = async (streamList, context) => {
         }
 };
 
-export const startPush = async (context) => {
+export const startPush = async (context, publishOption) => {
         try {
                 /** 开始推流，返回推流地址 */
-                const { url } = await zg.startPublishingStream(context.data.pushStreamID);
+                const { url } = await zg.startPublishingStream(context.data.pushStreamID, publishOption);
                 console.info('startPush', url);
                 context.setData(
                         {
