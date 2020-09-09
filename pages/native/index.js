@@ -30,7 +30,8 @@ Page({
                         frontCamera: true,    // 前后置摄像头，false 表示后置
                         enableCamera: true,   // 是否开启摄像头
                         isMirror: false,      // 画面是否镜像
-                        orientation: 'vertical'
+                        orientation: 'vertical',
+                        audioReverbType: 1
                 },
                 playConfig: {
                         fullScreen: false
