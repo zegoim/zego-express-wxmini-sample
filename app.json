@@ -2,6 +2,7 @@
   "pages": [
     "pages/main/main",
     "pages/base/index",
+    "pages/cdn/index",
     "pages/bgm/index",
     "pages/customlive/index",
     "pages/message/index",

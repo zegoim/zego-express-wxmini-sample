@@ -30,7 +30,8 @@ Page({
                         frontCamera: true,    // 前后置摄像头，false 表示后置
                         enableCamera: true,   // 是否开启摄像头
                         isMirror: false,      // 画面是否镜像
-                        orientation: 'vertical'
+                        orientation: 'vertical',
+                        audioReverbType: 1
                 },
                 playConfig: {
                         fullScreen: false
@@ -55,7 +56,7 @@ Page({
                         try {
                                 let token = await getLoginToken(zegoAppID, this.data.userID);
                                 this.setData({ token });
-                                let isLogin = await zg.loginRoom (this.data.roomID, this.data.token, {userID: this.data.userID, userName: 'nick' + this.data.userID});
+                                let isLogin = await zg.loginRoom (this.data.roomID, this.data.token, {userID: this.data.userID, userName: 'nick' + this.data.userID}, { userUpdate: true });
                                 isLogin ? console.log('login success') : console.error('login fail');
                                 this.setData({
                                         connectType: 1
@@ -119,6 +120,12 @@ Page({
         },
         onPlayError(e) {
                 console.log(e);
+        },
+        onPushAudiovolumenotify(e) {
+                console.log('onPushAudiovolumenotify', e.detail.volume);
+        },
+        onPlayAudiovolumenotify(e) {
+                console.log('onPlayAudiovolumenotify', e.detail.volume);
         },
         async onReady() {
                 zg = initSDK(this);

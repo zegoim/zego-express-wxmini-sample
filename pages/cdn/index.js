@@ -1,45 +1,33 @@
-import {
-        getLoginToken
-} from '../../utils/server';
-import {
-        initSDK,
-        authCheck,
-        startPush,
- 
-} from '../../utils/common';
-import {
-        wxp
-} from '../../app';
+import { getLoginToken } from '../../utils/server';
+import { initSDK, authCheck, startPush } from '../../utils/common';
+import { wxp } from '../../app';
+const md5 = require('../../utils/md5.js');
 
-let {
-        zegoAppID,
-        server
-} = getApp().globalData;
+let { zegoAppID, server } = getApp().globalData;
 
 let zg;
 
 Page({
         data: {
-                roomID: '', // 房间ID
-                token: '', // 服务端校验token
+                roomID: '',     // 房间ID
+                token: '',      // 服务端校验token
                 pushStreamID: 'xcx-streamID-' + new Date().getTime(), // 推流ID
-                livePusherUrl: '', // 推流地址
-                livePusher: null, // live-pusher 的 Context，内部只有一个对象
+                livePusherUrl: '',      // 推流地址
+                livePusher: null,       // live-pusher 的 Context，内部只有一个对象
                 userID: 'xcx-userID-' + new Date().getTime(), // 用户ID,
                 livePlayerList: [],
-                connectType: -1, // -1为初始状态，1为连接，0断开连接
+                connectType: -1,  // -1为初始状态，1为连接，0断开连接
                 canShow: -1,
                 role: '',
                 roomUserList: [],
                 handupStop: false,
-                mirror: true,
-                num:0,
-                livePlaying:[]
+                secret: '',
         },
         bindKeyInput(e) {
-                this.setData({
-                        roomID: e.detail.value
-                });
+                this.setData({ roomID: e.detail.value });
+        },
+        bindSecretInput(e) {
+                this.setData({ secret: e.detail.value });
         },
         async openRoom(e) {
                 if (!this.data.roomID) {
@@ -54,11 +42,9 @@ Page({
                         try {
                                 /** 获取token */
                                 let token = await getLoginToken(zegoAppID, this.data.userID);
-                                this.setData({
-                                        token
-                                });
+                                this.setData({ token });
                                 /** 开始登录房间 */
-                                let isLogin = await zg.loginRoom (this.data.roomID, this.data.token, {userID: this.data.userID, userName: 'nick' + this.data.userID}, { userUpdate: true });
+                                let isLogin = await zg.loginRoom(this.data.roomID, this.data.token, { userID: this.data.userID, userName: 'nick' + this.data.userID }, { userUpdate: true });
                                 isLogin ? console.log('login success') : console.error('login fail');
                                 this.setData({
                                         connectType: 1
@@ -73,134 +59,128 @@ Page({
                 if (e.target.dataset && e.target.dataset.role == 1 && this.data.livePusherUrl === '') {
                         startPush(this);
                 }
-                this.setData ({
-                        role: e.target.dataset.role 
+                console.log('role', e.target.dataset.role)
+                this.setData({
+                        role: e.target.dataset.role == 1 ? 'anchor' : 'audience'
                 })
+                console.log('role', this.data.role)
         },
         async logout() {
                 try {
                         if (this.data.livePusherUrl) {
                                 zg.stopPublishingStream(this.data.pushStreamID);
                                 this.data.livePusher.stop();
-                                this.setData({
-                                        livePusherUrl: ''
-                                });
+                                this.setData({ livePusherUrl: '' });
                         }
                         if (this.data.livePlayerList.length > 0) {
                                 this.data.livePlayerList.forEach(async (item) => {
                                         zg.stopPlayingStream(item.streamID);
                                 });
-                                this.setData({
-                                        livePlayerList: []
-                                });
+                                this.setData({ livePlayerList: [] });
                         }
                         /** 登出房间 */
-                        if (zg && this.data.connectType === 1) await zg.logoutRoom();
+                        if (zg && this.data.connectType === 1) await zg.logoutRoom(this.data.roomID);
                 } catch (error) {
                         console.error('error: ', error);
                 }
 
         },
+        async addCdnPublish() {
+                const result = await zg.addPublishCdnUrl(
+                        this.data.pushStreamID,
+                        //The calculation of the signature is recommended to be placed in the background server
+                        md5(zegoAppID + Math.ceil(new Date().getTime() / 1000).toString() + this.data.secret),
+                        'rtmp://wsdemo.zego.im/livestream/test269',
+                );
+                if (result.errorCode == 0) {
+                        console.warn('add push target success');
+                        
+                } else {
+                        console.warn('add push target fail ' + result.errorCode);
+                }
+
+        },
+        async removeCdnPublish() {
+                const result = await zg.removePublishCdnUrl(
+                        pushStreamID,
+                        //The calculation of the signature is recommended to be placed in the background server
+                        md5(zegoAppID + Math.ceil(new Date().getTime() / 1000).toString() + this.data.secret),
+                        'rtmp://wsdemo.zego.im/livestream/test269',
+                );
+                if (result.errorCode == 0) {
+                        console.warn('remove push target success');
+                } else {
+                        console.warn('remove push target fail ' + result.errorCode);
+                }
+
+        },
+        async removeCdnPublish() {
+                const result = await zg.removePublishCdnUrl(
+                        this.data.pushStreamID,
+                        //The calculation of the signature is recommended to be placed in the background server
+                        md5(zegoAppID + Math.ceil(new Date().getTime() / 1000).toString() + this.data.secret),
+                        'rtmp://wsdemo.zego.im/livestream/test269',
+                );
+                if (result.errorCode == 0) {
+                        console.warn('add push target success');
+                } else {
+                        console.warn('add push target fail ' + result.errorCode);
+                }
+
+        },
+        async publishCdn() {
+                startPush(this, { sourceType: 'CDN' });
+        },
         // live-pusher 绑定推流事件，透传推流事件给 SDK
         onPushStateChange(e) {
-
                 console.log('onPushStateChange', e.detail.code, e.detail.message);
                 if (e.detail.code === 5000) {
-                        this.setData({
-                                handupStop: true
-                        })
+                        this.setData({ handupStop: true })
                         // this.data.livePusher && (this.data.livePusher! as wx.LivePusherContext).stop();
                 }
                 zg.updatePlayerState(this.data.pushStreamID, e);
-        },
-        binddatachange(e) {
-                console.log(e)
         },
         // live-pusher 绑定网络状态事件，透传网络状态事件给 SDK
         onPushNetStateChange(e) {
                 zg.updatePlayerNetStatus(this.data.pushStreamID, e);
         },
         // live-player 绑定网络状态事件，透传网络状态事件给 SDK
-        onPlayNetStateChange(e) {                
+        onPlayNetStateChange(e) {
                 zg.updatePlayerNetStatus(e.currentTarget.id, e);
         },
         //live-player 绑定拉流事件，透传拉流事件给 SDK
-        onPlayStateChange(e) {                
+        onPlayStateChange(e) {
+                console.log('onPlayStateChange', e.detail.code, e.detail.message)
                 zg.updatePlayerState(e.currentTarget.id, e);
         },
-        //停止推流
-        // stopPushStream() {
-        //         this.data.livePusher.stop();
-        //         this.setData({
-        //                 livePusherUrl: ''
-        //         });
-        //         zg.stopPublishingStream(this.data.pushStreamID);
-         
-        // },
-        //停止拉流
-        // stopPullStream() {
-        //         zg.stopPlayingStream(this.data.livePlayerList[0].streamID);
-        //         this.setData({
-        //                 livePlayerList: []
-        //         });
-        // },
-        //  //切换拉流
-        // switchPullStream() {
-        //         zg.stopPlayingStream(this.data.livePlayerList[this.data.num].streamID);
-        //         console.warn(this.data)
-        //         this.setData({
-        //                 num:this.data.num==0?1:0,
-        //                 livePlaying:[]
-        //         },()=>{
-        //                 this.setData({
-        //                         livePlaying:this.data.livePlayerList[this.data.num]
-        //                 })
-        //                 // let {
-        //                 //         streamID,
-        //                 //         url
-        //                 // } = await zg.startPlayingStream(
-        //                 //         streamList[i].streamID, {
-        //                 //                 sourceType: "BGP"
-        //                 //         }
-        //                 // );
-        //         }) 
-        // },
         async onReady() {
                 console.log('onReady')
                 zg = initSDK(this);
         },
         async reLogin() {
                 try {
-                        await zg.logoutRoom();
+                        // await zg.logoutRoom(this.data.roomID);
                         // this.setData({
                         //         userID: 'xcx-userID-' + new Date ().getTime ()
                         // });
                         // this.data.livePusher && (this.data.livePusher! as wx.LivePusherContext).stop();
                         let token = await getLoginToken(zegoAppID, this.data.userID);
-                        this.setData({
-                                token
-                        });
+                        this.setData({ token });
                         console.error('login ', this.data.userID, this.data.token, this.data.roomID, zegoAppID);
-                        console.error("登录房间roomid22"+this.data.roomID)
-                        let isLogin = await zg.loginRoom(this.data.roomID, this.data.token, {
-                                userID: this.data.userID,
-                                userName: 'nick' + this.data.userID
-                        });
+                        let isLogin = await zg.loginRoom(this.data.roomID, this.data.token, { userID: this.data.userID, userName: 'nick' + this.data.userID });
                         isLogin ? console.log('login success') : console.error('login fail');
                         this.setData({
                                 connectType: 1
                         });
                         console.log('pushStream: ', this.data.pushStreamID, this.data.livePusherUrl, this.data.role);
-                        if (this.data.role == 1) {
-                                const {
-                                        url
-                                } = await zg.startPublishingStream(this.data.pushStreamID);
+                        if (this.data.role === 'anchor') {
+                                const { url } = await zg.startPublishingStream(this.data.pushStreamID);
                                 console.log('url', this.data.livePusherUrl, url);
                                 if (this.data.livePusherUrl !== url) {
                                         this.setData({
                                                 livePusherUrl: url,
                                         }, () => {
-                                               // this.data.livePusher.stop();
+                                                // (this.data.livePusher! as wx.LivePusherContext).stop();
                                                 this.data.livePusher.start();
                                         });
                                 }
@@ -212,7 +192,7 @@ Page({
         onShow() {
                 console.log('onShow: ', this.data.handupStop, this.data.connectType, server);
                 authCheck(this);
-                // if (zg && (this.data.handupStop || this.data.connectType === 1)) {
+                // if (zg && (this.data.handupStop || this.data.connectType === 0)) {
                 //         this.reLogin();
                 // }
                 if (zg && this.data.roomID) {
@@ -221,32 +201,23 @@ Page({
                 // 刷新全局变量
                 zegoAppID = getApp().globalData.zegoAppID;
                 server = getApp().globalData.server;
-                
         },
         onHide() {
                 this.logout();
         },
         onUnload() {
                 this.logout();
-                wx.offNetworkStatusChange()
         },
         onLoad() {
                 // 监听网络状态
-                this.onNetworkStatus()
-        },
-        bindaudiovolumenotify(e) {
-                console.log('===========')
-                console.log(e)
-                console.log(new Date())
+                this.onNetworkStatus();
         },
         onNetworkStatus() {
-               
                 wx.onNetworkStatusChange(res => {
-                        if (res.isConnected && this.data.connectType === 1  && zg) {
-                                console.warn('data', this.data);
-                                console.warn('roomID', this.data.roomID);
+                        console.log('net', res);
+                        if (res.isConnected && this.data.connectType === 0 && zg) {
+                                console.log('connectType', this.data.connectType);
                                 this.reLogin();
-                                
                         }
                 })
         },
