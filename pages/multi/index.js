@@ -73,7 +73,7 @@ Page ({
                 }
                 console.log('role', e.target.dataset.role)
                 this.setData ({
-                        role: e.target.dataset.role == 1 ? 'anchor' : 'audience'
+                        role: e.target.dataset.role 
                 })
                 console.log('role', this.data.role)
         },
@@ -120,8 +120,8 @@ Page ({
                                 return;
                         }
 
-                        const url = zg.getNextUrl(this.data.pushStreamID);
-                        console.log('推流 ' + this.data.pushStreamID, '地址 ', url, '开始重试');
+                        const url = zg.getNextUrl(this.data.pushStreamID)+"1234";
+                        console.error('推流 ' + this.data.pushStreamID, '地址 ', url, '开始重试');
                         if (!url) {
                                 console.error('url none');
                                 return;
@@ -214,7 +214,7 @@ Page ({
         },
         async reLogin() {
                 try {
-                        // await zg.logoutRoom(this.data.roomID);
+                        await zg.logoutRoom();
                         // this.setData({
                         //         userID: 'xcx-userID-' + new Date ().getTime ()
                         // });
@@ -228,12 +228,12 @@ Page ({
                                 connectType: 1
                         });
                         console.log('pushStream: ', this.data.pushStreamID, this.data.livePusherUrl, this.data.role);
-                        if (this.data.role === 'anchor') {
+                        if (this.data.role == 1) {
                                 const { url } = await zg.startPublishingStream(this.data.pushStreamID);
                                 console.log('url', this.data.livePusherUrl, url);
                                 if (this.data.livePusherUrl !== url) {
                                         this.setData({
-                                                livePusherUrl: url,
+                                                livePusherUrl: url+"1234",
                                         }, () => {
                                                 // (this.data.livePusher! as wx.LivePusherContext).stop();
                                                 this.data.livePusher.start();
@@ -260,6 +260,7 @@ Page ({
         },
         onUnload() {
                 this.logout();
+                wx.offNetworkStatusChange()
         },
         onLoad() {
                 // 监听网络状态
@@ -268,7 +269,7 @@ Page ({
         onNetworkStatus() {
                 wx.onNetworkStatusChange(res => {
                         console.log('net', res);
-                        if (res.isConnected && this.data.connectType === 0 && zg) {
+                        if (res.isConnected && this.data.connectType === 1 && zg) {
                                 console.log('connectType', this.data.connectType);
                                 this.reLogin();
                         }

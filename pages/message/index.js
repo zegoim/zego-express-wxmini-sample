@@ -4,7 +4,7 @@ import { getLoginToken } from '../../utils/server';
 import { format } from '../../utils/util';
 import { initSDK, authCheck, startPush } from '../../utils/common';
 
-let { zegoAppID, server } = getApp ().globalData;
+let { zegoAppID, server } = getApp().globalData;
 let zg;
 Page({
         data: {
@@ -45,7 +45,7 @@ Page({
                         });
                 });
                 zg.on('IMRecvCustomCommand', (roomID, fromUser, command) => {
-                        console.log('IMRecvCustomCommand',roomID, fromUser, command);
+                        console.log('IMRecvCustomCommand', roomID, fromUser, command);
                         let message = {
                                 ID: fromUser.userID,
                                 name: fromUser.userName,
@@ -82,6 +82,13 @@ Page({
                                 content: _content,
                                 showCancel: false,
                         })
+                });
+                zg.on("roomStateUpdate", (roomID, state, errorCode, extendedData) => {
+                        console.log("roomStateUpdate", roomID, state, errorCode, extendedData);
+                        if (state === "DISCONNECTED") {
+                                startPush(this);
+                        }
+
                 });
         },
         bindKeyInput(e) {
@@ -132,10 +139,13 @@ Page({
                         console.log('>>> barrageMessage success, ', isSent);
                 } catch (error) {
                         console.log('>>> barrageMessage, error: ', error);
-                };   
+                };
         },
         updateStreamExtra() {
                 zg.setStreamExtraInfo(this.data.pushStreamID, 'setStreamExtraInfo test, send at ' + new Date().toLocaleString())
+        },
+        setRoomExtraInfo() {
+                zg.setRoomExtraInfo(this.data.pushStreamID, '2', 'ReliableMessage test002')
         },
         async sendCustomCommand() {
                 console.log(this.data.roomUserList);
@@ -143,15 +153,15 @@ Page({
                         return item.userID
                 });
                 try {
-                        const res =  await zg.sendCustomCommand(this.data.roomID, this.data.inputMessage, toUserList);
+                        const res = await zg.sendCustomCommand(this.data.roomID, this.data.inputMessage, toUserList);
                         console.warn('send custom success ' + res)
-                } catch(error) {
+                } catch (error) {
                         console.error(JSON.stringify(error))
                 }
         },
         async openRoom(e) {
                 if (!this.data.roomID) {
-                        wxp.showModal ({
+                        wxp.showModal({
                                 title: '提示',
                                 content: '请输入房间号',
                                 showCancel: false,
@@ -160,14 +170,17 @@ Page({
                 }
                 if (this.data.connectType !== 1) {
                         try {
-                                let token = await getLoginToken (zegoAppID, this.data.userID);
+                                let token = await getLoginToken(zegoAppID, this.data.userID);
                                 this.setData({ token });
-                                let isLogin = await zg.loginRoom (this.data.roomID, this.data.token, {userID: this.data.userID, userName: 'nick' + this.data.userID}, {userUpdate: true});;
+                                let isLogin = await zg.loginRoom(this.data.roomID, this.data.token, { userID: this.data.userID, userName: 'nick' + this.data.userID }, { userUpdate: true });;
                                 isLogin ? console.log('login success') : console.error('login fail');
+                                console.log('zg.socketCenter.websocket')
+                                console.log(zg.socketCenter.websocket)
+                                console.log(zg.socketCenter.websocket.readyState)
                                 this.setData({
                                         connectType: 1
                                 });
-                        } catch(error) {
+                        } catch (error) {
                                 console.error('error: ', error);
                                 return;
                         }
@@ -176,6 +189,10 @@ Page({
                 if (e.target.dataset && e.target.dataset.role == 1 && this.data.livePusherUrl === '') {
                         startPush(this);
                 }
+                this.setData ({
+                        role: e.target.dataset.role 
+                })
+                
         },
         async logout() {
                 try {
@@ -204,7 +221,7 @@ Page({
                         this.setData({ handupStop: true })
                         // this.data.livePusher && (this.data.livePusher! as wx.LivePusherContext).stop();
                 }
-                zg.updatePlayerState (this.data.pushStreamID, e);
+                zg.updatePlayerState(this.data.pushStreamID, e);
         },
         // live-pusher 绑定网络状态事件，透传网络状态事件给 SDK
         onPushNetStateChange(e) {
@@ -224,26 +241,27 @@ Page({
         },
         async reLogin() {
                 try {
-                        // await zg.logout();
-                        let isLogin = await zg.loginRoom (this.data.roomID, this.data.token, {userID: this.data.userID, userName: 'nick' + this.data.userID});
+                         await zg.logoutRoom();
+                        let isLogin = await zg.loginRoom(this.data.roomID, this.data.token, { userID: this.data.userID, userName: 'nick' + this.data.userID });
+
                         isLogin ? console.log('login success') : console.error('login fail');
                         this.setData({
                                 connectType: 1
                         });
                         console.log('pushStream: ', this.data.pushStreamID, this.data.livePusherUrl);
-                        if (this.data.livePusherUrl) {
+                        if (this.data.role == 1) {
                                 const { url } = await zg.startPublishingStream(this.data.pushStreamID);
                                 console.log('url', this.data.livePusherUrl, url);
                                 if (this.data.livePusherUrl !== url) {
                                         this.setData({
                                                 livePusherUrl: url,
                                         }, () => {
-                                                this.data.livePusher.stop();
+                                                //this.data.livePusher.stop();
                                                 this.data.livePusher.start();
                                         });
                                 }
                         }
-                } catch(error) {
+                } catch (error) {
                         console.error('error: ', error);
                 }
         },
@@ -254,23 +272,24 @@ Page({
                         this.reLogin();
                 }
                 // 刷新全局变量
-                zegoAppID = getApp ().globalData.zegoAppID;
-                server = getApp ().globalData.server;
+                zegoAppID = getApp().globalData.zegoAppID;
+                server = getApp().globalData.server;
         },
         onHide() {
                 this.logout();
         },
         onUnload() {
                 this.logout();
+                wx.offNetworkStatusChange()
         },
         onLoad() {
                 // 监听网络状态
                 this.onNetworkStatus();
         },
         onNetworkStatus() {
-                wx.onNetworkStatusChange(res => {
-                        console.error('net', res);
-                        if (res.isConnected && this.data.connectType === 0 && zg) {
+               
+                wx.onNetworkStatusChange(res => {     
+                        if (res.isConnected && this.data.connectType === 1 && zg) {
                                 console.log('connectType', this.data.connectType);
                                 this.reLogin();
                         }

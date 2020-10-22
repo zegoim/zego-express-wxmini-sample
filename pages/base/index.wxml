@@ -1,7 +1,8 @@
-<view wx:if="{{canShow== 1}}">
+<view wx:if="{{canShow== 1}}" class="">
   <view class="containerBase">
-    <live-pusher wx:if="{{livePusherUrl}}" url="{{livePusherUrl}}" aspect="3:4" bindstatechange="onPushStateChange" bindnetstatus="onPushNetStateChange" waiting-image="https://storage.zego.im/downloads/pause_publish.png"></live-pusher>
-    <live-player wx:for="{{livePlayerList}}" wx:key="streamID" id="{{item.streamID}}" src="{{item.url}}" mode="RTC" autoplay bindstatechange="onPlayStateChange" bindnetstatus="onPlayNetStateChange"></live-player>
+    <live-pusher wx:if="{{livePusherUrl}}" url="{{livePusherUrl}}" aspect="3:4" bindstatechange="onPushStateChange" mode="SD" min-bitrate="800" max-bitrate="1500" bindnetstatus="onPushNetStateChange" waiting-image="https://storage.zego.im/downloads/pause_publish.png"   ></live-pusher>
+      <live-player  wx:for="{{livePlayerList}}" wx:key="streamID" id="{{item.streamID}}" src="{{item.url}}" mode="RTC" autoplay enable-metadata="true" bindmetadatachange="binddatachange" bindaudiovolumenotify="bindaudiovolumenotify"   bindstatechange="onPlayStateChange" bindnetstatus="onPlayNetStateChange"></live-player>
+    <!-- <live-player  id="{{livePlaying.streamID}}"  src="{{livePlaying.url}}" mode="RTC" autoplay enable-metadata="true" bindmetadatachange="binddatachange"  bindstatechange="onPlayStateChange" bindnetstatus="onPlayNetStateChange"></live-player> -->
   </view>
   <view class="index-container">
     <view class='input-container'>
@@ -15,7 +16,17 @@
       <button bindtap="openRoom" data-role="0"  hover-class="none" class="openRoom">
         加入房间(不推流)
       </button>
-      <!-- <button bindtap="logout" hover-class="none">退出房间</button> -->
+      <!-- <button bindtap="stopPushStream" data-role="1" hover-class="none" class="openRoom">
+        停止推流
+      </button>
+      <button bindtap="stopPullStream" data-role="0"  hover-class="none" class="openRoom">
+        停止拉流
+      </button>
+      <button bindtap="switchPullStream" data-role="0"  hover-class="none" class="openRoom">
+        切换拉流
+      </button> -->
+      
+      <button bindtap="logout" hover-class="none">退出房间</button>
     </view>
   </view>
 </view>

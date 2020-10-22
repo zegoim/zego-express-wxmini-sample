@@ -71,8 +71,12 @@ Page({
                 if (e.target.dataset && e.target.dataset.role == 1 && this.data.livePusherUrl === '') {
                         startPush(this);
                 }
+                this.setData ({
+                        role: e.target.dataset.role 
+                })
         },
         async snapshot(e) {
+              
                 const sucCallback = async (ret) => {
                         console.log('ret', ret.tempImagePath);
                         wxp.showLoading({ title: '正在上传...' });
@@ -80,7 +84,7 @@ Page({
                         // 上传图片
                         const res = await wxp.uploadFile({
                                 //  服务器上传图片接口地址
-                                url: 'https://***',
+                                url: 'https://doc.oa.zego.im/doc/uploadAliyunSource',
                                 filePath: ret.tempImagePath,
                                 name: 'file',
                                 header: {
@@ -109,7 +113,7 @@ Page({
                                 })
                         }
                         // 服务器存储图片地址
-                        const msg = 'https://***' + imgPath;
+                        const msg = 'https://zego-sdkdemospace.oss-cn-shanghai.aliyuncs.com/' + imgPath;
                         // 发送图片URL
                         try {
                                 const res = await zg.sendBroadcastMessage(this.data.roomID, msg);
@@ -221,26 +225,40 @@ Page({
         },
         async reLogin() {
                 try {
-                        // await zg.logout();
-                        let isLogin = await zg.loginRoom (this.data.roomID, this.data.token, {userID: this.data.userID, userName: 'nick' + this.data.userID});
+                         await zg.logoutRoom();
+                        // this.setData({
+                        //         userID: 'xcx-userID-' + new Date ().getTime ()
+                        // });
+                        // this.data.livePusher && (this.data.livePusher! as wx.LivePusherContext).stop();
+                        let token = await getLoginToken(zegoAppID, this.data.userID);
+                        this.setData({
+                                token
+                        });
+                        console.error('login ', this.data.userID, this.data.token, this.data.roomID, zegoAppID);
+                        let isLogin = await zg.loginRoom(this.data.roomID, this.data.token, {
+                                userID: this.data.userID,
+                                userName: 'nick' + this.data.userID
+                        });
                         isLogin ? console.log('login success') : console.error('login fail');
                         this.setData({
                                 connectType: 1
                         });
-                        console.log('pushStream: ', this.data.pushStreamID, this.data.livePusherUrl);
-                        if (this.data.livePusherUrl) {
-                                const { url } = await zg.startPublishingStream(this.data.pushStreamID);
+                        console.log('pushStream: ', this.data.pushStreamID, this.data.livePusherUrl, this.data.role);
+                        if (this.data.role == 1) {
+                                const {
+                                        url
+                                } = await zg.startPublishingStream(this.data.pushStreamID);
                                 console.log('url', this.data.livePusherUrl, url);
                                 if (this.data.livePusherUrl !== url) {
                                         this.setData({
                                                 livePusherUrl: url,
                                         }, () => {
-                                                this.data.livePusher.stop();
+                                                // (this.data.livePusher! as wx.LivePusherContext).stop();
                                                 this.data.livePusher.start();
                                         });
                                 }
                         }
-                } catch(error) {
+                } catch (error) {
                         console.error('error: ', error);
                 }
         },
@@ -259,6 +277,7 @@ Page({
         },
         onUnload() {
                 this.logout();
+                wx.offNetworkStatusChange()
         },
         onLoad() {
                 // 监听网络状态
@@ -267,7 +286,9 @@ Page({
         onNetworkStatus() {
                 wx.onNetworkStatusChange(res => {
                         console.error('net', res);
-                        if (res.isConnected && this.data.connectType === 0 && zg) {
+                        wxp.hideLoading();
+                        console.error('connectType', this.data.connectType);
+                        if (res.isConnected && this.data.connectType === 1 && zg) {
                                 console.log('connectType', this.data.connectType);
                                 this.reLogin();
                         }

@@ -1,7 +1,7 @@
 <view wx:if="{{canShow== 1}}">
   <view class="containerBase">
-    <live-pusher wx:if="{{livePusherUrl}}" url="{{livePusherUrl}}" aspect="3:4" bindstatechange="onPushStateChange" bindnetstatus="onPushNetStateChange" waiting-image="https://storage.zego.im/downloads/pause_publish.png"></live-pusher>
-    <live-player wx:for="{{livePlayerList}}" wx:key="streamID" id="{{item.streamID}}" src="{{item.url}}" mode="RTC" autoplay bindstatechange="onPlayStateChange" bindnetstatus="onPlayNetStateChange"></live-player>
+    <live-pusher wx:if="{{livePusherUrl}}" url="{{livePusherUrl}}" aspect="3:4" bindstatechange="onPushStateChange" mode="RTC" min-bitrate="1500" bindnetstatus="onPushNetStateChange" waiting-image="https://storage.zego.im/downloads/pause_publish.png"></live-pusher>
+    <live-player wx:for="{{livePlayerList}}" wx:key="streamID" id="{{item.streamID}}" src="{{item.url}}" min-cache="0.3" max-cache="0.8" mode="RTC" autoplay bindstatechange="onPlayStateChange" bindnetstatus="onPlayNetStateChange"></live-player>
   </view>
   <scroll-view class="message-view" scroll-y="true" scroll-into-view="{{scrollToView}}">
     <view class="message-item" wx:for="{{messageList}}" wx:key="{{index}}" id="{{item.ID}}">
@@ -27,6 +27,7 @@
       <button bindtap="sendBarrageMsg" hover-class="none" class="openRoom">弹幕发送</button>
       <button bindtap="sendCustomCommand" hover-class="none" class="openRoom">指定发送</button>
       <button bindtap="updateStreamExtra" hover-class="none" class="openRoom">更新信息</button>
+      <button bindtap="setRoomExtraInfo" hover-class="none" class="openRoom">发送可靠消息</button>
       <!-- <button bindtap="logout" hover-class="none" class="openRoom">退出房间</button> -->
     </view>
   </view>

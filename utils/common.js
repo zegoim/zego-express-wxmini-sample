@@ -1,7 +1,11 @@
 // import { ZegoExpressEngine } from "zego-express-engine-miniprogram";
-import { ZegoExpressEngine } from '../libs/ZegoExpressMiniProgram-1.6.0';
+import {
+        ZegoExpressEngine
+} from '../libs/ZegoExpressMiniProgram';
 
-import { wxp } from "../app.js";
+import {
+        wxp
+} from "../app.js";
 const app = getApp();
 
 let zg;
@@ -18,6 +22,9 @@ export const initSDK = (context) => {
         zg.on("roomStreamUpdate", (roomID, updateType, streamList) => {
                 console.log("roomStreamUpdate", roomID, updateType, streamList);
                 if (updateType === "ADD") {
+                        context.setData({
+                                streamList: streamList
+                        })
                         playAll(streamList, context);
                 } else {
                         stopPlayAll(streamList, context);
@@ -70,6 +77,13 @@ export const initSDK = (context) => {
         zg.on("playQualityUpdate", (streamID, playStats) => {
                 console.log("playQualityUpdate", streamID, playStats);
         });
+        zg.on("roomOnlineUserCountUpdate", (roomID, userCount) => {
+                        console.error("roomOnlineUserCountUpdate", roomID, userCount)
+        });
+        zg.on("recvReliableMessage", (roomID, userCount,trans_type) => {
+                console.error("recvReliableMessage", roomID, userCount,trans_type);
+        });
+         
         return zg;
 };
 
@@ -84,9 +98,13 @@ export const playAll = async (streamList, context) => {
         for (let i = 0; i < streamList.length; i++) {
                 /** 开始拉流，返回拉流地址 */
                 try {
-                        let { streamID, url } = await zg.startPlayingStream(
-                                streamList[i].streamID,
-                                { sourceType: "BGP" }
+                        let {
+                                streamID,
+                                url
+                        } = await zg.startPlayingStream(
+                                streamList[i].streamID, {
+                                        sourceType: "BGP"
+                                }
                         );
                         console.log("streamID", streamID, url);
                         setPlayUrl(streamID, url, context);
@@ -99,10 +117,11 @@ export const playAll = async (streamList, context) => {
 export const startPush = async (context) => {
         try {
                 /** 开始推流，返回推流地址 */
-                const { url } = await zg.startPublishingStream(context.data.pushStreamID);
+                const {
+                        url
+                } = await zg.startPublishingStream(context.data.pushStreamID);
                 console.info('startPush', url);
-                context.setData(
-                        {
+                context.setData({
                                 livePusherUrl: url,
                                 livePusher: wx.createLivePusherContext(),
                         },
@@ -150,7 +169,10 @@ export const setPlayUrl = (streamID, url, context) => {
                 }
         }
 
-        let streamInfo = { streamID: "", url: "" };
+        let streamInfo = {
+                streamID: "",
+                url: ""
+        };
         let isStreamRepeated = false;
 
         // 相同 streamID 的源已存在，更新 Url
@@ -169,7 +191,7 @@ export const setPlayUrl = (streamID, url, context) => {
                 streamInfo["playerContext"] = wx.createLivePlayerContext(streamID);
                 context.data.livePlayerList.push(streamInfo);
         }
-
+        app.globalData.livePlayerList = context.data.livePlayerList
         context.setData({
                 livePlayerList: context.data.livePlayerList,
         });
@@ -192,7 +214,9 @@ export const stopPlayAll = (streamList, context) => {
                         }
                 }
         }
-        context.setData({ livePlayerList: playStreamList });
+        context.setData({
+                livePlayerList: playStreamList
+        });
 };
 
 export const authCheck = async (context) => {

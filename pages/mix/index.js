@@ -60,6 +60,9 @@ Page({
                 if (e.target.dataset && e.target.dataset.role == 1 && this.data.livePusherUrl === '') {
                         startPush(this);
                 }
+                this.setData ({
+                        role: e.target.dataset.role 
+                })
         },
         async mixStream() {
                 this.setData({
@@ -189,21 +192,21 @@ Page({
         },
         async reLogin() {
                 try {
-                        // await zg.logout();
+                        await zg.logoutRoom();
                         let isLogin = await zg.loginRoom (this.data.roomID, this.data.token, {userID: this.data.userID, userName: 'nick' + this.data.userID});
                         isLogin ? console.log('login success') : console.error('login fail');
                         this.setData({
                                 connectType: 1
                         });
                         console.log('pushStream: ', this.data.pushStreamID, this.data.livePusherUrl);
-                        if (this.data.livePusherUrl) {
+                        if (this.data.role == 1) {
                                 const { url } = await zg.startPublishingStream(this.data.pushStreamID);
                                 console.log('url', this.data.livePusherUrl, url);
                                 if (this.data.livePusherUrl !== url) {
                                         this.setData({
                                                 livePusherUrl: url,
                                         }, () => {
-                                                this.data.livePusher.stop();
+                                                //this.data.livePusher.stop();
                                                 this.data.livePusher.start();
                                         });
                                 }
@@ -224,6 +227,7 @@ Page({
         },
         onUnload() {
                 this.logout();
+                wx.offNetworkStatusChange()
         },
         onHide() {
                 this.logout();
@@ -235,7 +239,7 @@ Page({
         onNetworkStatus() {
                 wx.onNetworkStatusChange(res => {
                         console.error('net', res);
-                        if (res.isConnected && this.data.connectType === 0 && zg) {
+                        if (res.isConnected && this.data.connectType === 1 && zg) {
                                 console.log('connectType', this.data.connectType);
                                 this.reLogin();
                         }
