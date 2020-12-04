@@ -81,52 +81,52 @@ Page({
                         console.log('ret', ret.tempImagePath);
                         wxp.showLoading({ title: '正在上传...' });
                         const imgPath = 'sdk-doc/mini-snapshot-' + new Date().getTime() + '.jpg'
-                        // 上传图片
-                        const res = await wxp.uploadFile({
-                                //  服务器上传图片接口地址
-                                url: 'https://doc.oa.zego.im/doc/uploadAliyunSource',
-                                filePath: ret.tempImagePath,
-                                name: 'file',
-                                header: {
-                                        'Content-Type': 'application/x-www-form-urlencoded',
-                                },
-                                formData: {
-                                        'path': imgPath,
-                                        'space': 'DemoSpace'
-                                },
-                        })
-                        console.log('res', res);
-                        const data = JSON.parse(res.data);
-                        if (data.code == 200) {
-                                wxp.hideLoading();
-                                wxp.showToast({
-                                        title: '发送成功',
-                                        duration: 1000,
-                                        mask: true
-                                });
-                        } else {
-                                wxp.hideLoading()
-                                wxp.showToast({
-                                        title: '上传失败',
-                                        duration: 1000,
-                                        mask: true
-                                })
-                        }
-                        // 服务器存储图片地址
-                        const msg = 'https://zego-sdkdemospace.oss-cn-shanghai.aliyuncs.com/' + imgPath;
-                        // 发送图片URL
-                        try {
-                                const res = await zg.sendBroadcastMessage(this.data.roomID, msg);
-                                console.log('sendMsg success', res);
-                        } catch (error) {
-                                console.log('sendMsg, error: ', error);
-                                wxp.hideLoading();
-                                wxp.showToast({
-                                        title: '发送失败',
-                                        duration: 1000,
-                                        mask: true
-                                });
-                        };
+                        // // 上传图片
+                        // const res = await wxp.uploadFile({
+                        //         //  服务器上传图片接口地址
+                        //         url: 'https://doc.oa.zego.im/doc/uploadAliyunSource',
+                        //         filePath: ret.tempImagePath,
+                        //         name: 'file',
+                        //         header: {
+                        //                 'Content-Type': 'application/x-www-form-urlencoded',
+                        //         },
+                        //         formData: {
+                        //                 'path': imgPath,
+                        //                 'space': 'DemoSpace'
+                        //         },
+                        // })
+                        // console.log('res', res);
+                        // const data = JSON.parse(res.data);
+                        // if (data.code == 200) {
+                        //         wxp.hideLoading();
+                        //         wxp.showToast({
+                        //                 title: '发送成功',
+                        //                 duration: 1000,
+                        //                 mask: true
+                        //         });
+                        // } else {
+                        //         wxp.hideLoading()
+                        //         wxp.showToast({
+                        //                 title: '上传失败',
+                        //                 duration: 1000,
+                        //                 mask: true
+                        //         })
+                        // }
+                        // // 服务器存储图片地址
+                        // const msg = 'https://zego-sdkdemospace.oss-cn-shanghai.aliyuncs.com/' + imgPath;
+                        // // 发送图片URL
+                        // try {
+                        //         const res = await zg.sendBroadcastMessage(this.data.roomID, msg);
+                        //         console.log('sendMsg success', res);
+                        // } catch (error) {
+                        //         console.log('sendMsg, error: ', error);
+                        //         wxp.hideLoading();
+                        //         wxp.showToast({
+                        //                 title: '发送失败',
+                        //                 duration: 1000,
+                        //                 mask: true
+                        //         });
+                        // };
                         setTimeout(async () => {
                                 const saveRes = await wxp.showModal({
                                         title: '提示',
@@ -134,6 +134,7 @@ Page({
                                 });
                                 if (saveRes.confirm) {
                                         console.log('saveImageToPhotosAlbum confirm');
+                                        wxp.hideLoading()
                                         this._saveImageToPhotosAlbum(ret.tempImagePath);
                                 } else if (saveRes.cancel) {
                                         console.log('saveImageToPhotosAlbum cancel');
