@@ -10,6 +10,10 @@ import {
 import {
         wxp
 } from '../../app';
+import {
+        CalcQualityGrade
+ 
+} from '../../utils/calc';
 
 let {
         zegoAppID,
@@ -121,7 +125,10 @@ Page({
                 zg.updatePlayerNetStatus(this.data.pushStreamID, e);
         },
         // live-player 绑定网络状态事件，透传网络状态事件给 SDK
-        onPlayNetStateChange(e) {                
+        onPlayNetStateChange(e) {    
+                let netQuaily = CalcQualityGrade(e.detail.info.videoFPS)
+                console.error('CalcQualityGrade', netQuaily);    
+                console.error('videoFPS', e.detail.info.videoFPS);           
                 zg.updatePlayerNetStatus(e.currentTarget.id, e);
         },
         //live-player 绑定拉流事件，透传拉流事件给 SDK
