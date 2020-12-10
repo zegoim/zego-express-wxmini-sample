@@ -14,7 +14,7 @@ import {
         CalcQualityGrade
 
 } from '../../utils/calc';
-let CalcQualityGradeFunc = new CalcQualityGrade();
+let calcQualityGradeFunc = new CalcQualityGrade();
 
 let {
         zegoAppID,
@@ -132,19 +132,19 @@ Page({
         },
         // live-player 绑定网络状态事件，透传网络状态事件给 SDK
         onPlayNetStateChange(e) {
-                let netQuaily = CalcQualityGradeFunc.CalcNetQualityGrade(e.currentTarget.id,e.detail.info.audioBitrate,e.detail.info.videoBitrate, e.detail.info.videoFPS)
-                console.error('CalcQualityGrade',e.detail.info.audioBitrate,e.detail.info.videoBitrate, e.detail.info.videoFPS);
+                let netQuaily = calcQualityGradeFunc.calcNetQualityGrade(e.currentTarget.id,e.detail.info.audioBitrate,e.detail.info.videoBitrate, e.detail.info.videoFPS)
+                console.error('netQuaily',netQuaily);
                 zg.updatePlayerNetStatus(e.currentTarget.id, e);
         },
          //初始化拉流网络质量配置 一条拉流初始化一次即可
          addStreamRefer(){
                 this.data.livePlayerList.forEach(item=>{
-                        CalcQualityGradeFunc.addStreamRefer(item.streamID,80,15)
+                        calcQualityGradeFunc.addStreamRefer(item.streamID,80,15)
                 })
         },
         //移除网络质量监听回调
         removeStreamRefer(){
-                CalcQualityGradeFunc.removeStreamRefer(this.data.livePlayerList[0].streamID);     
+                calcQualityGradeFunc.removeStreamRefer(this.data.livePlayerList[0].streamID);     
         },
         //live-player 绑定拉流事件，透传拉流事件给 SDK
         onPlayStateChange(e) {

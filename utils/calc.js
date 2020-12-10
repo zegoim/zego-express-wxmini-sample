@@ -34,7 +34,7 @@ export class CalcQualityGrade {
         }
         return true;
     }
-    CalcNetQualityGrade(streamID, audio_kbps, video_kbps, fps) {
+    calcNetQualityGrade(streamID, audio_kbps, video_kbps, fps) {
         if (!this.streamIDList[streamID]) {
             console.error("streamID not exist");
             return false;
