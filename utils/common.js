@@ -192,6 +192,8 @@ export const setPlayUrl = (streamID, url, context) => {
         app.globalData.livePlayerList = context.data.livePlayerList
         context.setData({
                 livePlayerList: context.data.livePlayerList,
+        },()=>{
+                context.addStreamRefer&&context.addStreamRefer();
         });
 };
 

@@ -5,15 +5,16 @@ import {
         initSDK,
         authCheck,
         startPush,
- 
+
 } from '../../utils/common';
 import {
         wxp
 } from '../../app';
 import {
         CalcQualityGrade
- 
+
 } from '../../utils/calc';
+let CalcQualityGradeFunc = new CalcQualityGrade();
 
 let {
         zegoAppID,
@@ -37,8 +38,8 @@ Page({
                 roomUserList: [],
                 handupStop: false,
                 mirror: true,
-                num:0,
-                livePlaying:[]
+                num: 0,
+                livePlaying: []
         },
         bindKeyInput(e) {
                 this.setData({
@@ -62,7 +63,12 @@ Page({
                                         token
                                 });
                                 /** 开始登录房间 */
-                                let isLogin = await zg.loginRoom (this.data.roomID, this.data.token, {userID: this.data.userID, userName: 'nick' + this.data.userID}, { userUpdate: true });
+                                let isLogin = await zg.loginRoom(this.data.roomID, this.data.token, {
+                                        userID: this.data.userID,
+                                        userName: 'nick' + this.data.userID
+                                }, {
+                                        userUpdate: true
+                                });
                                 isLogin ? console.log('login success') : console.error('login fail');
                                 this.setData({
                                         connectType: 1
@@ -77,8 +83,8 @@ Page({
                 if (e.target.dataset && e.target.dataset.role == 1 && this.data.livePusherUrl === '') {
                         startPush(this);
                 }
-                this.setData ({
-                        role: e.target.dataset.role 
+                this.setData({
+                        role: e.target.dataset.role
                 })
         },
         async logout() {
@@ -125,14 +131,23 @@ Page({
                 zg.updatePlayerNetStatus(this.data.pushStreamID, e);
         },
         // live-player 绑定网络状态事件，透传网络状态事件给 SDK
-        onPlayNetStateChange(e) {    
-                let netQuaily = CalcQualityGrade(e.detail.info.videoFPS)
-                console.error('CalcQualityGrade', netQuaily);    
-                console.error('videoFPS', e.detail.info.videoFPS);           
+        onPlayNetStateChange(e) {
+                let netQuaily = CalcQualityGradeFunc.CalcNetQualityGrade(e.currentTarget.id,e.detail.info.audioBitrate,e.detail.info.videoBitrate, e.detail.info.videoFPS)
+                console.error('CalcQualityGrade',e.detail.info.audioBitrate,e.detail.info.videoBitrate, e.detail.info.videoFPS);
                 zg.updatePlayerNetStatus(e.currentTarget.id, e);
         },
+         //初始化拉流网络质量配置 一条拉流初始化一次即可
+         addStreamRefer(){
+                this.data.livePlayerList.forEach(item=>{
+                        CalcQualityGradeFunc.addStreamRefer(item.streamID,80,15)
+                })
+        },
+        //移除网络质量监听回调
+        removeStreamRefer(){
+                CalcQualityGradeFunc.removeStreamRefer(this.data.livePlayerList[0].streamID);     
+        },
         //live-player 绑定拉流事件，透传拉流事件给 SDK
-        onPlayStateChange(e) {                
+        onPlayStateChange(e) {
                 zg.updatePlayerState(e.currentTarget.id, e);
         },
         //停止推流
@@ -142,7 +157,7 @@ Page({
         //                 livePusherUrl: ''
         //         });
         //         zg.stopPublishingStream(this.data.pushStreamID);
-         
+
         // },
         //停止拉流
         // stopPullStream() {
@@ -176,6 +191,7 @@ Page({
                 console.log('onReady')
                 zg = initSDK(this);
         },
+
         async reLogin() {
                 try {
                         await zg.logoutRoom();
@@ -188,7 +204,7 @@ Page({
                                 token
                         });
                         console.error('login ', this.data.userID, this.data.token, this.data.roomID, zegoAppID);
-                        console.error("登录房间roomid22"+this.data.roomID)
+                        console.error("登录房间roomid22" + this.data.roomID)
                         let isLogin = await zg.loginRoom(this.data.roomID, this.data.token, {
                                 userID: this.data.userID,
                                 userName: 'nick' + this.data.userID
@@ -207,7 +223,7 @@ Page({
                                         this.setData({
                                                 livePusherUrl: url,
                                         }, () => {
-                                               // this.data.livePusher.stop();
+                                                // this.data.livePusher.stop();
                                                 this.data.livePusher.start();
                                         });
                                 }
@@ -228,7 +244,7 @@ Page({
                 // 刷新全局变量
                 zegoAppID = getApp().globalData.zegoAppID;
                 server = getApp().globalData.server;
-                
+
         },
         onHide() {
                 this.logout();
@@ -247,13 +263,13 @@ Page({
                 console.log(new Date())
         },
         onNetworkStatus() {
-               
+
                 wx.onNetworkStatusChange(res => {
-                        if (res.isConnected && this.data.connectType === 1  && zg) {
+                        if (res.isConnected && this.data.connectType === 1 && zg) {
                                 console.warn('data', this.data);
                                 console.warn('roomID', this.data.roomID);
                                 this.reLogin();
-                                
+
                         }
                 })
         },

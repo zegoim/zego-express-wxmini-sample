@@ -16,6 +16,7 @@
       <button bindtap="openRoom" data-role="0"  hover-class="none" class="openRoom">
         加入房间(不推流)
       </button>
+
       <!-- <button bindtap="stopPushStream" data-role="1" hover-class="none" class="openRoom">
         停止推流
       </button>
