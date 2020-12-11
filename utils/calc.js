@@ -68,8 +68,8 @@ export class CalcQualityGrade {
             console.error("audio_kbps must be number");
             return false;
         }
-        if (typeof video_fps != "number") {
-            console.error("video_fps must be number");
+        if (typeof video_kbps != "number") {
+            console.error("video_kbps must be number");
             return false;
         }
         if (typeof fps != "number") {
