@@ -64,6 +64,18 @@ export class CalcQualityGrade {
             console.error("streamID not exist");
             return false;
         }
+        if (typeof audio_kbps != "number") {
+            console.error("audio_kbps must be number");
+            return false;
+        }
+        if (typeof video_fps != "number") {
+            console.error("video_fps must be number");
+            return false;
+        }
+        if (typeof fps != "number") {
+            console.error("fps must be number");
+            return false;
+        }
         if ((audio_kbps || video_kbps || fps) && this.streamIDList[streamID].cannotCalc) {
             this.streamIDList[streamID].cannotCalc = false
         }
