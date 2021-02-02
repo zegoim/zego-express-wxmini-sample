@@ -4,12 +4,47 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
+  },
+  "jest": {
+    "verbose": true,
+    "collectCoverage": true,
+    "coveragePathIgnorePatterns": [
+      "./script/wx.js"
+    ],
+    "testPathIgnorePatterns": [
+      "./script/wx.js"
+    ],
+    "testEnvironment": "node",
+    "setupFiles": [
+      "./script/wx.js"
+    ],
+    "transformIgnorePatterns": [
+      "<rootDir>/node_modules/(?!(miniprogram-api-promise)"
+    ],
+    "transform": {
+      "^.+\\.[t|j]s?$": "babel-jest"
+    }
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "miniprogram-api-promise": "^1.0.4",
-    "zego-express-engine-miniprogram": "^1.6.0"
+    "testfor-zego-wxminit": "^2.0.2",
+    "zego-express-engine-miniprogram": "^1.7.2"
+  },
+  "devDependencies": {
+    "axios": "^0.21.1",
+    "sinon": "^9.2.3",
+    "regenerator-runtime": "^0.13.7",
+    "chai": "^4.2.0",
+    "crypto": "^1.0.1",
+    "jest": "^22.4.3",
+    "@babel/core": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "^23.6.0",
+    "babel-preset-es2015": "^6.24.1",
+    "miniprogram-automator": "^0.10.0"
   }
 }

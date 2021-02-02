@@ -1,50 +1,69 @@
 // import { ZegoExpressEngine } from 'zego-express-engine-miniprogram';
-import { ZegoExpressEngine } from '../../libs/ZegoExpressMiniProgram-1.6.0';
-import { getLoginToken } from '../../utils/server';
-import {  _checkParam } from '../../utils/common';
-import { wxp } from '../../app';
+import {
+        ZegoExpressEngine
+} from '../../libs/ZegoExpressMiniProgram';
+import {
+        getLoginToken
+} from '../../utils/server';
+import {
+        _checkParam
+} from '../../utils/common';
+import {
+        wxp
+} from '../../app';
 
-let { zegoAppID, server } = getApp ().globalData;
+let {
+        zegoAppID,
+        server
+} = getApp().globalData;
 
 // 推拉流重试次数
 const MAX_RETRY_COUNT = 5;
-const isTest = true;
 let zg;
 
-Page ({
+Page({
         data: {
-                roomID: '',     // 房间ID
-                token: '',      // 服务端校验token
-                pushStreamID: 'xcx-streamID-' + new Date ().getTime (), // 推流ID
-                livePusherUrl: '',      // 推流地址
-                livePusher: null,       // live-pusher 的 Context，内部只有一个对象
-                userID: 'xcx-userID-' + new Date ().getTime (), // 用户ID,
-                pushConfig: {           // 推流配置项
-                        muted: false,         // 推流是否静音
-                        enableCamera: true,   // 是否开启摄像头
+                roomID: '', // 房间ID
+                token: '', // 服务端校验token
+                pushStreamID: 'xcx-streamID-' + new Date().getTime(), // 推流ID
+                livePusherUrl: '', // 推流地址
+                livePusher: null, // live-pusher 的 Context，内部只有一个对象
+                userID: 'xcx-userID-' + new Date().getTime(), // 用户ID,
+                pushConfig: { // 推流配置项
+                        muted: false, // 推流是否静音
+                        enableCamera: true, // 是否开启摄像头
                 },
                 livePlayerList: [],
-                connectType: -1,  // -1为初始状态，1为连接，0断开连接
+                connectType: -1, // -1为初始状态，1为连接，0断开连接
                 canShow: -1,
                 role: '',
                 roomUserList: [],
                 pushRetryCount: 0,
                 pushErrCnt: 0,
                 playErrCnt: 0,
+                isTest: false,
+
         },
         bindKeyInput(e) {
-                this.setData ({ roomID: e.detail.value });
+                this.setData({
+                        roomID: e.detail.value
+                });
         },
         bindCount(e) {
                 if (e.target.dataset.type == 'push') {
-                        this.setData ({ pushErrCnt: e.detail.value });
+                        
+                        this.setData({
+                                pushErrCnt: e.detail.value
+                        });
                 } else {
-                        this.setData ({ playErrCnt: e.detail.value }); 
+                        this.setData({
+                                playErrCnt: e.detail.value
+                        });
                 }
         },
         async openRoom(e) {
                 if (!this.data.roomID) {
-                        wxp.showModal ({
+                        wxp.showModal({
                                 title: '提示',
                                 content: '请输入房间号',
                                 showCancel: false,
@@ -54,15 +73,22 @@ Page ({
                 if (this.data.connectType !== 1) {
                         try {
                                 /** 获取token */
-                                let token = await getLoginToken (zegoAppID, this.data.userID);
-                                this.setData({ token });
+                                let token = await getLoginToken(zegoAppID, this.data.userID);
+                                this.setData({
+                                        token
+                                });
                                 /** 开始登录房间 */
-                                let isLogin = await zg.loginRoom (this.data.roomID, this.data.token, {userID: this.data.userID, userName: 'nick' + this.data.userID}, { userUpdate: true });
+                                let isLogin = await zg.loginRoom(this.data.roomID, this.data.token, {
+                                        userID: this.data.userID,
+                                        userName: 'nick' + this.data.userID
+                                }, {
+                                        userUpdate: true
+                                });
                                 isLogin ? console.log('login success') : console.error('login fail');
                                 this.setData({
                                         connectType: 1
                                 });
-                        } catch(error) {
+                        } catch (error) {
                                 console.error('error: ', error);
                                 return;
                         }
@@ -72,29 +98,37 @@ Page ({
                         this.startPush(this);
                 }
                 console.log('role', e.target.dataset.role)
-                this.setData ({
-                        role: e.target.dataset.role 
+                this.setData({
+                        role: e.target.dataset.role
                 })
                 console.log('role', this.data.role)
         },
-
+        openRetryPush() {
+                this.setData({
+                        isTest: !this.data.isTest
+                })
+        },
         async logout() {
                 console.warn('logout');
                 try {
                         if (this.data.livePusherUrl) {
-                                zg.stopPublishingStream (this.data.pushStreamID);
-                                this.data.livePusher.stop ();
-                                this.setData ({ livePusherUrl: '' });
+                                zg.stopPublishingStream(this.data.pushStreamID);
+                                this.data.livePusher.stop();
+                                this.setData({
+                                        livePusherUrl: ''
+                                });
                         }
                         if (this.data.livePlayerList.length > 0) {
-                                this.data.livePlayerList.forEach (async (item) => {
-                                        zg.stopPlayingStream (item.streamID);
+                                this.data.livePlayerList.forEach(async (item) => {
+                                        zg.stopPlayingStream(item.streamID);
                                 });
-                                this.setData ({ livePlayerList: [] });
+                                this.setData({
+                                        livePlayerList: []
+                                });
                         }
                         /** 登出房间 */
                         if (zg && this.data.connectType === 1) await zg.logoutRoom(this.data.roomID);
-                } catch(error) {
+                } catch (error) {
                         console.error('error: ', error);
                 }
 
@@ -114,13 +148,20 @@ Page ({
                         // console.error('retry count', this.data.pushRetryCount, MAX_RETRY_COUNT);
                         console.log('推流 ' + this.data.pushStreamID, '地址 ', this.data.livePusherUrl, '连接失败');
                         if (this.data.pushRetryCount >= MAX_RETRY_COUNT) {
-                                zg.updatePlayerState (this.data.pushStreamID, e);
+                                zg.updatePlayerState(this.data.pushStreamID, e);
                                 // console.error('push retry fail');
                                 console.error('推流 ' + this.data.pushStreamID, '重试完全失败');
                                 return;
                         }
+                        let url = zg.getNextUrl(this.data.pushStreamID);
 
-                        const url = zg.getNextUrl(this.data.pushStreamID)+"1234";
+                        if (this.data.isTest) {
+                                
+                                if (this.data.pushErrCnt > this.data.pushRetryCount) {
+                                        url = this.data.isTest ? "sasasasasas" : url;
+                                }
+                        }
+
                         console.error('推流 ' + this.data.pushStreamID, '地址 ', url, '开始重试');
                         if (!url) {
                                 console.error('url none');
@@ -138,7 +179,7 @@ Page ({
                                 this.data.pushRetryCount = 0;
                                 console.log('推流 ' + this.data.pushStreamID, '地址 ', this.data.livePusherUrl, '连接成功');
                         }
-                        zg.updatePlayerState (this.data.pushStreamID, e);
+                        zg.updatePlayerState(this.data.pushStreamID, e);
                 }
         },
         // live-pusher 绑定网络状态事件，透传网络状态事件给 SDK
@@ -147,7 +188,7 @@ Page ({
                         console.log('房间断开了');
                         return;
                 }
-                zg.updatePlayerNetStatus (this.data.pushStreamID, e);
+                zg.updatePlayerNetStatus(this.data.pushStreamID, e);
         },
         // live-player 绑定网络状态事件，透传网络状态事件给 SDK
         onPlayNetStateChange(e) {
@@ -155,7 +196,7 @@ Page ({
                         console.log('房间断开了');
                         return;
                 }
-                zg.updatePlayerNetStatus (e.currentTarget.id, e);
+                zg.updatePlayerNetStatus(e.currentTarget.id, e);
         },
         //live-player 绑定拉流事件，透传拉流事件给 SDK
         onPlayStateChange(e) {
@@ -173,25 +214,27 @@ Page ({
                         _player.retryCount++;
                         console.log('拉流 ' + _player.streamID, '地址 ', _player.url, '连接失败');
 
-                        if(_player.retryCount >= MAX_RETRY_COUNT) {
-                                zg.updatePlayerState (e.currentTarget.id, e);
+                        if (_player.retryCount >= MAX_RETRY_COUNT) {
+                                zg.updatePlayerState(e.currentTarget.id, e);
                                 console.error('拉流 ' + _player.streamID, '重试完全失败');
                                 return;
                         }
-                        const url = zg.getNextUrl(e.currentTarget.id);
+                
+                        let url = zg.getNextUrl(e.currentTarget.id);
+
+                        if (this.data.isTest) { 
+                                console.error("this.data.playErrCnt",this.data.playErrCnt,_player.retryCount)
+                                if (this.data.playErrCnt > _player.retryCount) {
+                                        url = this.data.isTest ? "sasasasasas" : url;
+                                }
+                        }
                         // console.error('play retry', url);
-                        console.log('拉流 ' + _player.streamID, '地址 ', _player.url, '开始重试');
+                        console.error('拉流 ' + _player.streamID, '地址 ', _player.url, '开始重试');
                         if (!url) {
                                 console.error('url none');
                                 return;
                         }
-
-                        // let _url
-                        // if (_player.retryCount >= this.data.playErrCnt) {
-                        //         _url = this.setTestUrl(url, false)
-                        // } else {
-                        //         _url = this.setTestUrl(url, true)
-                        // }
+ 
                         _player.url = url;
                         this.setData({
                                 livePlayerList: this.data.livePlayerList
@@ -200,17 +243,17 @@ Page ({
                                 _player.playerContext.play();
                         })
                 } else {
-                        if (e.detail.code === 2004) {
+                        if (e.detail.code === 2001) {
                                 _player.retryCount = 0;
                                 console.log('拉流 ' + _player.streamID, '地址 ', _player.url, '连接成功');
-                        } 
-                        zg.updatePlayerState (e.currentTarget.id, e);
+                        }
+                        zg.updatePlayerState(e.currentTarget.id, e);
                 }
 
         },
         async onReady() {
                 console.log('onReady')
-                zg = this.initSDK (this);
+                zg = this.initSDK(this);
         },
         async reLogin() {
                 try {
@@ -219,28 +262,35 @@ Page ({
                         //         userID: 'xcx-userID-' + new Date ().getTime ()
                         // });
                         // this.data.livePusher && (this.data.livePusher! as wx.LivePusherContext).stop();
-                        let token = await getLoginToken (zegoAppID, this.data.userID);
-                        this.setData({ token });
+                        let token = await getLoginToken(zegoAppID, this.data.userID);
+                        this.setData({
+                                token
+                        });
                         console.log('login ', this.data.userID, this.data.token, this.data.roomID, zegoAppID);
-                        let isLogin = await zg.loginRoom (this.data.roomID, this.data.token, {userID: this.data.userID, userName: 'nick' + this.data.userID});
+                        let isLogin = await zg.loginRoom(this.data.roomID, this.data.token, {
+                                userID: this.data.userID,
+                                userName: 'nick' + this.data.userID
+                        });
                         isLogin ? console.log('login success') : console.error('login fail');
                         this.setData({
                                 connectType: 1
                         });
                         console.log('pushStream: ', this.data.pushStreamID, this.data.livePusherUrl, this.data.role);
                         if (this.data.role == 1) {
-                                const { url } = await zg.startPublishingStream(this.data.pushStreamID);
+                                const {
+                                        url
+                                } = await zg.startPublishingStream(this.data.pushStreamID);
                                 console.log('url', this.data.livePusherUrl, url);
                                 if (this.data.livePusherUrl !== url) {
                                         this.setData({
-                                                livePusherUrl: url+"1234",
+                                                livePusherUrl: url + "1234",
                                         }, () => {
                                                 // (this.data.livePusher! as wx.LivePusherContext).stop();
                                                 this.data.livePusher.start();
                                         });
                                 }
                         }
-                } catch(error) {
+                } catch (error) {
                         console.error('error: ', error);
                 }
         },
@@ -252,8 +302,8 @@ Page ({
                 //         this.reLogin();
                 // }
                 // 刷新全局变量
-                zegoAppID = getApp ().globalData.zegoAppID;
-                server = getApp ().globalData.server;
+                zegoAppID = getApp().globalData.zegoAppID;
+                server = getApp().globalData.server;
         },
         onHide() {
                 this.logout();
@@ -282,11 +332,13 @@ Page ({
                 console.log('version', zg.getVersion());
                 zg.setDebugVerbose(false);
                 this.authCheck(context);
-        
+
                 // console.log(this);
                 zg.on("roomStreamUpdate", (roomID, updateType, streamList) => {
                         console.log("roomStreamUpdate", roomID, updateType, streamList);
+                        
                         if (updateType === "ADD") {
+
                                 this.playAll(streamList, context);
                         } else {
                                 this.stopPlayAll(streamList, context);
@@ -348,39 +400,45 @@ Page ({
                 });
                 return zg;
         },
-        
+
         async playAll(streamList, context) {
                 console.log("streamList", streamList);
                 if (streamList.length === 0) {
                         console.log("startPlayingStream, streamList is null");
                         return;
                 }
-        
+
                 // 获取每个 streamId 对应的拉流 url
                 for (let i = 0; i < streamList.length; i++) {
                         /** 开始拉流，返回拉流地址 */
                         try {
-                                let { streamID, url } = await zg.startPlayingStream(
-                                        streamList[i].streamID,
-                                        { sourceType: "BGP" }
+                                let {
+                                        streamID,
+                                        url
+                                } = await zg.startPlayingStream(
+                                        streamList[i].streamID, {
+                                                sourceType: "BGP"
+                                        }
                                 );
-                                console.log("streamID", streamID, url);
-                                this.setPlayUrl(streamID, url, context);
+                                // console.log("streamID", streamID, url);
+                                let testUrl = this.data.isTest?"dsdsdsds":url
+                                this.setPlayUrl(streamID, testUrl, context);
                         } catch (error) {
                                 console.error("error", error);
                         }
                 }
         },
-        
+
         async startPush(context) {
                 try {
                         /** 开始推流，返回推流地址 */
-                        const { url } = await zg.startPublishingStream(context.data.pushStreamID);
+                        const {
+                                url
+                        } = await zg.startPublishingStream(context.data.pushStreamID);
                         // const res = await zg.startPublishingStream(context.data.pushStreamID);
                         console.log('>>> startPush', url);
-                        context.setData(
-                                {
-                                        livePusherUrl: url,
+                        context.setData({
+                                        livePusherUrl: this.data.isTest ? "dsdsdssd" : url,
                                         livePusher: wx.createLivePusherContext(),
                                 },
                                 () => {
@@ -393,7 +451,7 @@ Page ({
                         console.error("error", error);
                 }
         },
-        
+
         setPlayUrl(streamID, url, context) {
                 if (!url) {
                         console.log(">>>[liveroom-room] setPlayUrl, url is null");
@@ -411,10 +469,13 @@ Page ({
                                 return;
                         }
                 }
-        
-                let streamInfo = { streamID: "", url: "" };
+
+                let streamInfo = {
+                        streamID: "",
+                        url: ""
+                };
                 let isStreamRepeated = false;
-        
+
                 // 相同 streamID 的源已存在，更新 Url
                 for (let i = 0; i < context.data.livePlayerList.length; i++) {
                         if (context.data.livePlayerList[i]["streamID"] === streamID) {
@@ -423,7 +484,7 @@ Page ({
                                 break;
                         }
                 }
-        
+
                 // 相同 streamID 的源不存在，创建新 player
                 if (!isStreamRepeated) {
                         streamInfo["streamID"] = streamID;
@@ -437,12 +498,13 @@ Page ({
                         livePlayerList: context.data.livePlayerList,
                 });
         },
-        
+
         stopPlayAll(streamList, context) {
                 if (streamList.length === 0) {
                         console.log("stopPlayAll, streamList is empty");
                         return;
                 }
+
                 let playStreamList = context.data.livePlayerList;
                 for (let i = 0; i < streamList.length; i++) {
                         let streamID = streamList[i].streamID;
@@ -455,7 +517,9 @@ Page ({
                                 }
                         }
                 }
-                context.setData({ livePlayerList: playStreamList });
+                context.setData({
+                        livePlayerList: playStreamList
+                });
         },
 
         async authCheck(context) {
@@ -491,7 +555,7 @@ Page ({
                                         });
                                 },
                         });
-        
+
                         wxp.authorize({
                                 scope: "scope.record",
                                 success() {

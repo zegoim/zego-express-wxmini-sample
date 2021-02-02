@@ -57,6 +57,9 @@ Page({
                                 scrollToView: message.ID,
                         });
                 });
+                zg.on('roomExtraInfoUpdate', (roomID, roomExtraInfoList) => {
+                        console.error('roomExtraInfoUpdate', roomID, roomExtraInfoList);
+                })
                 zg.on('IMRecvBarrageMessage', (roomID, chatData) => {
                         console.log('IMRecvBroadcastMessage', roomID, chatData);
                         let message = {
@@ -148,7 +151,7 @@ Page({
                 zg.setRoomExtraInfo(this.data.pushStreamID, '2', 'ReliableMessage test002')
         },
         async sendCustomCommand() {
-                console.log(this.data.roomUserList);
+                console.error(this.data.roomUserList);
                 const toUserList = this.data.roomUserList.map(item => {
                         return item.userID
                 });
@@ -169,14 +172,15 @@ Page({
                         return;
                 }
                 if (this.data.connectType !== 1) {
+                
                         try {
                                 let token = await getLoginToken(zegoAppID, this.data.userID);
+                                
                                 this.setData({ token });
-                                let isLogin = await zg.loginRoom(this.data.roomID, this.data.token, { userID: this.data.userID, userName: 'nick' + this.data.userID }, { userUpdate: true });;
+                                let isLogin = await zg.loginRoom(this.data.roomID, this.data.token, { userID: this.data.userID, userName: 'nick' + this.data.userID }, { userUpdate: true });
+                                debugger
                                 isLogin ? console.log('login success') : console.error('login fail');
-                                console.log('zg.socketCenter.websocket')
-                                console.log(zg.socketCenter.websocket)
-                                console.log(zg.socketCenter.websocket.readyState)
+        
                                 this.setData({
                                         connectType: 1
                                 });
@@ -245,7 +249,8 @@ Page({
                         let isLogin = await zg.loginRoom (this.data.roomID, this.data.token, {userID: this.data.userID, userName: 'nick' + this.data.userID}, { userUpdate: true });
                         isLogin ? console.log('login success') : console.error('login fail');
                         this.setData({
-                                connectType: 1
+                                connectType: 1,
+                                roomUserList:[]
                         });
                         console.log('pushStream: ', this.data.pushStreamID, this.data.livePusherUrl);
                         if (this.data.role == 1) {
@@ -286,7 +291,7 @@ Page({
                 this.onNetworkStatus();
         },
         onNetworkStatus() {
-               
+                wx.offNetworkStatusChange()
                 wx.onNetworkStatusChange(res => {     
                         if (res.isConnected && this.data.connectType === 1 && zg) {
                                 console.log('connectType', this.data.connectType);

@@ -8,6 +8,12 @@ Page ({
         data: {
                 tapTime: new Date (),
                 entryInfos: [
+                        // {
+                        //         icon: '../../resource/interactionLive.png',
+                        //         subtitle: '《测试推拉流》',
+                        //         title: '测试视频直播',
+                        //         navigateTo: '../test/index'
+                        // },
                         {
                                 icon: '../../resource/interactionLive.png',
                                 subtitle: '《基础推拉流》',

@@ -90,7 +90,7 @@ Page({
                         this.data.pushStreamID,
                         //The calculation of the signature is recommended to be placed in the background server
                         md5(zegoAppID + Math.ceil(new Date().getTime() / 1000).toString() + this.data.secret),
-                        'rtmp://wsdemo.zego.im/livestream/test269',
+                        'rtmp://wsdemo.zego.im/livestream/'+this.data.pushStreamID,
                 );
                 if (result.errorCode == 0) {
                         console.warn('add push target success');
@@ -102,29 +102,15 @@ Page({
         },
         async removeCdnPublish() {
                 const result = await zg.removePublishCdnUrl(
-                        pushStreamID,
+                        this.data.pushStreamID,
                         //The calculation of the signature is recommended to be placed in the background server
-                        md5(zegoAppID + Math.ceil(new Date().getTime() / 1000).toString() + this.data.secret),
-                        'rtmp://wsdemo.zego.im/livestream/test269',
+                        'rtmp://wsdemo.zego.im/livestream/'+this.data.pushStreamID,
                 );
+                console.warn('result',result);
                 if (result.errorCode == 0) {
                         console.warn('remove push target success');
                 } else {
                         console.warn('remove push target fail ' + result.errorCode);
-                }
-
-        },
-        async removeCdnPublish() {
-                const result = await zg.removePublishCdnUrl(
-                        this.data.pushStreamID,
-                        //The calculation of the signature is recommended to be placed in the background server
-                        md5(zegoAppID + Math.ceil(new Date().getTime() / 1000).toString() + this.data.secret),
-                        'rtmp://wsdemo.zego.im/livestream/test269',
-                );
-                if (result.errorCode == 0) {
-                        console.warn('add push target success');
-                } else {
-                        console.warn('add push target fail ' + result.errorCode);
                 }
 
         },

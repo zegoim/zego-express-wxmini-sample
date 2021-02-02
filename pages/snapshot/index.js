@@ -137,6 +137,7 @@ Page({
                                         wxp.hideLoading()
                                         this._saveImageToPhotosAlbum(ret.tempImagePath);
                                 } else if (saveRes.cancel) {
+                                        wxp.hideLoading();
                                         console.log('saveImageToPhotosAlbum cancel');
                                 }
                         }, 3000)

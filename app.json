@@ -10,7 +10,8 @@
     "pages/native/index",
     "pages/setting/index",
     "pages/snapshot/index",
-    "pages/multi/index"
+    "pages/multi/index",
+    "pages/test/index"
   ],
   "window": {
     "backgroundTextStyle": "light",

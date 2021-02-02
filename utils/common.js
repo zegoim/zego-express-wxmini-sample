@@ -1,7 +1,7 @@
-// import { ZegoExpressEngine } from "zego-express-engine-miniprogram";
-import {
-        ZegoExpressEngine
-} from '../libs/ZegoExpressMiniProgram';
+import { ZegoExpressEngine } from "testfor-zego-wxminit";
+// import {
+//         ZegoExpressEngine
+// } from '../libs/ZegoExpressMiniProgram';
 
 import {
         wxp
@@ -66,7 +66,7 @@ export const initSDK = (context) => {
                 }
         });
         zg.on("publisherStateUpdate", (result) => {
-                console.log("publishStateUpdate", result);
+                console.error("publishStateUpdate", result);
         });
         zg.on("playerStateUpdate", (result) => {
                 console.log("playStateUpdate", result);

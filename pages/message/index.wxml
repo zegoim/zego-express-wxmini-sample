@@ -16,6 +16,9 @@
       <input value="{{roomID}}" bindinput="bindKeyInput" placeholder="请输入房间 ID" placeholder-style='color: #b3b3b3; font-size: 14px;' class="room-input" />
       <input value="{{message}}" bindinput="bindMessageInput" confirm-type='send' bindconfirm="sendMsg" placeholder="说点什么吧～" placeholder-style='color: #b3b3b3; font-size: 14px;' class="msg-input" />
     </view>
+    <view>
+    
+    </view>
     <view class="button-container">
       <button bindtap="openRoom" data-role="1"  hover-class="none" class="openRoom">
         加入房间(推流)

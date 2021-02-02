@@ -1,6 +1,9 @@
-
-import {sharePage} from '../../utils/util' ;
-import { wxp } from '../../app';
+import {
+        sharePage
+} from '../../utils/util';
+import {
+        wxp
+} from '../../app';
 Page({
         data: {
                 streamUrl: '',
@@ -14,16 +17,23 @@ Page({
                 roomUserList: []
         },
         onShareAppMessage() {
-                return sharePage ();
+                return sharePage();
         },
         inputUrl(e) {
-                this.setData({ streamUrl: e.detail.value });
+                this.setData({
+                        streamUrl: e.detail.value
+                });
         },
-        async scanQR () {
+        async scanQR() {
                 try {
-                        const {result, scanType} = await wxp.scanCode();
+                        const {
+                                result,
+                                scanType
+                        } = await wxp.scanCode();
                         if (scanType === 'QR_CODE') {
-                                this.setData({ streamUrl: result });
+                                this.setData({
+                                        streamUrl: result
+                                });
                         } else {
                                 console.error('扫描的不是二维码');
                         }
@@ -33,34 +43,54 @@ Page({
         },
         async copy() {
                 try {
-                        await wxp.setClipboardData({ data: this.data.streamUrl });
+                        await wxp.setClipboardData({
+                                data: this.data.streamUrl
+                        });
                         const clipboardData = await wxp.getClipboardData();
                         console.log('copy success, clipboardData: ', clipboardData);
-                } catch(err) {
+                } catch (err) {
                         console.error('复制失败：', err);
                 }
         },
         pushStream() {
                 this.checkUrl(this.data.streamUrl);
-                this.setData({ pushStart: !this.data.pushStart });
-                if(this.data.pushStart) {
+                this.setData({
+                        pushStart: !this.data.pushStart
+                });
+                if (this.data.pushStart) {
                         this.setData({
                                 pushUrl: this.data.streamUrl,
-                                pushContext: wx.createLivePusherContext ()
+                                pushContext: wx.createLivePusherContext()
                         }, () => {
-                                this.data.pushContext.start ();
+                                this.data.pushContext.start();
                         });
                 } else {
-                        this.setData({ pushUrl: '' });
+                        this.data.pushContext.stop();
+                        this.setData({
+                                pushUrl: ''
+                        });
+
                 }
         },
         playStream() {
                 this.checkUrl(this.data.streamUrl);
-                this.setData({ playStart: !this.data.playStart });
+                this.setData({
+                        playStart: !this.data.playStart
+                });
                 if (this.data.playStart) {
-                        this.setData({ playUrl: this.data.streamUrl });
+                        this.setData({
+                                playUrl: this.data.streamUrl,
+                                playContext: wx.createLivePlayerContext("live-player")
+                        }, () => {
+                                this.data.playContext.play();
+                        });
+
                 } else {
-                        this.setData({ playUrl: '' });
+                        this.data.playContext.stop();
+                        this.setData({
+                                playUrl: ''
+                        });
+
                 }
         },
         checkUrl(url) {

@@ -137,7 +137,7 @@ export class CalcQualityGrade {
 
         //视频等级计算
         if (target_video_fps_) {
-            debugger
+            
             let v_diff_fps = Math.abs(fps - target_video_fps_);
             if (v_diff_fps <= target_video_fps_ * 1 / 3) {
                 vGrade = this.QualityGrade.Good;
