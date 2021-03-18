@@ -1,7 +1,7 @@
-import { ZegoExpressEngine } from "testfor-zego-wxminit";
-// import {
-//         ZegoExpressEngine
-// } from '../libs/ZegoExpressMiniProgram';
+// import { ZegoExpressEngine } from "zego-express-engine-miniprogram";
+import {
+        ZegoExpressEngine
+} from '../libs/ZegoExpressMiniProgram';
 
 import {
         wxp
@@ -14,6 +14,7 @@ export const initSDK = (context) => {
         if (!_checkParam(app.globalData.zegoAppID, app.globalData.server)) return false;
         /** 初始化SDK，userID 为用户自定义ID，全局唯一 */
         zg = new ZegoExpressEngine(app.globalData.zegoAppID, app.globalData.server);
+
         console.log('version', zg.getVersion());
         zg.setDebugVerbose(false);
         authCheck(context);

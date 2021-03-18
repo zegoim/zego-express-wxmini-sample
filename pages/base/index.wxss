@@ -32,4 +32,10 @@
     background: rgba(13, 112, 255, 0.5);
     color: #fff;
   }
-  
+  .testpusher{
+    width: 200rpx;
+    height: 200rpx;
+    position: fixed;
+    left: 0;
+    top: 0;
+  }

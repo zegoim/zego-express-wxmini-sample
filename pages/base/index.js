@@ -72,6 +72,9 @@ Page({
                                         userUpdate: true
                                 });
                                 isLogin ? console.log('login success') : console.error('login fail');
+                                zg.setLogConfig({
+                                        logURL:'https://weblogger560224782-api.e-business.net.cn/httplog'
+                                })
                                 this.setData({
                                         connectType: 1
                                 });
@@ -152,22 +155,22 @@ Page({
         onPlayStateChange(e) {
                 zg.updatePlayerState(e.currentTarget.id, e);
         },
-        //停止推流
-        // stopPushStream() {
-        //         this.data.livePusher.stop();
-        //         this.setData({
-        //                 livePusherUrl: ''
-        //         });
-        //         zg.stopPublishingStream(this.data.pushStreamID);
+        // 停止推流
+        stopPushStream() {
+                this.data.livePusher.stop();
+                this.setData({
+                        livePusherUrl: ''
+                });
+                zg.stopPublishingStream(this.data.pushStreamID);
 
-        // },
+        },
         //停止拉流
-        // stopPullStream() {
-        //         zg.stopPlayingStream(this.data.livePlayerList[0].streamID);
-        //         this.setData({
-        //                 livePlayerList: []
-        //         });
-        // },
+        stopPullStream() {
+                zg.stopPlayingStream(this.data.livePlayerList[0].streamID);
+                this.setData({
+                        livePlayerList: []
+                });
+        },
         //  //切换拉流
         // switchPullStream() {
         //         zg.stopPlayingStream(this.data.livePlayerList[this.data.num].streamID);
@@ -192,6 +195,7 @@ Page({
         async onReady() {
                 console.log('onReady')
                 zg = initSDK(this);
+   
         },
 
         async reLogin() {
