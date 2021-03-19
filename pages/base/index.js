@@ -190,12 +190,13 @@ Page({
         //                 //                 sourceType: "BGP"
         //                 //         }
         //                 // );
-        //         }) 
+        //         })
         // },
         async onReady() {
                 console.log('onReady')
                 zg = initSDK(this);
-   
+                console.log('sdk version: ', zg.getVersion());
+
         },
 
         async reLogin() {

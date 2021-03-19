@@ -178,7 +178,7 @@ Page({
                                 
                                 this.setData({ token });
                                 let isLogin = await zg.loginRoom(this.data.roomID, this.data.token, { userID: this.data.userID, userName: 'nick' + this.data.userID }, { userUpdate: true });
-                                debugger
+                                //debugger
                                 isLogin ? console.log('login success') : console.error('login fail');
         
                                 this.setData({
@@ -241,6 +241,8 @@ Page({
         },
         async onReady() {
                 zg = initSDK(this);
+                console.log("message sdk version: ", zg.getVersion());
+                console.log(zg);
                 zg && this.bindCallback();
         },
         async reLogin() {
