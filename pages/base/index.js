@@ -155,6 +155,10 @@ Page({
         onPlayStateChange(e) {
                 zg.updatePlayerState(e.currentTarget.id, e);
         },
+
+        publishStream(){
+                startPush(this);
+        },
         // 停止推流
         stopPushStream() {
                 this.data.livePusher.stop();
