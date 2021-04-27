@@ -84,6 +84,9 @@ export const initSDK = (context) => {
         zg.on("recvReliableMessage", (roomID, userCount,trans_type) => {
                 console.error("recvReliableMessage", roomID, userCount,trans_type);
         });
+        zg.on("tokenWillExpire", (roomID) => {
+                console.error("tokenWillExpire", roomID);
+        });
          
         return zg;
 };

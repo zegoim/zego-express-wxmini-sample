@@ -52,6 +52,12 @@ Page ({
                         },
                         {
                                 icon: '../../resource/interactionLive.png',
+                                subtitle: 'token v3',
+                                title: 'token鉴权',
+                                navigateTo: '../tokenRole/index'
+                        },
+                        {
+                                icon: '../../resource/interactionLive.png',
                                 subtitle: '',
                                 title: '自定义推拉流',
                                 navigateTo: '../customlive/index'

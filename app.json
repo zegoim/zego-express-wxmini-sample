@@ -10,8 +10,8 @@
     "pages/native/index",
     "pages/setting/index",
     "pages/snapshot/index",
-    "pages/multi/index"
-
+    "pages/multi/index",
+    "pages/tokenRole/index"
   ],
   "window": {
     "backgroundTextStyle": "light",
