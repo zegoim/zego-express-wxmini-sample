@@ -222,6 +222,8 @@ Page({
                 this.logout();
         },
         onUnload() {
+                getApp().globalData.zegoAppID = 1739272706;
+                getApp().globalData.server = 'wss://webliveroom-test.zego.im/ws';
                 this.logout();
                 wx.offNetworkStatusChange()
         },
