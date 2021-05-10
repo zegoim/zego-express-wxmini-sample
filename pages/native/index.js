@@ -184,7 +184,7 @@ Page({
                         'playConfig.fullScreen': !this.data.playConfig.fullScreen
                 }, () => {
                         console.log('>> fullScreen: ', this.data.playConfig.fullScreen);
-                        const ID = event.target.ID.replace('s-', '');
+                        const ID = event.target.id.replace('s-', '');
                         const livePlayer = wx.createLivePlayerContext(ID);
                         if (this.data.playConfig.fullScreen) {
                                 livePlayer.requestFullScreen({ direction: 0 });

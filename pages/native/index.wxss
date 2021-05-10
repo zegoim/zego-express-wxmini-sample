@@ -35,8 +35,6 @@
   }
   .img-box {
     position: absolute;
-    width: 40rpx;
-    height: 40rpx;
-    right: 6rpx;
+    right: 16rpx;
     bottom: 6rpx;
   }
