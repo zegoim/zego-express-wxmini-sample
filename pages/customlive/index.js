@@ -123,4 +123,16 @@ Page({
         onPlayNetStateChange(e) {
                 console.log('onPlayNetStateChange: ', e);
         },
+        onLoad() {
+                // 监听网络重连，恢复播放状态
+                wx.onNetworkStatusChange(res => {
+                        if (res.isConnected && this.data.playStart) {
+                                this.setData({
+                                        playUrl: this.data.streamUrl,
+                                }, () => {
+                                        this.data.playContext.play();
+                                });
+                        }
+                })
+        },
 });
