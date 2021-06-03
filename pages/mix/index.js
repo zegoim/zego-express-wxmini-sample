@@ -188,11 +188,11 @@ Page({
                 zg.updatePlayerState(e.currentTarget.id, e);
         },
         async onReady() {
-                zg = initSDK (this);
+                zg = initSDK(this);
         },
         async reLogin() {
                 try {
-                        // await zg.logout();
+                        await zg.logout();
                         let isLogin = await zg.loginRoom (this.data.roomID, this.data.token, {userID: this.data.userID, userName: 'nick' + this.data.userID}, { userUpdate: true });
                         isLogin ? console.log('login success') : console.error('login fail');
                         this.setData({
