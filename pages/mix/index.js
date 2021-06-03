@@ -3,7 +3,7 @@ import { wxp } from '../../app';
 import { getLoginToken } from '../../utils/server';
 import { initSDK, authCheck, startPush } from '../../utils/common';
 
-let { zegoAppID, server } = getApp ().globalData;
+let { zegoAppID, server } = getApp().globalData;
 let zg;
 Page({
 
@@ -13,10 +13,10 @@ Page({
         data: {
                 roomID: '',     // 房间ID
                 token: '',      // 服务端校验token
-                pushStreamID: 'xcx-streamID-' + new Date ().getTime (), // 推流ID
+                pushStreamID: 'xcx-streamID-' + new Date().getTime(), // 推流ID
                 livePusherUrl: '',      // 推流地址
                 livePusher: null,       // live-pusher 的 Context，内部只有一个对象
-                userID: 'xcx-userID-' + new Date ().getTime (), // 用户ID,
+                userID: 'xcx-userID-' + new Date().getTime(), // 用户ID,
                 livePlayerList: [],
                 connectType: -1,  // -1为初始状态，1为连接，0断开连接
                 handupStop: false,
@@ -35,7 +35,7 @@ Page({
         },
         async openRoom(e) {
                 if (!this.data.roomID) {
-                        wxp.showModal ({
+                        wxp.showModal({
                                 title: '提示',
                                 content: '请输入房间号',
                                 showCancel: false,
@@ -44,14 +44,14 @@ Page({
                 }
                 if (this.data.connectType !== 1) {
                         try {
-                                let token = await getLoginToken (zegoAppID, this.data.userID);
+                                let token = await getLoginToken(zegoAppID, this.data.userID);
                                 this.setData({ token });
-                                let isLogin = await zg.loginRoom (this.data.roomID, this.data.token, {userID: this.data.userID, userName: 'nick' + this.data.userID});
+                                let isLogin = await zg.loginRoom(this.data.roomID, this.data.token, { userID: this.data.userID, userName: 'nick' + this.data.userID });
                                 isLogin ? console.log('login success') : console.error('login fail');
                                 this.setData({
                                         connectType: 1
                                 });
-                        } catch(error) {
+                        } catch (error) {
                                 console.error('error: ', error);
                                 return;
                         }
@@ -60,8 +60,8 @@ Page({
                 if (e.target.dataset && e.target.dataset.role == 1 && this.data.livePusherUrl === '') {
                         startPush(this);
                 }
-                this.setData ({
-                        role: e.target.dataset.role 
+                this.setData({
+                        role: e.target.dataset.role
                 })
         },
         async mixStream() {
@@ -71,7 +71,7 @@ Page({
                 if (this.data.mixStreamStart) {
                         const inputList = [{
                                 streamID: this.data.pushStreamID,
-                                contentType	: 'video',
+                                contentType: 'video',
                                 layout: {
                                         top: 0,
                                         left: 0,
@@ -83,7 +83,7 @@ Page({
                                 const playerStream = this.data.livePlayerList[0]
                                 inputList.push({
                                         streamID: playerStream.streamID,
-                                        contentType	: 'video',
+                                        contentType: 'video',
                                         layout: {
                                                 top: 480,
                                                 left: 0,
@@ -113,7 +113,7 @@ Page({
                                 console.log('mixPlayInfoList: ', result);
                                 const _mixPlayerUrls = []
                                 if (result.errorCode !== 0) {
-                                  console.error('mix fail', result);
+                                        console.error('mix fail', result);
                                 }
                                 const { streamID, url } = await zg.startPlayingStream(this.data.mixStreamID, { isMix: true })
                                 console.log('>>>[liveroom-room] startPlayingStream, streamID: ', streamID, ' url: ', url);
@@ -145,21 +145,21 @@ Page({
         async logout() {
                 try {
                         if (this.data.livePusherUrl) {
-                                zg.stopPublishingStream (this.data.pushStreamID);
-                                this.data.livePusher.stop ();
-                                this.setData ({ livePusherUrl: '' });
+                                zg.stopPublishingStream(this.data.pushStreamID);
+                                this.data.livePusher.stop();
+                                this.setData({ livePusherUrl: '' });
                         }
                         if (this.data.livePlayerList.length > 0) {
-                                this.data.livePlayerList.forEach ((item) => {
-                                        zg.stopPlayingStream (item.streamID);
+                                this.data.livePlayerList.forEach((item) => {
+                                        zg.stopPlayingStream(item.streamID);
                                 });
-                                this.setData ({ livePlayerList: [] });
+                                this.setData({ livePlayerList: [] });
                         }
                         if (this.data.mixPlayerUrls.length > 0) {
-                                this.data.mixPlayerUrls.forEach ((item) => {
-                                        zg.stopPlayingStream (item.streamID);
+                                this.data.mixPlayerUrls.forEach((item) => {
+                                        zg.stopPlayingStream(item.streamID);
                                 });
-                                this.setData ({ mixPlayerUrls: []});
+                                this.setData({ mixPlayerUrls: [] });
                         }
                         if (zg && this.data.connectType === 1) await zg.logoutRoom(this.data.roomID);
                 } catch (error) {
@@ -173,7 +173,7 @@ Page({
                         this.setData({ handupStop: true })
                         // this.data.livePusher && (this.data.livePusher! as wx.LivePusherContext).stop();
                 }
-                zg.updatePlayerState (this.data.pushStreamID, e);
+                zg.updatePlayerState(this.data.pushStreamID, e);
         },
         // live-pusher 绑定网络状态事件，透传网络状态事件给 SDK
         onPushNetStateChange(e) {
@@ -192,8 +192,8 @@ Page({
         },
         async reLogin() {
                 try {
-                        await zg.logout();
-                        let isLogin = await zg.loginRoom (this.data.roomID, this.data.token, {userID: this.data.userID, userName: 'nick' + this.data.userID}, { userUpdate: true });
+                        await zg.logoutRoom();
+                        let isLogin = await zg.loginRoom(this.data.roomID, this.data.token, { userID: this.data.userID, userName: 'nick' + this.data.userID }, { userUpdate: true });
                         isLogin ? console.log('login success') : console.error('login fail');
                         this.setData({
                                 connectType: 1
@@ -211,7 +211,8 @@ Page({
                                         });
                                 }
                         }
-                } catch(error) {
+                } catch (error) {
+                        debugger
                         console.error('error: ', error);
                 }
         },
@@ -222,8 +223,8 @@ Page({
                         this.reLogin();
                 }
                 // 刷新全局变量
-                zegoAppID = getApp ().globalData.zegoAppID;
-                server = getApp ().globalData.server;
+                zegoAppID = getApp().globalData.zegoAppID;
+                server = getApp().globalData.server;
         },
         onUnload() {
                 this.logout();
