@@ -1,9 +1,19 @@
+import {
+        wxp
+} from '../../app';
+import {
+        getLoginToken
+} from '../../utils/server';
+import {
+        initSDK,
+        authCheck,
+        startPush
+} from '../../utils/common';
 
-import { wxp } from '../../app';
-import { getLoginToken } from '../../utils/server';
-import { initSDK, authCheck, startPush } from '../../utils/common';
-
-let { zegoAppID, server } = getApp().globalData;
+let {
+        zegoAppID,
+        server
+} = getApp().globalData;
 let zg;
 Page({
 
@@ -11,14 +21,14 @@ Page({
          * 页面的初始数据
          */
         data: {
-                roomID: '',     // 房间ID
-                token: '',      // 服务端校验token
+                roomID: '', // 房间ID
+                token: '', // 服务端校验token
                 pushStreamID: 'xcx-streamID-' + new Date().getTime(), // 推流ID
-                livePusherUrl: '',      // 推流地址
-                livePusher: null,       // live-pusher 的 Context，内部只有一个对象
+                livePusherUrl: '', // 推流地址
+                livePusher: null, // live-pusher 的 Context，内部只有一个对象
                 userID: 'xcx-userID-' + new Date().getTime(), // 用户ID,
                 livePlayerList: [],
-                connectType: -1,  // -1为初始状态，1为连接，0断开连接
+                connectType: -1, // -1为初始状态，1为连接，0断开连接
                 handupStop: false,
                 canShow: -1,
                 roomUserList: [],
@@ -45,8 +55,13 @@ Page({
                 if (this.data.connectType !== 1) {
                         try {
                                 let token = await getLoginToken(zegoAppID, this.data.userID);
-                                this.setData({ token });
-                                let isLogin = await zg.loginRoom(this.data.roomID, this.data.token, { userID: this.data.userID, userName: 'nick' + this.data.userID });
+                                this.setData({
+                                        token
+                                });
+                                let isLogin = await zg.loginRoom(this.data.roomID, this.data.token, {
+                                        userID: this.data.userID,
+                                        userName: 'nick' + this.data.userID
+                                });
                                 isLogin ? console.log('login success') : console.error('login fail');
                                 this.setData({
                                         connectType: 1
@@ -115,9 +130,17 @@ Page({
                                 if (result.errorCode !== 0) {
                                         console.error('mix fail', result);
                                 }
-                                const { streamID, url } = await zg.startPlayingStream(this.data.mixStreamID, { isMix: true })
+                                const {
+                                        streamID,
+                                        url
+                                } = await zg.startPlayingStream(this.data.mixStreamID, {
+                                        isMix: true
+                                })
                                 console.log('>>>[liveroom-room] startPlayingStream, streamID: ', streamID, ' url: ', url);
-                                _mixPlayerUrls.push({ streamID, url })
+                                _mixPlayerUrls.push({
+                                        streamID,
+                                        url
+                                })
                                 this.setData({
                                         mixPlayerUrls: _mixPlayerUrls
                                 })
@@ -126,7 +149,9 @@ Page({
                         };
                 } else {
                         try {
-                                const { errorCode } = await zg.stopMixerTask(this.data.mixTaskID)
+                                const {
+                                        errorCode
+                                } = await zg.stopMixerTask(this.data.mixTaskID)
                                 console.log('stopMixerTask ', errorCode)
                                 if (this.data.mixPlayerUrls.length > 0) {
                                         this.data.mixPlayerUrls.forEach((item) => {
@@ -147,19 +172,25 @@ Page({
                         if (this.data.livePusherUrl) {
                                 zg.stopPublishingStream(this.data.pushStreamID);
                                 this.data.livePusher.stop();
-                                this.setData({ livePusherUrl: '' });
+                                this.setData({
+                                        livePusherUrl: ''
+                                });
                         }
                         if (this.data.livePlayerList.length > 0) {
                                 this.data.livePlayerList.forEach((item) => {
                                         zg.stopPlayingStream(item.streamID);
                                 });
-                                this.setData({ livePlayerList: [] });
+                                this.setData({
+                                        livePlayerList: []
+                                });
                         }
                         if (this.data.mixPlayerUrls.length > 0) {
                                 this.data.mixPlayerUrls.forEach((item) => {
                                         zg.stopPlayingStream(item.streamID);
                                 });
-                                this.setData({ mixPlayerUrls: [] });
+                                this.setData({
+                                        mixPlayerUrls: []
+                                });
                         }
                         if (zg && this.data.connectType === 1) await zg.logoutRoom(this.data.roomID);
                 } catch (error) {
@@ -170,7 +201,9 @@ Page({
         onPushStateChange(e) {
                 console.error('onPushStateChange', e.detail.code, e.detail.message);
                 if (e.detail.code === 5000) {
-                        this.setData({ handupStop: true })
+                        this.setData({
+                                handupStop: true
+                        })
                         // this.data.livePusher && (this.data.livePusher! as wx.LivePusherContext).stop();
                 }
                 zg.updatePlayerState(this.data.pushStreamID, e);
@@ -193,14 +226,21 @@ Page({
         async reLogin() {
                 try {
                         await zg.logoutRoom();
-                        let isLogin = await zg.loginRoom(this.data.roomID, this.data.token, { userID: this.data.userID, userName: 'nick' + this.data.userID }, { userUpdate: true });
+                        let isLogin = await zg.loginRoom(this.data.roomID, this.data.token, {
+                                userID: this.data.userID,
+                                userName: 'nick' + this.data.userID
+                        }, {
+                                userUpdate: true
+                        });
                         isLogin ? console.log('login success') : console.error('login fail');
                         this.setData({
                                 connectType: 1
                         });
                         console.log('pushStream: ', this.data.pushStreamID, this.data.livePusherUrl);
                         if (this.data.role == 1) {
-                                const { url } = await zg.startPublishingStream(this.data.pushStreamID);
+                                const {
+                                        url
+                                } = await zg.startPublishingStream(this.data.pushStreamID);
                                 console.log('url', this.data.livePusherUrl, url);
                                 if (this.data.livePusherUrl !== url) {
                                         this.setData({
@@ -212,7 +252,6 @@ Page({
                                 }
                         }
                 } catch (error) {
-                        debugger
                         console.error('error: ', error);
                 }
         },
@@ -243,6 +282,17 @@ Page({
                         if (res.isConnected && this.data.connectType === 1 && zg) {
                                 console.log('connectType', this.data.connectType);
                                 this.reLogin();
+                                const urls = this.data.mixPlayerUrls
+                                this.setData({
+                                        mixPlayerUrls: urls.map(item => ({
+                                                ...item,
+                                                url: ''
+                                        })),
+                                }, () => {
+                                        this.setData({
+                                                mixPlayerUrls: urls,
+                                        })
+                                })
                         }
                 })
         },
