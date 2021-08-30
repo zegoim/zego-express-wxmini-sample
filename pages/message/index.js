@@ -86,13 +86,7 @@ Page({
                                 showCancel: false,
                         })
                 });
-                zg.on("roomStateUpdate", (roomID, state, errorCode, extendedData) => {
-                        console.log("roomStateUpdate", roomID, state, errorCode, extendedData);
-                        if (state === "DISCONNECTED") {
-                                startPush(this);
-                        }
-
-                });
+  
         },
         bindKeyInput(e) {
                 this.setData({
