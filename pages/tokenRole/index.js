@@ -84,9 +84,7 @@ Page({
                                         userUpdate: true
                                 });
                                 isLogin ? console.log('login success') : console.error('login fail');
-                                zg.setLogConfig({
-                                        logURL: 'https://weblogger560224782-api.e-business.net.cn/httplog'
-                                })
+                                
                                 this.setData({
                                         connectType: 1
                                 });
