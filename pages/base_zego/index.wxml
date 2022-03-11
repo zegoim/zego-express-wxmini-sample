@@ -1,0 +1,52 @@
+<view wx:if="{{canShow== 1}}" class="">
+	<view class="containerBase">
+		<zego-pusher id="zegoPusher" pusher="{{pusher}}" />
+		<zego-player
+		 wx:for="{{zegoPlayerList}}"
+		 wx:key="id"
+		 id="{{item.componentID}}"
+		 playerId="{{item.playerId}}"
+		 playerList="{{playerList}}"
+		/>
+	</view>
+	<view class="index-container">
+		<view class='input-container'>
+			<input
+			 value="{{roomID}}"
+			 bindinput="bindKeyInput"
+			 placeholder="请输入房间 ID"
+			 placeholder-style='color: #b3b3b3; font-size: 14px;'
+			 class="room-input"
+			/>
+			<text class="tip" />
+
+				</view>
+				<view class="button-container">
+						<button bindtap="openRoom" data-role="1" data-option="videoAndAudio" hover-class="none" class="openRoom">
+								加入房间(推流)
+						</button>
+						<button bindtap="openRoom" data-role="0" hover-class="none" class="openRoom">
+								加入房间(不推流)
+						</button>
+						<button bindtap="openRoom" data-role="1" data-option="audio" hover-class="none" class="openRoom">
+								加入房间(推纯音频)
+						</button>
+						<button bindtap="openRoom" data-role="1" data-option="video" hover-class="none" class="openRoom">
+								加入房间(推纯视频)
+						</button>
+						<button bindtap="pausePush" data-role="1" data-option="video" hover-class="none" class="openRoom">
+								暂停推流
+						</button>
+						<button bindtap="resumePush" data-role="1" data-option="video" hover-class="none" class="openRoom">
+								恢复推流
+						</button>
+						<button bindtap="logout" hover-class="none">退出房间</button>
+				</view>
+		</view>
+</view>
+<view class="settings">
+		<button wx:if="{{canShow==0}}" open-type="openSetting" bindopensetting="settingCallback">
+				授权使用摄像头和麦克风
+		</button>
+</view>
+

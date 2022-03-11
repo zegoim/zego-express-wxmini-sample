@@ -1,0 +1,25 @@
+<!--components/zego-player/zego-player.wxml-->
+<view>
+	<live-player
+	 wx:if="{{player.url}}"
+	 id="{{player.id}}"
+	 src="{{player.url}}"
+	 mode="live"
+	 autoplay="{{true}}"
+	 mute-audio="{{player.muteAudio}}"
+	 mute-video="{{player.muteVideo}}"
+	 orientation="{{player.orientation}}"
+	 object-fit="{{player.objectFit}}"
+	 min-cache="{{player.minCache}}"
+	 max-cache="{{player.maxCache}}"
+	 sound-mode="{{player.soundMode}}"
+	 enable-recv-message="{{player.enableRecvMessage}}"
+	 auto-pause-if-navigate="{{player.autoPauseIfNavigate}}"
+	 auto-pause-if-open-native="{{player.autoPauseIfOpenNative}}"
+	 enable-metadata="true"
+	 bindmetadatachange="binddatachange"
+	 bindstatechange="onPlayStateChange"
+	 bindnetstatus="onPlayNetStateChange"
+	/>
+</view>
+

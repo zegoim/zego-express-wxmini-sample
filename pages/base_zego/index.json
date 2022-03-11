@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "zego-pusher": "../../components/zego-pusher/zego-pusher",
+    "zego-player": "../../components/zego-player/zego-player"
+  }
+}

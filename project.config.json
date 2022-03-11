@@ -39,7 +39,7 @@
     "minifyWXSS": true
   },
   "compileType": "miniprogram",
-  "libVersion": "2.13.1",
+  "libVersion": "2.22.0",
   "appid": "wxaff391ce11635b64",
   "projectname": "zego-express-wxmini-sample",
   "debugOptions": {

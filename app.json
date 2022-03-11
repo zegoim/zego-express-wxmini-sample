@@ -2,6 +2,7 @@
   "pages": [
     "pages/main/main",
     "pages/base/index",
+    "pages/base_zego/index",
     "pages/cdn/index",
     "pages/bgm/index",
     "pages/customlive/index",

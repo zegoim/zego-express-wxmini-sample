@@ -10,6 +10,12 @@ Page ({
                 entryInfos: [
                         {
                                 icon: '../../resource/interactionLive.png',
+                                subtitle: '基础推拉流_组件',
+                                title: '视频直播',
+                                navigateTo: '../base_zego/index'
+                        },
+                        {
+                                icon: '../../resource/interactionLive.png',
                                 subtitle: '《基础推拉流》',
                                 title: '视频直播',
                                 navigateTo: '../base/index'
