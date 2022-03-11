@@ -112,6 +112,10 @@ Page({
                         this.data.playerList && this.data.playerList.forEach(i => {
                                 zg.getPlayerInstance(i.id).stop()
                         })
+                        
+                        this.setData({
+                                zegoPlayerList: []
+                        })
                         /** 登出房间 */
                         if (zg && this.data.connectType === 1) await zg.logoutRoom();
                 } catch (error) {
@@ -199,6 +203,10 @@ Page({
                 // if (zg && (this.data.handupStop || this.data.connectType === 1)) {
                 //         this.reLogin();
                 // }
+                // 初始化 zego-player列表
+                this.setData({
+                        zegoPlayerList: []
+                })
                 if (zg && this.data.roomID) {
                         this.reLogin();
                 }

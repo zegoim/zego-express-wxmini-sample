@@ -47,12 +47,10 @@ Component({
     },
     //live-player 绑定拉流事件，透传拉流事件给 SDK
     onPlayStateChange(e) {
-      console.log("mytag e.currentTarget.id, e", e.currentTarget.id, e)
       zgInstance.updatePlayerState(e.currentTarget.id, e)
     },
     // live-player 绑定网络状态事件，透传网络状态事件给 SDK
     onPlayNetStateChange(e) {
-      console.log("mytag e.currentTarget.id, e", e.currentTarget.id, e)
       zgInstance.updatePlayerNetStatus(e.currentTarget.id, e)
     }
   }
