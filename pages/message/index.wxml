@@ -29,7 +29,7 @@
       <button bindtap="sendMsg" hover-class="none" class="openRoom">广播发送</button>
       <button bindtap="sendBarrageMsg" hover-class="none" class="openRoom">弹幕发送</button>
       <button bindtap="sendCustomCommand" hover-class="none" class="openRoom">指定发送</button>
-      <button bindtap="updateStreamExtra" hover-class="none" class="openRoom">更新信息</button>
+      <button bindtap="updateStreamExtra" hover-class="none" class="openRoom">更新流附加信息</button>
       <button bindtap="setRoomExtraInfo" hover-class="none" class="openRoom">发送可靠消息</button>
       <!-- <button bindtap="logout" hover-class="none" class="openRoom">退出房间</button> -->
     </view>

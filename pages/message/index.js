@@ -142,7 +142,7 @@ Page({
                 zg.setStreamExtraInfo(this.data.pushStreamID, 'setStreamExtraInfo test, send at ' + new Date().toLocaleString())
         },
         setRoomExtraInfo() {
-                zg.setRoomExtraInfo(this.data.pushStreamID, '2', 'ReliableMessage test002')
+                zg.setRoomExtraInfo(this.data.roomID, '2', 'ReliableMessage test002')
         },
         async sendCustomCommand() {
                 console.error(this.data.roomUserList);

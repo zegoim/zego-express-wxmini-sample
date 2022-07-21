@@ -1,7 +1,7 @@
-// import { ZegoExpressEngine } from "zego-express-engine-miniprogram";
-import {
-        ZegoExpressEngine
-} from '../libs/ZegoExpressMiniProgram';
+import { ZegoExpressEngine } from "zego-express-engine-miniprogram";
+// import {
+//         ZegoExpressEngine
+// } from '../libs/ZegoExpressMiniProgram';
 
 import {
         wxp
@@ -17,6 +17,9 @@ export const initSDK = (context) => {
 
         console.log('version', zg.getVersion());
         zg.setDebugVerbose(false);
+        // zg.setLogConfig({
+        //         logURL: 'https://weblogger1739272706-api.zego.im/httplog'
+        // });
         authCheck(context);
 
         // console.log(this);

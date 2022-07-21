@@ -157,8 +157,8 @@ Page({
                 })
         },
         async onReady() {
-                getApp().globalData.zegoAppID = 383110717;
-                getApp().globalData.server = 'wss://webliveroom383110717-api.zego.im/ws';
+                getApp().globalData.zegoAppID = 2913569222;
+                getApp().globalData.server = 'wss://webliveroom2913569222-api.zego.im/ws';
                 console.log('onReady')
                 zg = initSDK(this);
                 console.log('sdk version: ', zg.getVersion());
