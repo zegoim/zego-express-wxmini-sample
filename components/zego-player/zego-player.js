@@ -28,7 +28,8 @@ Component({
     }
   },
   data: {
-    player: {}
+    player: {},
+    state: "NO_PLAY"
   },
   /**
    * 组件的方法列表
@@ -52,6 +53,26 @@ Component({
     // live-player 绑定网络状态事件，透传网络状态事件给 SDK
     onPlayNetStateChange(e) {
       zgInstance.updatePlayerNetStatus(e.currentTarget.id, e)
-    }
+    },
+    /**
+     * 暂停渲染
+     */
+    pausePlayer() {
+      zgInstance.getPlayerInstance(this.data.playerId).pause();
+    },
+    /**
+     * 恢复渲染
+     */
+    resumePlayer() {
+      zgInstance.getPlayerInstance(this.data.playerId).resume();
+    },
+    /**
+     * 重新拉流
+     */
+    rePlay() {
+      zgInstance.getPlayerInstance(this.data.playerId).stop()
+      zgInstance.getPlayerInstance(this.data.playerId).play()
+      this.resumePlayer()
+    },
   }
 })

@@ -28,6 +28,15 @@
 						<button bindtap="openRoom" data-role="0" hover-class="none" class="openRoom">
 								加入房间(不推流)
 						</button>
+						<!-- <button bindtap="resumeAllPlayers" hover-class="none" class="btn">
+							恢复播放
+						</button> -->
+						<!-- <button bindtap="pauseAllPlayers" hover-class="none" class="btn">
+							暂停播放
+						</button> -->
+						<!-- <button bindtap="mutePlayStreamAudio" data-role="0" hover-class="none" class="checkInfo">
+							mutePlayStreamAudio
+						</button> -->
 						<button bindtap="openRoom" data-role="1" data-option="audio" hover-class="none" class="openRoom">
 								加入房间(推纯音频)
 						</button>

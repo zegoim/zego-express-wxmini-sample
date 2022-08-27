@@ -4,7 +4,7 @@
 	 wx:if="{{player.url}}"
 	 id="{{player.id}}"
 	 src="{{player.url}}"
-	 mode="live"
+	 mode="RTC"
 	 autoplay="{{true}}"
 	 mute-audio="{{player.muteAudio}}"
 	 mute-video="{{player.muteVideo}}"

@@ -14,6 +14,11 @@ Component({
       }
     }
   },
+  data: {
+    state: "NO_PUBLISH",
+    streamID: "",
+    options: {}
+  },
   /**
    * 组件的初始数据
    */
@@ -29,6 +34,10 @@ Component({
         // 开始推流
         const res = (await zgInstance.getPusherInstance()).start(pushStreamID, publishOption)
         console.log("startPush res", res);
+        this.setData({
+          streamID: pushStreamID,
+          options: publishOption||{}
+        })
       } catch (error) {
         console.error("error in startPush", error)
       }
@@ -46,6 +55,31 @@ Component({
     },
     onPushError(e) {
       console.log("onPushError e", e)
-    }
+    },
+    /**
+     * 重新推流
+     * @param {*} 
+     */
+    async rePush() {
+      zgInstance.getPusherInstance().stop()
+      const {streamID,options} = this.data
+      // 延迟1s确保停推完成再重新推流
+      setTimeout(async () => {
+        console.warn('rePush', streamID, options)
+        try {
+          await zgInstance.getPusherInstance().start(streamID, options)
+          this.resumePlayer()
+          console.warn("rePush res",streamID, options);
+        } catch (error) {
+          console.warn("rePush failed", error);
+        }
+      }, 1000);
+    },
+    /**
+     * 恢复渲染
+     */
+    resumePlayer() {
+      zgInstance.getPusherInstance(this.data.playerId).resume();
+    },
   }
 })
