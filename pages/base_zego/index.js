@@ -221,7 +221,7 @@ Page({
                 })
                 wx.onAudioInterruptionEnd(() => {
                         console.warn("结束中断播放")
-                        this.forceRecoverPushAndPlay()
+                        this.forceRecoverPushAndPlay(true)
                 })
         },
         onNetworkStatus() {
@@ -233,12 +233,12 @@ Page({
          * 恢复推拉流
          * 在房间状态重连时进行调用
          */
-        forceRecoverPushAndPlay() {
+        forceRecoverPushAndPlay(rePush = false) {
                 console.warn("forceRecoverPushAndPlay")
                 // 获取推流组件，进行重新推流
                 const zegoPusher = this.selectComponent("#zegoPusher")
-                console.warn('是否需要恢复推流', zegoPusher, zegoPusher?.data.state);
-                if (zegoPusher && ["NO_PUBLISH", "PUBLISH_REQUESTING"].includes(zegoPusher.data.state)) {
+                console.warn('是否需要恢复推流', zegoPusher,rePush, zegoPusher?.data.state);
+                if (zegoPusher && (rePush || ["NO_PUBLISH", "PUBLISH_REQUESTING"].includes(zegoPusher.data.state))) {
                         console.warn(' 重新推流', this.data.pushStreamID);
                         zegoPusher.rePush();
                 }
@@ -251,8 +251,10 @@ Page({
                                 zegoPlayer.rePlay();
                         } else if (zegoPlayer) {
                                 // 恢复渲染
-                                console.warn('恢复拉流渲染', item.playerId);
                                 zegoPlayer.resumePlayer();
+                                zg.mutePlayStreamAudio(item.playerId, true)
+                                zg.mutePlayStreamAudio(item.playerId, false)
+                                console.warn('恢复拉流渲染', item.playerId);
                         }
                 })
         },

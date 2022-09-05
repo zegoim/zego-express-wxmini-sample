@@ -33,7 +33,7 @@ Component({
         zgInstance.zegoWechatMini.setPusherAttributes(config)
         // 开始推流
         const res = (await zgInstance.getPusherInstance()).start(pushStreamID, publishOption)
-        console.log("startPush res", res);
+        console.log("startPush res", res, publishOption);
         this.setData({
           streamID: pushStreamID,
           options: publishOption||{}
@@ -69,7 +69,7 @@ Component({
         try {
           await zgInstance.getPusherInstance().start(streamID, options)
           this.resumePlayer()
-          console.warn("rePush res",streamID, options);
+          console.warn("rePush res", streamID, options);
         } catch (error) {
           console.warn("rePush failed", error);
         }
