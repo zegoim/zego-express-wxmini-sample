@@ -247,16 +247,16 @@ Page({
                 // if (zg && (this.data.handupStop || this.data.connectType === 1)) {
                 //         this.reLogin();
                 // }
-                if (zg && this.data.roomID) {
-                        this.reLogin();
-                }
+                // if (zg && this.data.roomID) {
+                //         this.reLogin();
+                // }
                 // 刷新全局变量
                 zegoAppID = getApp().globalData.zegoAppID;
                 server = getApp().globalData.server;
 
         },
         onHide() {
-                this.logout();
+                // this.logout();
         },
         onUnload() {
                 this.logout();

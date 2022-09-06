@@ -23,6 +23,7 @@ let {
 
 let zg;
 
+
 Page({
         data: {
                 roomID: '', // 房间ID
@@ -216,18 +217,21 @@ Page({
                 // 监听网络状态
                 this.onNetworkStatus()
                 // 监听声音中断恢复事件，将每个拉流组件进行强制恢复播放
-                wx.onAudioInterruptionBegin(() => {
-                        console.warn("开始中断播放")
-                })
-                wx.onAudioInterruptionEnd(() => {
-                        console.warn("结束中断播放")
-                        this.forceRecoverPushAndPlay(true)
-                })
+                wx.onAudioInterruptionBegin(this.audioInterruptBegin)
+                wx.onAudioInterruptionEnd(this.audioInterruptEnd)
         },
         onNetworkStatus() {
                 wx.onNetworkStatusChange(res => {
                         console.warn("onNetworkStatusChange", res.isConnected)
                 })
+        },
+        audioInterruptBegin() {
+                console.warn("开始中断播放")
+        },
+        
+        audioInterruptEnd() {
+                console.warn("结束中断播放")
+                this.forceRecoverPushAndPlay(true)
         },
         /**
          * 恢复推拉流
