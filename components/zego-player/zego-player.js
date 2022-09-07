@@ -70,9 +70,19 @@ Component({
      * 重新拉流
      */
     rePlay() {
-      zgInstance.getPlayerInstance(this.data.playerId).stop()
-      zgInstance.getPlayerInstance(this.data.playerId).play()
-      this.resumePlayer()
+      return Promise(resolve => {
+        zgInstance.getPlayerInstance(this.data.playerId).stop()
+        console.warn("rePlay res", streamID, options);
+        setTimeout(() => {
+          try {
+            zgInstance.getPlayerInstance(this.data.playerId).play()
+            this.resumePlayer()
+          } catch (error) { 
+            console.warn("rePlay failed!!!", error, error + "");
+          }
+          resolve()
+        }, 1000);
+      })
     },
   }
 })

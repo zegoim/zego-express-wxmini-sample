@@ -40,9 +40,10 @@ Page({
                 num: 0,
                 livePlaying: [],
                 isReLoginging: false,
-                pusher: {},  // live-pusher的属性，sdk进行管理
-                playerList: [],  // live-player的属性列表，sdk进行管理
-                zegoPlayerList: [],  // 组件列表
+                pusher: {}, // live-pusher的属性，sdk进行管理
+                playerList: [], // live-player的属性列表，sdk进行管理
+                zegoPlayerList: [], // 组件列表
+                isRecovering: false
         },
         bindKeyInput(e) {
                 this.setData({
@@ -84,7 +85,9 @@ Page({
                 }
                 // 创建房间，开始推流
                 if (e.target.dataset && e.target.dataset.role == 1) {
-                        let config = { mode: "SD" };
+                        let config = {
+                                mode: "RTC"
+                        };
                         if (e.target.dataset.option == "video") {
                                 config.enableMic = false;
                         } else if (e.target.dataset.option == "audio") {
@@ -228,7 +231,7 @@ Page({
         audioInterruptBegin() {
                 console.warn("开始中断播放")
         },
-        
+
         audioInterruptEnd() {
                 console.warn("结束中断播放")
                 this.forceRecoverPushAndPlay(true)
@@ -239,12 +242,24 @@ Page({
          */
         forceRecoverPushAndPlay(rePush = false) {
                 console.warn("forceRecoverPushAndPlay")
+                if(this.data.connectType !== 1) {
+                        console.warn("未登录房间")
+                        return
+                }
+                if(this.data.room === true) {
+                        console.warn("正在恢复推拉流")
+                        return
+                }
+                this.setData({
+                        isRecovering: true
+                })
                 // 获取推流组件，进行重新推流
                 const zegoPusher = this.selectComponent("#zegoPusher")
-                console.warn('是否需要恢复推流', zegoPusher,rePush, zegoPusher?.data.state);
+                console.warn('是否需要恢复推流', zegoPusher, rePush, zegoPusher?.data.state);
+                const promiseList = []
                 if (zegoPusher && (rePush || ["NO_PUBLISH", "PUBLISH_REQUESTING"].includes(zegoPusher.data.state))) {
                         console.warn(' 重新推流', this.data.pushStreamID);
-                        zegoPusher.rePush();
+                        promiseList.push(zegoPusher.rePush())
                 }
                 this.data.zegoPlayerList.forEach(item => {
                         // 获取拉流组件，进行重新拉流
@@ -252,7 +267,7 @@ Page({
                         console.warn('是否需要恢复拉流', item.playerId, zegoPlayer?.data.state);
                         if (zegoPlayer && ["NO_PLAY", "PLAY_REQUESTING"].includes(zegoPlayer.data.state)) {
                                 console.warn('重新拉流', item.playerId);
-                                zegoPlayer.rePlay();
+                                promiseList.push(zegoPlayer.rePlay())
                         } else if (zegoPlayer) {
                                 // 恢复渲染
                                 zegoPlayer.resumePlayer();
@@ -261,6 +276,13 @@ Page({
                                 console.warn('恢复拉流渲染', item.playerId);
                         }
                 })
+                const cb = ()=>{
+                        console.warn("forceRecoverPushAndPlay 结束")
+                        this.setData({
+                                isRecovering: false
+                        })
+                }
+                Promise.all(promiseList).then(cb).catch(cb)
         },
 
         // /**

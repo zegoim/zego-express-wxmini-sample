@@ -1,4 +1,3 @@
-
 // components/zegoPusher.js
 let zgInstance
 Component({
@@ -36,7 +35,7 @@ Component({
         console.log("startPush res", res, publishOption);
         this.setData({
           streamID: pushStreamID,
-          options: publishOption||{}
+          options: publishOption || {}
         })
       } catch (error) {
         console.error("error in startPush", error)
@@ -60,20 +59,26 @@ Component({
      * 重新推流
      * @param {*} 
      */
-    async rePush() {
-      zgInstance.getPusherInstance().stop()
-      const {streamID,options} = this.data
-      // 延迟1s确保停推完成再重新推流
-      setTimeout(async () => {
-        console.warn('rePush', streamID, options)
-        try {
-          await zgInstance.getPusherInstance().start(streamID, options)
-          this.resumePlayer()
-          console.warn("rePush res", streamID, options);
-        } catch (error) {
-          console.warn("rePush failed", error);
-        }
-      }, 1000);
+    rePush() {
+      return new Promise((resolve) => {
+        zgInstance.getPusherInstance().stop()
+        const {
+          streamID,
+          options
+        } = this.data
+        // 延迟1s确保停推完成再重新推流
+        setTimeout(async () => {
+          console.warn('rePush', streamID, options)
+          try {
+            await zgInstance.getPusherInstance().start(streamID, options)
+            this.resumePlayer()
+            console.warn("rePush res", streamID, options);
+          } catch (error) {
+            console.warn("rePush failed!!!", error, error + "");
+          }
+          resolve()
+        }, 1000);
+      })
     },
     /**
      * 恢复渲染

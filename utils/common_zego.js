@@ -14,7 +14,9 @@ export const initSDK = (context, pushAtr, playAtr) => {
   if (!_checkParam(app.globalData.zegoAppID, app.globalData.server)) return false
   /** 初始化SDK，userID 为用户自定义ID，全局唯一 */
   zg = new ZegoExpressEngine(app.globalData.zegoAppID, app.globalData.server)
-
+  // zg.setLogConfig({
+  //   logLevel: "disable"
+  // });
   console.log("version", zg.getVersion())
   zg.setDebugVerbose(false)
   authCheck(context)
@@ -97,9 +99,14 @@ export const initSDK = (context, pushAtr, playAtr) => {
     console.warn("roomStateChanged", roomID, state, errorCode, extendedData)
     if (state === "RECONNECTED") {
       console.log("房间重连完成，进行恢复推拉流")
-      context.forceRecoverPushAndPlay()
       context.setData({
         connectType: 1
+      })
+      context.forceRecoverPushAndPlay()
+    } else if(state === "RECONNECTING") {
+      console.log("房间重连中")
+      context.setData({
+        connectType: 0
       })
     }
   })
