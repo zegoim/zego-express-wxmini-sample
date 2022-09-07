@@ -276,6 +276,7 @@ Page({
         onNetworkStatus() {
 
                 wx.onNetworkStatusChange(res => {
+                        console.warn("网络变化", res.isConnected)
                         if (res.isConnected && this.data.connectType === 1 && zg) {
                                 console.warn('data', this.data);
                                 console.warn('roomID', this.data.roomID);

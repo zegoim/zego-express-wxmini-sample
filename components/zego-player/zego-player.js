@@ -70,9 +70,10 @@ Component({
      * 重新拉流
      */
     rePlay() {
-      return Promise(resolve => {
-        zgInstance.getPlayerInstance(this.data.playerId).stop()
-        console.warn("rePlay res", streamID, options);
+      return new Promise(resolve => {
+        const playInstance = zgInstance.getPlayerInstance(this.data.playerId);
+        console.warn('rePlay', playInstance)
+        playInstance.stop()
         setTimeout(() => {
           try {
             zgInstance.getPlayerInstance(this.data.playerId).play()

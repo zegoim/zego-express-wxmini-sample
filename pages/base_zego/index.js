@@ -184,9 +184,9 @@ Page({
                                 connectType: 1
                         });
                         //console.log('pushStream: ', this.data.pushStreamID, this.data.livePusherUrl, this.data.role);
-                        if (this.data.role == 1) {
-                                startPush(this, undefined, this.data.config)
-                        }
+                        // if (this.data.role == 1) {
+                        //         startPush(this, undefined, this.data.config)
+                        // }
                         this.data.isReLoginging = false;
                 } catch (error) {
                         console.error('error: ', error);
@@ -215,6 +215,8 @@ Page({
                 console.warn("onUnload 进行登出")
                 this.logout();
                 wx.offNetworkStatusChange()
+                wx.offAudioInterruptionBegin(this.audioInterruptBegin)
+                wx.offAudioInterruptionEnd(this.audioInterruptEnd)
         },
         onLoad() {
                 // 监听网络状态
@@ -225,7 +227,16 @@ Page({
         },
         onNetworkStatus() {
                 wx.onNetworkStatusChange(res => {
-                        console.warn("onNetworkStatusChange", res.isConnected)
+                        console.warn("网络变化", res.isConnected, res.networkType, this.data.connectType, zg)
+                        if (res.isConnected && this.data.connectType === 1 && zg) {
+                                console.warn('data', this.data);
+                                console.warn('roomID', this.data.roomID);
+                                setTimeout(() => {
+                                        this.reLogin();
+                                }, 500)
+                                
+
+                        }
                 })
         },
         audioInterruptBegin() {
@@ -282,7 +293,9 @@ Page({
                                 isRecovering: false
                         })
                 }
-                Promise.all(promiseList).then(cb).catch(cb)
+                Promise.all(promiseList).then(cb).catch((err) => {
+                        console.error(err)
+                })
         },
 
         // /**
