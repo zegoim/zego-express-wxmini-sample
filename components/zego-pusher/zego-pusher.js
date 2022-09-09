@@ -61,11 +61,11 @@ Component({
      */
     rePush() {
       return new Promise((resolve) => {
-        zgInstance.getPusherInstance().stop()
         const {
           streamID,
           options
         } = this.data
+        zgInstance.getPusherInstance().stop()
         // 延迟1s确保停推完成再重新推流
         setTimeout(async () => {
           console.warn('rePush', streamID, options)
@@ -74,7 +74,16 @@ Component({
             this.resumePlayer()
             console.warn("rePush res", streamID, options);
           } catch (error) {
+            // 小米手机切换网络重新推流，可能出现自动重推失败。
             console.warn("rePush failed!!!", error, error + "");
+            wx.showModal({
+              title: "异常提示",
+              content: "检测到推流异常，是否重新推流",
+              showCancel: true,
+              success: ()=>{
+                this.rePush()
+              },
+            })
           }
           resolve()
         }, 1000);

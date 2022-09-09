@@ -5,7 +5,7 @@
 	 id="{{player.id}}"
 	 src="{{player.url}}"
 	 mode="RTC"
-	 autoplay="{{true}}"
+	 autoplay
 	 mute-audio="{{player.muteAudio}}"
 	 mute-video="{{player.muteVideo}}"
 	 orientation="{{player.orientation}}"

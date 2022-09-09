@@ -63,6 +63,7 @@ Page({
                         try {
                                 /** 获取token */
                                 let token = await getLoginToken(zegoAppID, this.data.userID);
+                                if(!token) console.error("没有获取到token", token)
                                 this.setData({
                                         token
                                 });
@@ -228,15 +229,15 @@ Page({
         onNetworkStatus() {
                 wx.onNetworkStatusChange(res => {
                         console.warn("网络变化", res.isConnected, res.networkType, this.data.connectType, zg)
-                        if (res.isConnected && this.data.connectType === 1 && zg) {
-                                console.warn('data', this.data);
-                                console.warn('roomID', this.data.roomID);
-                                setTimeout(() => {
-                                        this.reLogin();
-                                }, 500)
+                        // if (res.isConnected && this.data.connectType === 1 && zg) {
+                        //         console.warn('data', this.data);
+                        //         console.warn('roomID', this.data.roomID);
+                        //         setTimeout(() => {
+                        //                 this.reLogin();
+                        //         }, 500)
                                 
 
-                        }
+                        // }
                 })
         },
         audioInterruptBegin() {
@@ -294,25 +295,11 @@ Page({
                         })
                 }
                 Promise.all(promiseList).then(cb).catch((err) => {
-                        console.error(err)
+                        console.warn("forceRecoverPushAndPlay error",err)
+                        cb()
                 })
         },
 
-        // /**
-        //  * 拉流播放器恢复渲染
-        //  */
-        // resumeAllPlayers() {
-        //         this.data.zegoPlayerList.forEach(item => {
-        //                 const zegoPlayer = this.selectComponent(`#${item.componentID}`)
-        //                 // 开始播放
-        //                 zegoPlayer.resumePlayer()
-        //                 console.warn("resumePlayer complete", item.playerId)
-        //         })
-        //         // 触发视图更新
-        //         this.setData({
-        //                 zegoPlayerList: this.data.zegoPlayerList
-        //         })
-        // },
         pausePush() {
                 zg.getPusherInstance().pause({
                         success: () => {

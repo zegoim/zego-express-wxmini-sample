@@ -3,7 +3,7 @@
 		<zego-pusher id="zegoPusher" pusher="{{pusher}}" />
 		<zego-player
 		 wx:for="{{zegoPlayerList}}"
-		 wx:key="id"
+		 wx:key="playerId"
 		 id="{{item.componentID}}"
 		 playerId="{{item.playerId}}"
 		 playerList="{{playerList}}"

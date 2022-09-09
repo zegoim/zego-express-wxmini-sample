@@ -44,6 +44,7 @@ export const initSDK = (context, pushAtr, playAtr) => {
           context.setData({
             zegoPlayerList: context.data.zegoPlayerList
           })
+
           // 在zegoPlayerList更新后， 将zg实例传入对应的流id的组件内
           const zegoPlayer = context.selectComponent(`#${zegoPlayerAttr.componentID}`)
           if (!zegoPlayer) return console.warn("未能获取到组件节点", streamList[i].streamID)
@@ -127,8 +128,8 @@ export const initSDK = (context, pushAtr, playAtr) => {
       state,
       streamID
     } = result
+    console.warn("playerStateUpdate", result)
     context.data.zegoPlayerList.find(item => {
-      console.warn("playStateUpdate", result)
       // 更新拉流组件拉流状态
       const zegoPlayer = context.selectComponent(`#${item.componentID}`)
       if (!zegoPlayer) return false
