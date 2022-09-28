@@ -43,6 +43,18 @@ Component({
     },
     onPushStateChange(e) {
       zgInstance.updatePlayerState(this.data.pusher.id, e)
+
+      /**
+       * 电话接入终止推流
+       * https://developers.weixin.qq.com/community/develop/doc/00084e597a4670609b7de188756000?highLine=5001
+       */
+      const {code} = e.detail
+      if(code === 5001) {
+        console.warn("推流被停止 5001")
+        this.setData({
+          state: "NO_PUBLISH"
+        })
+      }
     },
     // live-pusher 绑定网络状态事件，透传网络状态事件给 SDK
     onPushNetStateChange(e) {

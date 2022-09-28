@@ -246,7 +246,7 @@ Page({
 
         audioInterruptEnd() {
                 console.warn("结束中断播放")
-                this.forceRecoverPushAndPlay(true)
+                this.forceRecoverPushAndPlay()
         },
         /**
          * 恢复推拉流
