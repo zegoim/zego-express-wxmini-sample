@@ -1,7 +1,7 @@
-import { ZegoExpressEngine } from "zego-express-engine-miniprogram";
-// import {
-//         ZegoExpressEngine
-// } from '../libs/ZegoExpressMiniProgram';
+// import { ZegoExpressEngine } from "zego-express-engine-miniprogram";
+import {
+        ZegoExpressEngine
+} from '../libs/ZegoExpressMiniProgram';
 
 import {
         wxp

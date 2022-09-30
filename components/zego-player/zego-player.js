@@ -28,7 +28,8 @@ Component({
     }
   },
   data: {
-    player: {}
+    player: {},
+    state: "NO_PLAY"
   },
   /**
    * 组件的方法列表
@@ -36,22 +37,58 @@ Component({
   methods: {
     async startPlay(instance, streamID) {
       try {
+        if(!instance) {
+          console.warn("instance 不存在", streamID)
+          return 
+        }
         // 获取页面上的zego实例
         zgInstance = instance
-        // 等待 getPlayerInstance 创建 live-player的上下文后，将组件内的this绑定到 player的上下文上。
-        const res = (await zgInstance.getPlayerInstance(streamID)).play()
-        console.log("startPlay res", res)
+        // 等待 getPlayerInstance 创建 live-player 的上下文后，将组件内的this绑定到 player的上下文上。
+        const res = await zgInstance.getPlayerInstance(streamID).play()
+        console.warn("初次拉流开始", streamID, res)
       } catch (error) {
-        console.error("error in startPlay ", error)
+        console.warn("初次拉流失败 ", streamID, error)
       }
     },
     //live-player 绑定拉流事件，透传拉流事件给 SDK
     onPlayStateChange(e) {
+      // console.warn("onPlayStateChange", e.currentTarget.id, e.detail.code, e.detail.message)
       zgInstance.updatePlayerState(e.currentTarget.id, e)
     },
     // live-player 绑定网络状态事件，透传网络状态事件给 SDK
     onPlayNetStateChange(e) {
       zgInstance.updatePlayerNetStatus(e.currentTarget.id, e)
-    }
+    },
+    /**
+     * 暂停渲染
+     */
+    pausePlayer() {
+      zgInstance.getPlayerInstance(this.data.playerId).pause();
+    },
+    /**
+     * 恢复渲染
+     */
+    resumePlayer() {
+      zgInstance.getPlayerInstance(this.data.playerId).resume();
+    },
+    /**
+     * 重新拉流
+     */
+    rePlay() {
+      return new Promise(resolve => {
+        const playInstance = zgInstance.getPlayerInstance(this.data.playerId);
+        console.warn('rePlay', playInstance)
+        playInstance.stop()
+        setTimeout(async () => {
+          try {
+            await zgInstance.getPlayerInstance(this.data.playerId).play()
+            this.resumePlayer()
+          } catch (error) { 
+            console.warn("rePlay failed!!!", error, error + "");
+          }
+          resolve()
+        }, 1000);
+      })
+    },
   }
 })

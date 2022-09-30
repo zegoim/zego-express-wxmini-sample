@@ -247,16 +247,16 @@ Page({
                 // if (zg && (this.data.handupStop || this.data.connectType === 1)) {
                 //         this.reLogin();
                 // }
-                if (zg && this.data.roomID) {
-                        this.reLogin();
-                }
+                // if (zg && this.data.roomID) {
+                //         this.reLogin();
+                // }
                 // 刷新全局变量
                 zegoAppID = getApp().globalData.zegoAppID;
                 server = getApp().globalData.server;
 
         },
         onHide() {
-                this.logout();
+                // this.logout();
         },
         onUnload() {
                 this.logout();
@@ -276,6 +276,7 @@ Page({
         onNetworkStatus() {
 
                 wx.onNetworkStatusChange(res => {
+                        console.warn("网络变化", res.isConnected)
                         if (res.isConnected && this.data.connectType === 1 && zg) {
                                 console.warn('data', this.data);
                                 console.warn('roomID', this.data.roomID);

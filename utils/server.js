@@ -35,6 +35,7 @@ export async function getLoginToken(appID, userID) {
                             'content-type': 'text/plain'
                     },
             });
+            console.warn('>>> get token success: ');
             if (res.statusCode === 200) return res.data;
             return;
     } catch(error) {

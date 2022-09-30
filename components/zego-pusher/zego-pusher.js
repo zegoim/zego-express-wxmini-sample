@@ -1,4 +1,3 @@
-
 // components/zegoPusher.js
 let zgInstance
 Component({
@@ -14,6 +13,11 @@ Component({
       }
     }
   },
+  data: {
+    state: "NO_PUBLISH",
+    streamID: "",
+    options: {}
+  },
   /**
    * 组件的初始数据
    */
@@ -28,13 +32,29 @@ Component({
         zgInstance.zegoWechatMini.setPusherAttributes(config)
         // 开始推流
         const res = (await zgInstance.getPusherInstance()).start(pushStreamID, publishOption)
-        console.log("startPush res", res);
+        console.log("startPush res", res, publishOption);
+        this.setData({
+          streamID: pushStreamID,
+          options: publishOption || {}
+        })
       } catch (error) {
         console.error("error in startPush", error)
       }
     },
     onPushStateChange(e) {
       zgInstance.updatePlayerState(this.data.pusher.id, e)
+
+      /**
+       * 电话接入终止推流
+       * https://developers.weixin.qq.com/community/develop/doc/00084e597a4670609b7de188756000?highLine=5001
+       */
+      const {code} = e.detail
+      if(code === 5001) {
+        console.warn("推流被停止 5001")
+        this.setData({
+          state: "NO_PUBLISH"
+        })
+      }
     },
     // live-pusher 绑定网络状态事件，透传网络状态事件给 SDK
     onPushNetStateChange(e) {
@@ -46,6 +66,46 @@ Component({
     },
     onPushError(e) {
       console.log("onPushError e", e)
-    }
+    },
+    /**
+     * 重新推流
+     * @param {*} 
+     */
+    rePush() {
+      return new Promise((resolve) => {
+        const {
+          streamID,
+          options
+        } = this.data
+        zgInstance.getPusherInstance().stop()
+        // 延迟1s确保停推完成再重新推流
+        setTimeout(async () => {
+          console.warn('rePush', streamID, options)
+          try {
+            await zgInstance.getPusherInstance().start(streamID, options)
+            this.resumePlayer()
+            console.warn("rePush res", streamID, options);
+          } catch (error) {
+            // 小米手机切换网络重新推流，可能出现自动重推失败。
+            console.warn("rePush failed!!!", error, error + "");
+            wx.showModal({
+              title: "异常提示",
+              content: "检测到推流异常，是否重新推流",
+              showCancel: true,
+              success: ()=>{
+                this.rePush()
+              },
+            })
+          }
+          resolve()
+        }, 1000);
+      })
+    },
+    /**
+     * 恢复渲染
+     */
+    resumePlayer() {
+      zgInstance.getPusherInstance(this.data.playerId).resume();
+    },
   }
 })

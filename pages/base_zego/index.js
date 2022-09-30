@@ -20,10 +20,9 @@ let {
         zegoAppID,
         server
 } = getApp().globalData;
-// import {
-//         ZegoExpressEngine
-// } from '../../libs/ZegoExpressMiniProgram';
+
 let zg;
+
 
 Page({
         data: {
@@ -41,9 +40,10 @@ Page({
                 num: 0,
                 livePlaying: [],
                 isReLoginging: false,
-                pusher: {},  // live-pusher的属性，sdk进行管理
-                playerList: [],  // live-player的属性列表，sdk进行管理
-                zegoPlayerList: [],  // 组件列表
+                pusher: {}, // live-pusher的属性，sdk进行管理
+                playerList: [], // live-player的属性列表，sdk进行管理
+                zegoPlayerList: [], // 组件列表
+                isRecovering: false
         },
         bindKeyInput(e) {
                 this.setData({
@@ -63,6 +63,7 @@ Page({
                         try {
                                 /** 获取token */
                                 let token = await getLoginToken(zegoAppID, this.data.userID);
+                                if(!token) console.error("没有获取到token", token)
                                 this.setData({
                                         token
                                 });
@@ -85,7 +86,9 @@ Page({
                 }
                 // 创建房间，开始推流
                 if (e.target.dataset && e.target.dataset.role == 1) {
-                        let config = {mode: "SD"};
+                        let config = {
+                                mode: "RTC"
+                        };
                         if (e.target.dataset.option == "video") {
                                 config.enableMic = false;
                         } else if (e.target.dataset.option == "audio") {
@@ -97,9 +100,9 @@ Page({
 
                         // 将zg实例传递给组件。
                         const zegoPusher = this.selectComponent("#zegoPusher")
-                        await zegoPusher.startPush(zg, this.data.pushStreamID, undefined, this.data.config); 
+                        await zegoPusher.startPush(zg, this.data.pushStreamID, undefined, this.data.config);
                 }
-                this.setData({        
+                this.setData({
                         role: e.target.dataset.role
                 })
         },
@@ -108,11 +111,11 @@ Page({
                         if (this.data.pusher && this.data.pusher.url) {
                                 zg.getPusherInstance().stop()
                         }
-                        
+
                         this.data.playerList && this.data.playerList.forEach(i => {
                                 zg.getPlayerInstance(i.id).stop()
                         })
-                        
+
                         this.setData({
                                 zegoPlayerList: []
                         })
@@ -124,7 +127,7 @@ Page({
 
         },
 
-       
+
         //初始化拉流网络质量配置 一条拉流初始化一次即可
         addStreamRefer() {
                 this.data.livePlayerList.forEach(item => {
@@ -137,7 +140,7 @@ Page({
                 calcQualityGradeFunc.removeStreamRefer(this.data.livePlayerList[0].streamID);
         },
 
-        publishStream(){
+        publishStream() {
                 zg.getPusherInstance().start(this.data.pushStreamID);
         },
         // 停止推流
@@ -182,9 +185,9 @@ Page({
                                 connectType: 1
                         });
                         //console.log('pushStream: ', this.data.pushStreamID, this.data.livePusherUrl, this.data.role);
-                        if (this.data.role == 1) {
-                                startPush(this, undefined, this.data.config)
-                        }
+                        // if (this.data.role == 1) {
+                        //         startPush(this, undefined, this.data.config)
+                        // }
                         this.data.isReLoginging = false;
                 } catch (error) {
                         console.error('error: ', error);
@@ -193,50 +196,110 @@ Page({
         async onReady() {
                 console.log('onReady')
                 zg = initSDK(this, "pusher", "playerList");
-                console.log("zg",zg);
+                console.log("zg", zg);
                 console.log('sdk version: ', zg.getVersion());
 
         },
         onShow() {
-                console.log('onShow: ', this.data.handupStop, this.data.connectType, server);
+                console.warn('onShow: ', this.data.handupStop, this.data.connectType, server);
                 authCheck(this);
-                // if (zg && (this.data.handupStop || this.data.connectType === 1)) {
-                //         this.reLogin();
-                // }
-                // 初始化 zego-player列表
-                this.setData({
-                        zegoPlayerList: []
-                })
-                if (zg && this.data.roomID) {
-                        this.reLogin();
-                }
                 // 刷新全局变量
                 zegoAppID = getApp().globalData.zegoAppID;
                 server = getApp().globalData.server;
 
         },
         onHide() {
-                this.logout();
+                console.warn("onHide")
+                // this.logout();
         },
         onUnload() {
+                console.warn("onUnload 进行登出")
                 this.logout();
                 wx.offNetworkStatusChange()
+                wx.offAudioInterruptionBegin(this.audioInterruptBegin)
+                wx.offAudioInterruptionEnd(this.audioInterruptEnd)
         },
         onLoad() {
                 // 监听网络状态
                 this.onNetworkStatus()
-                // zg = new ZegoExpressEngine(zegoAppID, server)
+                // 监听声音中断恢复事件，将每个拉流组件进行强制恢复播放
+                wx.onAudioInterruptionBegin(this.audioInterruptBegin)
+                wx.onAudioInterruptionEnd(this.audioInterruptEnd)
         },
         onNetworkStatus() {
                 wx.onNetworkStatusChange(res => {
-                        if (res.isConnected && this.data.connectType === 1 && zg) {
-                                console.warn('data', this.data);
-                                console.warn('roomID', this.data.roomID);
-                                this.reLogin();
+                        console.warn("网络变化", res.isConnected, res.networkType, this.data.connectType, zg)
+                        // if (res.isConnected && this.data.connectType === 1 && zg) {
+                        //         console.warn('data', this.data);
+                        //         console.warn('roomID', this.data.roomID);
+                        //         setTimeout(() => {
+                        //                 this.reLogin();
+                        //         }, 500)
+                                
 
-                        }
+                        // }
                 })
         },
+        audioInterruptBegin() {
+                console.warn("开始中断播放")
+        },
+
+        audioInterruptEnd() {
+                console.warn("结束中断播放")
+                this.forceRecoverPushAndPlay()
+        },
+        /**
+         * 恢复推拉流
+         * 在房间状态重连时进行调用
+         */
+        forceRecoverPushAndPlay(rePush = false) {
+                console.warn("forceRecoverPushAndPlay")
+                if(this.data.connectType !== 1) {
+                        console.warn("未登录房间")
+                        return
+                }
+                if(this.data.room === true) {
+                        console.warn("正在恢复推拉流")
+                        return
+                }
+                this.setData({
+                        isRecovering: true
+                })
+                // 获取推流组件，进行重新推流
+                const zegoPusher = this.selectComponent("#zegoPusher")
+                console.warn('是否需要恢复推流', zegoPusher, rePush, zegoPusher?.data.state);
+                const promiseList = []
+                if (zegoPusher && (rePush || ["NO_PUBLISH", "PUBLISH_REQUESTING"].includes(zegoPusher.data.state))) {
+                        console.warn(' 重新推流', this.data.pushStreamID);
+                        promiseList.push(zegoPusher.rePush())
+                }
+                this.data.zegoPlayerList.forEach(item => {
+                        // 获取拉流组件，进行重新拉流
+                        const zegoPlayer = this.selectComponent(`#${item.componentID}`)
+                        console.warn('是否需要恢复拉流', item.playerId, zegoPlayer?.data.state);
+                        if (zegoPlayer && ["NO_PLAY", "PLAY_REQUESTING"].includes(zegoPlayer.data.state)) {
+                                console.warn('重新拉流', item.playerId);
+                                promiseList.push(zegoPlayer.rePlay())
+                        } else if (zegoPlayer) {
+                                // 恢复渲染
+                                zegoPlayer.resumePlayer();
+                                zg.mutePlayStreamAudio(item.playerId, true)
+                                zg.mutePlayStreamAudio(item.playerId, false)
+                                console.warn('恢复拉流渲染', item.playerId);
+                        }
+                })
+                const cb = ()=>{
+                        console.warn("forceRecoverPushAndPlay 结束")
+                        this.setData({
+                                isRecovering: false
+                        })
+                }
+                Promise.all(promiseList).then(cb).catch((err) => {
+                        console.warn("forceRecoverPushAndPlay error",err)
+                        cb()
+                })
+        },
+
         pausePush() {
                 zg.getPusherInstance().pause({
                         success: () => {

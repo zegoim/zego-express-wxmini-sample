@@ -1,7 +1,11 @@
 // import { ZegoExpressEngine } from "zego-express-engine-miniprogram";
-import { ZegoExpressEngine } from "../libs/ZegoExpressMiniProgram"
+import {
+  ZegoExpressEngine
+} from "../libs/ZegoExpressMiniProgram"
 
-import { wxp } from "../app.js"
+import {
+  wxp
+} from "../app.js"
 const app = getApp()
 
 let zg
@@ -10,7 +14,9 @@ export const initSDK = (context, pushAtr, playAtr) => {
   if (!_checkParam(app.globalData.zegoAppID, app.globalData.server)) return false
   /** 初始化SDK，userID 为用户自定义ID，全局唯一 */
   zg = new ZegoExpressEngine(app.globalData.zegoAppID, app.globalData.server)
-
+  // zg.setLogConfig({
+  //   logLevel: "disable"
+  // });
   console.log("version", zg.getVersion())
   zg.setDebugVerbose(false)
   authCheck(context)
@@ -23,7 +29,7 @@ export const initSDK = (context, pushAtr, playAtr) => {
 
   // console.log(this);
   zg.on("roomStreamUpdate", async (roomID, updateType, streamList) => {
-    console.error("roomStreamUpdate", roomID, updateType, streamList);
+    console.warn("roomStreamUpdate", roomID, updateType, streamList);
     if (updateType === "ADD") {
       for (let i = 0; i < streamList.length; i++) {
         try {
@@ -38,13 +44,15 @@ export const initSDK = (context, pushAtr, playAtr) => {
           context.setData({
             zegoPlayerList: context.data.zegoPlayerList
           })
+
           // 在zegoPlayerList更新后， 将zg实例传入对应的流id的组件内
           const zegoPlayer = context.selectComponent(`#${zegoPlayerAttr.componentID}`)
-          if (!zegoPlayer) return wx.showToast({ icon: "none", title: "未能获取到组件节点" })
+          if (!zegoPlayer) return console.warn("未能获取到组件节点", streamList[i].streamID)
           // 开始播放
+          console.warn("开始拉流", roomID, streamList[i].streamID);
           await zegoPlayer.startPlay(zg, streamList[i].streamID)
         } catch (error) {
-          console.error("playStream error", error)
+          console.error("拉流出错，等待房间重连恢复", error)
         }
       }
     } else {
@@ -88,11 +96,50 @@ export const initSDK = (context, pushAtr, playAtr) => {
       })
     }
   })
+  zg.on("roomStateChanged", (roomID, state, errorCode, extendedData) => {
+    console.warn("roomStateChanged", roomID, state, errorCode, extendedData)
+    if (state === "RECONNECTED") {
+      console.log("房间重连完成，进行恢复推拉流")
+      context.setData({
+        connectType: 1
+      })
+      context.forceRecoverPushAndPlay()
+    } else if(state === "RECONNECTING") {
+      console.log("房间重连中")
+      context.setData({
+        connectType: 0
+      })
+    }
+  })
   zg.on("publisherStateUpdate", (result) => {
-    console.error("publishStateUpdate", result)
+    const {
+      state,
+      streamID
+    } = result
+    console.warn("publisherStateUpdate", result)
+    // 更新推流组件推流状态
+    const zegoPusher = context.selectComponent("#zegoPusher")
+    zegoPusher.setData({
+      state
+    })
   })
   zg.on("playerStateUpdate", (result) => {
-    console.log("playStateUpdate", result)
+    const {
+      state,
+      streamID
+    } = result
+    console.warn("playerStateUpdate", result)
+    context.data.zegoPlayerList.find(item => {
+      // 更新拉流组件拉流状态
+      const zegoPlayer = context.selectComponent(`#${item.componentID}`)
+      if (!zegoPlayer) return false
+      if (zegoPlayer.data.playerId === streamID) {
+        zegoPlayer.setData({
+          state
+        })
+        return true
+      }
+    })
   })
   zg.on("publishQualityUpdate", (streamID, publishStats) => {
     console.log("publishQualityUpdate", streamID, publishStats)
@@ -124,7 +171,10 @@ export const playAll = async (streamList, context) => {
   for (let i = 0; i < streamList.length; i++) {
     /** 开始拉流，返回拉流地址 */
     try {
-      let { streamID, url } = await zg.startPlayingStream(streamList[i].streamID, {
+      let {
+        streamID,
+        url
+      } = await zg.startPlayingStream(streamList[i].streamID, {
         sourceType: "BGP"
       })
       console.log("streamID", streamID, url)
@@ -182,10 +232,9 @@ export const setPlayUrl = (streamID, url, context) => {
     context.data.livePlayerList.push(streamInfo)
   }
   app.globalData.livePlayerList = context.data.livePlayerList
-  context.setData(
-    {
-      livePlayerList: context.data.livePlayerList
-    },
+  context.setData({
+    livePlayerList: context.data.livePlayerList
+  },
     () => {
       context.addStreamRefer && context.addStreamRefer()
     }
