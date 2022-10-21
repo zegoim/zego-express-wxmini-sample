@@ -1,5 +1,5 @@
 import {
-        getLoginToken
+  getTokenAndUserID
 } from '../../utils/server';
 import {
         initSDK,
@@ -29,7 +29,7 @@ Page({
                 roomID: '', // 房间ID
                 token: '', // 服务端校验token
                 pushStreamID: 'xcx-streamID-' + new Date().getTime(), // 推流ID
-                userID: 'xcx-userID-' + new Date().getTime(), // 用户ID,
+                userID: '', // 用户ID,
                 livePlayerList: [],
                 connectType: -1, // -1为初始状态，1为连接，0断开连接
                 canShow: -1,
@@ -61,11 +61,15 @@ Page({
                 }
                 if (this.data.connectType !== 1) {
                         try {
-                                /** 获取token */
-                                let token = await getLoginToken(zegoAppID, this.data.userID);
-                                if(!token) console.error("没有获取到token", token)
+                                /** 获取token, userID */
+                                const res = getTokenAndUserID();
+                                if (!res) {
+                                  console.error("userID and Token haven't been set.")
+                                  return;
+                                }
                                 this.setData({
-                                        token
+                                    token: res.token,
+                                    userID: res.userID
                                 });
                                 /** 开始登录房间 */
                                 let isLogin = await zg.loginRoom(this.data.roomID, this.data.token, {
@@ -162,18 +166,15 @@ Page({
                 this.data.isReLoginging = true;
                 try {
                         await zg.logoutRoom();
-                        // this.setData({
-                        //         userID: 'xcx-userID-' + new Date ().getTime ()
-                        // });
-                        // this.data.livePusher && (this.data.livePusher! as wx.LivePusherContext).stop();
-                        let token = await getLoginToken(zegoAppID, this.data.userID);
-                        if (!token) {
-                                console.error("获取token 失败");
-                                this.reLogin();
-                                return
+                        /** 获取token, userID */
+                        const res = getTokenAndUserID();
+                        if (!res) {
+                          console.error("userID and Token haven't been set.")
+                          return;
                         }
                         this.setData({
-                                token
+                            token: res.token,
+                            userID: res.userID
                         });
                         console.error('login ', this.data.userID, this.data.token, this.data.roomID, zegoAppID);
                         let isLogin = await zg.loginRoom(this.data.roomID, this.data.token, {

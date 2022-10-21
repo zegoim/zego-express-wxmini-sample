@@ -1,5 +1,5 @@
 //import { ZegoExpressEngine } from 'zego-express-engine-miniprogram';
-import { getLoginToken } from '../../utils/server';
+import { getTokenAndUserID } from '../../utils/server';
 import { format } from '../../utils/util';
 import { wxp } from '../../app';
 import { initSDK, authCheck, startPush } from '../../utils/common';
@@ -13,7 +13,7 @@ Page({
                 pushStreamID: 'xcx-streamID-' + new Date ().getTime (), // 推流ID
                 livePusherUrl: '',      // 推流地址
                 livePusher: null,       // live-pusher 的 Context，内部只有一个对象
-                userID: 'xcx-userID-' + new Date ().getTime (), // 用户ID,
+                userID: '', // 用户ID,
                 livePlayerList: [],
                 connectType: -1,  // -1为初始状态，1为连接，0断开连接
                 handupStop: false,
@@ -55,8 +55,16 @@ Page({
                 }
                 if (this.data.connectType !== 1) {
                         try {
-                                let token = await getLoginToken (zegoAppID, this.data.userID);
-                                this.setData({ token });
+                                /** 获取token, userID */
+                                const res = getTokenAndUserID();
+                                if (!res) {
+                                  console.error("userID and Token haven't been set.")
+                                  return;
+                                }
+                                this.setData({
+                                    token: res.token,
+                                    userID: res.userID
+                                });
                                 let isLogin = await zg.loginRoom (this.data.roomID, this.data.token, {userID: this.data.userID, userName: 'nick' + this.data.userID}, { userUpdate: true });
                                 isLogin ? console.log('login success') : console.error('login fail');
                                 this.setData({
@@ -228,13 +236,15 @@ Page({
         async reLogin() {
                 try {
                          await zg.logoutRoom();
-                        // this.setData({
-                        //         userID: 'xcx-userID-' + new Date ().getTime ()
-                        // });
-                        // this.data.livePusher && (this.data.livePusher! as wx.LivePusherContext).stop();
-                        let token = await getLoginToken(zegoAppID, this.data.userID);
+                        /** 获取token, userID */
+                        const res = getTokenAndUserID();
+                        if (!res) {
+                          console.error("userID and Token haven't been set.")
+                          return;
+                        }
                         this.setData({
-                                token
+                            token: res.token,
+                            userID: res.userID
                         });
                         console.error('login ', this.data.userID, this.data.token, this.data.roomID, zegoAppID);
                         let isLogin = await zg.loginRoom(this.data.roomID, this.data.token, {

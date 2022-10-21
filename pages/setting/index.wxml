@@ -3,30 +3,31 @@
 <view class="settings">
 
     <view class="items">
-        <label>appID:</label>
-        <input bindinput="inputChange" disabled value="{{_appID}}" data-name="appID"/>
+        <label>AppID:</label>
+        <input bindinput="inputChange" value="{{_appID}}" data-name="appID"/>
     </view>
 
-    <!-- <view class="items">
-        <label>tokenURL:</label>
-        <input bindinput="inputChange" disabled value="{{_tokenURL}}" data-name="tokenURL"/>
-    </view> -->
+    <view class="items">
+        <label>ServerURL:</label>
+        <input bindinput="inputChange" value="{{_serverURL}}" data-name="serverURL"/>
+    </view>
 
     <view class="items">
-        <label>serverURL:</label>
-        <input bindinput="inputChange" disabled value="{{_serverURL}}" data-name="serverURL"/>
+        <label>UserID:</label>
+        <input bindinput="inputChange" value="{{_userID}}" data-name="userID"/>
+    </view>
+
+    <view class="items">
+        <label>Token</label>
+        <input bindinput="inputChange" value="{{_token}}" data-name="token" maxlength="255"/>
     </view>
 
 </view>
 
 
 <view class="handler">
-    <view class="buttonGroup-top">
-        <button class="leftTop" bindtap="scanQR">扫描</button>
-        <button class="rightTop">xx</button>
-    </view>
-    <view class="buttonGroup-bottom">
-        <button class="leftBottom" bindtap="submit">确定</button>
-        <button class="rightBottom" bindtap="reset"> 重置</button>
+    <view class="buttonGroup">
+        <button bindtap="submit" class="btn-block">确定</button>
+        <button bindtap="reset" class="btn-block"> 重置</button>
     </view>
 </view>

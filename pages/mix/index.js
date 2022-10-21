@@ -2,7 +2,7 @@ import {
         wxp
 } from '../../app';
 import {
-        getLoginToken
+  getTokenAndUserID
 } from '../../utils/server';
 import {
         initSDK,
@@ -26,7 +26,7 @@ Page({
                 pushStreamID: 'xcx-streamID-' + new Date().getTime(), // 推流ID
                 livePusherUrl: '', // 推流地址
                 livePusher: null, // live-pusher 的 Context，内部只有一个对象
-                userID: 'xcx-userID-' + new Date().getTime(), // 用户ID,
+                userID: '', // 用户ID,
                 livePlayerList: [],
                 connectType: -1, // -1为初始状态，1为连接，0断开连接
                 handupStop: false,
@@ -54,9 +54,15 @@ Page({
                 }
                 if (this.data.connectType !== 1) {
                         try {
-                                let token = await getLoginToken(zegoAppID, this.data.userID);
+                                /** 获取token, userID */
+                                const res = getTokenAndUserID();
+                                if (!res) {
+                                  console.error("userID and Token haven't been set.")
+                                  return;
+                                }
                                 this.setData({
-                                        token
+                                    token: res.token,
+                                    userID: res.userID
                                 });
                                 let isLogin = await zg.loginRoom(this.data.roomID, this.data.token, {
                                         userID: this.data.userID,

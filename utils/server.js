@@ -1,46 +1,27 @@
-import { wxp } from "../app.js";
+function _getTokenFromGlobal() {
+  return getApp().globalData.token;
+}
 
-export async function getLoginToken(appID, userID) {
-    let { tokenURL, cgi_token, tokenTestURL } = getApp ().globalData;
-    console.log ('>>> get token');
-    if (cgi_token) {
-            try {
-                    const result = await wxp.request({
-                            url: tokenTestURL,
-                            data: {
-                                    app_id: appID,
-                                    id_name: userID,
-                                    cgi_token 
-                            },
-                            header: {
-                                    'content-type': 'text/plain'
-                            },
-                    })
-                    if (result.statusCode === 200) return result.data;
-                    return;
-            } catch (error) {
-                    console.error('>>> get test token fail: ', error);
-                    return;
-            }
-    }
-    try {
-            const res = await wxp.request ({
-                    url: tokenURL,  //该接口由开发者后台自行实现，开发者的 Token 从各自后台获取
-                    // 请求参数中的appID与userID分别为初始化SDK所填的appID与userID
-                    data: {
-                            app_id: appID,
-                            id_name: userID,
-                    },
-                    header: {
-                            'content-type': 'text/plain'
-                    },
-            });
-            console.warn('>>> get token success: ');
-            if (res.statusCode === 200) return res.data;
-            return;
-    } catch(error) {
-            console.error('>>> get token fail: ', error);
-            return;
-    }
-    
+function _getUserIDFromGlobal() {
+  return getApp().globalData.userID;
+}
+
+export function getTokenAndUserID() {
+  if (!_getTokenFromGlobal() || !_getUserIDFromGlobal()) {
+    wx.navigateTo({
+      url: '/pages/setting/index',
+      success: ()=> {
+        wx.showToast({
+          title: `请设置正确的UserID和Token`,
+          icon: 'none',
+          duration: 3000
+        });
+      },
+      fail: ()=>{
+        console.error("userID and Token haven't been set.")
+      }
+    });
+    return null;
+  }
+  return { token: _getTokenFromGlobal(), userID: _getUserIDFromGlobal() };
 }

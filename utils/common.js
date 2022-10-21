@@ -18,7 +18,7 @@ export const initSDK = (context) => {
         console.log('version', zg.getVersion());
         zg.setDebugVerbose(false);
         // zg.setLogConfig({
-        //         logURL: 'https://weblogger1739272706-api.zego.im/httplog'
+        //         logURL: ''
         // });
         authCheck(context);
 
@@ -285,7 +285,7 @@ export const authCheck = async (context) => {
 export const _checkParam = (zegoAppID, server) => {
         if (!zegoAppID) {
                 wx.showToast({
-                        title: `请在app.js中提供正确的zegoAppID`,
+                        title: `请在app.js或在自定义设置中提供正确的zegoAppID`,
                         icon: 'none',
                         duration: 5000
                 });

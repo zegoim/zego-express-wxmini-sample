@@ -15,7 +15,7 @@ const TIMEOUT = 10000;
 const DELAY = 3000;
 const APPID = 1739272706;
 const SERVER = 'wss://webliveroom-test.zego.im/ws';
-const tokenURL = 'https://wsliveroom-alpha.zego.im:8282/token';
+const tokenURL = '';
 const targetURL = 'rtmp://wsdemo.zego.im/livestream/test259';
 
 const getToken = (app_id = APPID, id_name = '') =>

@@ -1,5 +1,5 @@
 import {
-        getLoginToken
+        getTokenAndUserID
 } from '../../utils/server';
 import {
         initSDK,
@@ -32,7 +32,7 @@ Page({
                 pushStreamID: 'xcx-streamID-' + new Date().getTime(), // 推流ID
                 livePusherUrl: '', // 推流地址
                 livePusher: null, // live-pusher 的 Context，内部只有一个对象
-                userID: 'xcx-userID-' + new Date().getTime(), // 用户ID,
+                userID: '', // 用户ID,
                 livePlayerList: [],
                 connectType: -1, // -1为初始状态，1为连接，0断开连接
                 canShow: -1,
@@ -59,10 +59,15 @@ Page({
                 }
                 if (this.data.connectType !== 1) {
                         try {
-                                /** 获取token */
-                                let token = await getLoginToken(zegoAppID, this.data.userID);
+                                /** 获取token, userID */
+                                const res = getTokenAndUserID();
+                                if (!res) {
+                                  console.error("userID and Token haven't been set.")
+                                  return;
+                                }
                                 this.setData({
-                                        token
+                                    token: res.token,
+                                    userID: res.userID
                                 });
                                 /** 开始登录房间 */
                                 let isLogin = await zg.loginRoom(this.data.roomID, this.data.token, {
@@ -76,7 +81,6 @@ Page({
                                 this.setData({
                                         connectType: 1
                                 });
-                                // zg.setCustomSignalUrl([`rtmp://120.77.40.218/zegostg/${this.data.pushStreamID}`]); //wss://webrtctest.zego.im/ws?a=webrtc-demo
                         } catch (error) {
                                 console.error('error: ', error);
                                 return;
@@ -174,43 +178,26 @@ Page({
                 });
         },
         //  //切换拉流
-        // switchPullStream() {
-        //         zg.stopPlayingStream(this.data.livePlayerList[this.data.num].streamID);
-        //         console.warn(this.data)
-        //         this.setData({
-        //                 num:this.data.num==0?1:0,
-        //                 livePlaying:[]
-        //         },()=>{
-        //                 this.setData({
-        //                         livePlaying:this.data.livePlayerList[this.data.num]
-        //                 })
-        //                 // let {
-        //                 //         streamID,
-        //                 //         url
-        //                 // } = await zg.startPlayingStream(
-        //                 //         streamList[i].streamID, {
-        //                 //                 sourceType: "BGP"
-        //                 //         }
-        //                 // );
-        //         })
-        // },
         async onReady() {
                 console.log('onReady')
                 zg = initSDK(this);
-                console.log('sdk version: ', zg.getVersion());
-
+                if (zg) {
+                  console.log('sdk version: ', zg.getVersion());
+                }
         },
 
         async reLogin() {
                 try {
                         await zg.logoutRoom();
-                        // this.setData({
-                        //         userID: 'xcx-userID-' + new Date ().getTime ()
-                        // });
-                        // this.data.livePusher && (this.data.livePusher! as wx.LivePusherContext).stop();
-                        let token = await getLoginToken(zegoAppID, this.data.userID);
+                        /** 获取token, userID */
+                        const res = getTokenAndUserID();
+                        if (!res) {
+                          console.error("userID and Token haven't been set.")
+                          return;
+                        }
                         this.setData({
-                                token
+                            token: res.token,
+                            userID: res.userID
                         });
                         console.error('login ', this.data.userID, this.data.token, this.data.roomID, zegoAppID);
                         console.error("登录房间roomid22" + this.data.roomID)

@@ -3,7 +3,7 @@ import {
         ZegoExpressEngine
 } from '../../libs/ZegoExpressMiniProgram';
 import {
-        getLoginToken
+        getTokenAndUserID
 } from '../../utils/server';
 import {
         _checkParam
@@ -28,7 +28,7 @@ Page({
                 pushStreamID: 'xcx-streamID-' + new Date().getTime(), // 推流ID
                 livePusherUrl: '', // 推流地址
                 livePusher: null, // live-pusher 的 Context，内部只有一个对象
-                userID: 'xcx-userID-' + new Date().getTime(), // 用户ID,
+                userID: '', // 用户ID,
                 pushConfig: { // 推流配置项
                         muted: false, // 推流是否静音
                         enableCamera: true, // 是否开启摄像头
@@ -72,10 +72,15 @@ Page({
                 }
                 if (this.data.connectType !== 1) {
                         try {
-                                /** 获取token */
-                                let token = await getLoginToken(zegoAppID, this.data.userID);
+                                /** 获取token, userID */
+                                const res = getTokenAndUserID();
+                                if (!res) {
+                                  console.error("userID and Token haven't been set.")
+                                  return;
+                                }
                                 this.setData({
-                                        token
+                                    token: res.token,
+                                    userID: res.userID
                                 });
                                 /** 开始登录房间 */
                                 let isLogin = await zg.loginRoom(this.data.roomID, this.data.token, {
@@ -258,13 +263,15 @@ Page({
         async reLogin() {
                 try {
                         await zg.logoutRoom();
-                        // this.setData({
-                        //         userID: 'xcx-userID-' + new Date ().getTime ()
-                        // });
-                        // this.data.livePusher && (this.data.livePusher! as wx.LivePusherContext).stop();
-                        let token = await getLoginToken(zegoAppID, this.data.userID);
+                        /** 获取token, userID */
+                        const res = getTokenAndUserID();
+                        if (!res) {
+                          console.error("userID and Token haven't been set.")
+                          return;
+                        }
                         this.setData({
-                                token
+                            token: res.token,
+                            userID: res.userID
                         });
                         console.log('login ', this.data.userID, this.data.token, this.data.roomID, zegoAppID);
                         let isLogin = await zg.loginRoom(this.data.roomID, this.data.token, {

@@ -14,9 +14,6 @@ export const initSDK = (context, pushAtr, playAtr) => {
   if (!_checkParam(app.globalData.zegoAppID, app.globalData.server)) return false
   /** 初始化SDK，userID 为用户自定义ID，全局唯一 */
   zg = new ZegoExpressEngine(app.globalData.zegoAppID, app.globalData.server)
-  // zg.setLogConfig({
-  //   logLevel: "disable"
-  // });
   console.log("version", zg.getVersion())
   zg.setDebugVerbose(false)
   authCheck(context)
@@ -322,7 +319,7 @@ export const authCheck = async (context) => {
 export const _checkParam = (zegoAppID, server) => {
   if (!zegoAppID) {
     wx.showToast({
-      title: `请在app.js中提供正确的zegoAppID`,
+      title: `请在app.js或在自定义设置中提供正确的zegoAppID`,
       icon: "none",
       duration: 5000
     })
