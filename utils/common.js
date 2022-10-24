@@ -294,7 +294,7 @@ export const _checkParam = (zegoAppID, server) => {
         }
         if (!server) {
                 wx.showToast({
-                        title: `请在app.js中提供正确的server`,
+                        title: `请在app.js或在自定义设置中提供正确的server`,
                         icon: 'none',
                         duration: 5000
                 });

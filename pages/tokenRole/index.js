@@ -37,15 +37,19 @@ Page({
                         this.setData({
                                 roomID: e.detail.value
                         });
-                } else if (e.target.dataset && e.target.dataset.role == "userID") {
+                } else if (e.target.dataset && e.target.dataset.role == "server") {
                         this.setData({
-                                userID: e.detail.value
+                          server: e.detail.value
                         });
                 } else if (e.target.dataset && e.target.dataset.role == "token") {
                         this.setData({
                                 token: e.detail.value
                         });
-                }
+                } else if (e.target.dataset && e.target.dataset.role == "userID") {
+                  this.setData({
+                    userID: e.detail.value
+                  });
+          } 
 
         },
         async openRoom(e) {
@@ -157,10 +161,11 @@ Page({
                 })
         },
         async onReady() {
-                getApp().globalData.zegoAppID = 2913569222;
-                getApp().globalData.server = 'wss://webliveroom2913569222-api.zego.im/ws';
                 console.log('onReady')
                 zg = initSDK(this);
+                if (!zg) {
+                  return;
+                }
                 console.log('sdk version: ', zg.getVersion());
 
                 // 覆盖全局回调, 只是为了特殊处理推流鉴权失败, 主动停止推流
@@ -211,7 +216,7 @@ Page({
         onShow() {
                 console.log('onShow: ', this.data.handupStop, this.data.connectType, server);
                 authCheck(this);
-                if (zg && this.data.roomID) {
+                if (zg && this.data.roomID && this.data.token && this.data.userID) {
                         this.reLogin();
                 }
 
@@ -220,8 +225,6 @@ Page({
                 this.logout();
         },
         onUnload() {
-                getApp().globalData.zegoAppID = 1739272706;
-                getApp().globalData.server = 'wss://webliveroom-test.zego.im/ws';
                 this.logout();
                 wx.offNetworkStatusChange()
         },

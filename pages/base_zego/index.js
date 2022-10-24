@@ -197,9 +197,9 @@ Page({
         async onReady() {
                 console.log('onReady')
                 zg = initSDK(this, "pusher", "playerList");
-                console.log("zg", zg);
-                console.log('sdk version: ', zg.getVersion());
-
+                if (zg) {
+                  console.log('sdk version: ', zg.getVersion());
+                }
         },
         onShow() {
                 console.warn('onShow: ', this.data.handupStop, this.data.connectType, server);
@@ -207,7 +207,6 @@ Page({
                 // 刷新全局变量
                 zegoAppID = getApp().globalData.zegoAppID;
                 server = getApp().globalData.server;
-
         },
         onHide() {
                 console.warn("onHide")
