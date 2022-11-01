@@ -1,5 +1,5 @@
 .containerBase {
-  height: 73vh;
+  height: 63vh;
   padding: 10rpx;
 }
 
@@ -29,6 +29,7 @@ button[type='primary'] {
   display: inline-block;
   width: 48vw;
   margin: 7rpx;
+  font-size: 28rpx;
   background: rgba(13, 112, 255, 0.5);
   color: #fff;
 }

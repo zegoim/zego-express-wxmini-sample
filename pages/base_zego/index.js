@@ -43,7 +43,7 @@ Page({
                 pusher: {}, // live-pusher的属性，sdk进行管理
                 playerList: [], // live-player的属性列表，sdk进行管理
                 zegoPlayerList: [], // 组件列表
-                isRecovering: false
+                isRecovering: false,
         },
         bindKeyInput(e) {
                 this.setData({
@@ -227,18 +227,20 @@ Page({
                 wx.onAudioInterruptionEnd(this.audioInterruptEnd)
         },
         onNetworkStatus() {
-                wx.onNetworkStatusChange(res => {
-                        console.warn("网络变化", res.isConnected, res.networkType, this.data.connectType, zg)
-                        // if (res.isConnected && this.data.connectType === 1 && zg) {
-                        //         console.warn('data', this.data);
-                        //         console.warn('roomID', this.data.roomID);
-                        //         setTimeout(() => {
-                        //                 this.reLogin();
-                        //         }, 500)
-                                
-
-                        // }
-                })
+                const sys = wx.getSystemInfoSync();
+                if (sys.platform === 'ios') {
+                        wx.onNetworkStatusChange(res => {
+                                console.warn("网络变化", res.isConnected, res.networkType, this.data.connectType, zg, new Date())
+                                if (res.isConnected && this.data.connectType === 1 && zg) {
+                                        console.warn('data', this.data);
+                                        console.warn('roomID', this.data.roomID);
+                                        setTimeout(() => {
+                                                console.warn('connectType', this.data.connectType)
+                                                this.forceRecoverPushAndPlay()
+                                        }, 2000)
+                                }
+                        })
+                }
         },
         audioInterruptBegin() {
                 console.warn("开始中断播放")
@@ -258,7 +260,7 @@ Page({
                         console.warn("未登录房间")
                         return
                 }
-                if(this.data.room === true) {
+                if(this.data.isRecovering === true) {
                         console.warn("正在恢复推拉流")
                         return
                 }
@@ -325,5 +327,28 @@ Page({
                                 console.warn("complete")
                         }
                 })
+        },
+
+        onPusherEvent(data) {
+                console.log(`onPusherEvent`, data)
+                const { name, event } = data.detail
+                switch (name) {
+                        case 'statusChange':
+                                const platform = wx.getSystemInfoSync().platform;
+                                if (platform === 'android') {
+                                        wx.showModal({
+                                                title: "异常提示",
+                                                content: "推流被外部停止，是否重新推流",
+                                                showCancel: true,
+                                                success: ()=>{
+                                                        this.forceRecoverPushAndPlay()
+                                                },
+                                        })
+                                }
+                                break;
+                        default:
+                                break;
+                }
+                        
         }
 });

@@ -57,6 +57,7 @@ Component({
     },
     // live-player 绑定网络状态事件，透传网络状态事件给 SDK
     onPlayNetStateChange(e) {
+      // console.info('onPushNetStateChange', e.currentTarget.id, e.detail.code)
       zgInstance.updatePlayerNetStatus(e.currentTarget.id, e)
     },
     /**

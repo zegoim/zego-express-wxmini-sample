@@ -112,16 +112,19 @@ Page({
                 }
         },
         onPushStateChange(e) {
-                console.log('onPushStateChange: ', e);
+                console.warn('onPushStateChange: ', e.detail.code);
         },
         onPushNetStateChange(e) {
-                console.log('onPushNetStateChange: ', e);
+                console.warn('onPushNetStateChange: ', e.detail.info);
         },
         onPlayStateChange(e) {
-                console.log('onPlayStateChange: ', e);
+                console.warn('onPlayStateChange: ', e.detail.code);
         },
         onPlayNetStateChange(e) {
-                console.log('onPlayNetStateChange: ', e);
+                console.warn('onPlayNetStateChange: ', e.detail.info);
+        },
+        onPlayAudiovolumenotify(e) {
+                // console.log('onPlayAudiovolumenotify', e.detail.volume)
         },
         onLoad() {
                 // 监听网络重连，恢复播放状态

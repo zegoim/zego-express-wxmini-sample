@@ -9,7 +9,7 @@
       <text class="tip"></text>
     </view>
     <view class='input-container'>
-      <input value="{{secret}}" bindinput="bindSecretInput" placeholder="请输入secret" placeholder-style='color: #b3b3b3; font-size: 14px;' class="room-input" />
+      <input value="{{cdnURL}}" bindinput="bindCdnURLInput" placeholder="请输入转推CDN地址" placeholder-style='color: #b3b3b3; font-size: 14px;' class="room-input" />
       <text class="tip"></text>
     </view>
     <view class="button-container">
@@ -27,6 +27,9 @@
       </button>
       <button bindtap="publishCdn" data-role="0"  hover-class="none" class="openRoom">
         推流cdn
+      </button>
+      <button bindtap="openRoom" data-role="2"  hover-class="none" class="openRoom">
+        加入房间(拉流CDN)
       </button>
       <!-- <button bindtap="logout" hover-class="none">退出房间</button> -->
     </view>

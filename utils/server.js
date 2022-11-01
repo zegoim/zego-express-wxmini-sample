@@ -1,3 +1,5 @@
+import { wxp } from '../app.js';
+
 function _getTokenFromGlobal() {
   return getApp().globalData.token;
 }

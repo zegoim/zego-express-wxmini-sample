@@ -11,6 +11,6 @@
     </view>
     <view class="live-container">
         <live-pusher class="liver" url="{{pushUrl}}" aspect="3:4" mode="RTC" bindstatechange="onPushStateChange" bindnetstatus="onPushNetStateChange" waiting-image="https://storage.zego.im/downloads/pause_publish.png"></live-pusher>
-        <live-player class="liver" src="{{playUrl}}" mode="RTC" id="live-player" bindstatechange="onPlayStateChange" bindnetstatus="onPlayNetStateChange"></live-player>
+        <live-player class="liver" src="{{playUrl}}" mode="RTC" id="live-player" bindstatechange="onPlayStateChange" bindnetstatus="onPlayNetStateChange" bindaudiovolumenotify="onPlayAudiovolumenotify"></live-player>
     </view>
 </view>

@@ -118,7 +118,7 @@ Page({
           wxp.navigateBack({delta: 1});
       }
   },
-
+  
     reset() {
       this.setData({
           _appID: 123,

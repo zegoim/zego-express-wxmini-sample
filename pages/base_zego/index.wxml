@@ -1,6 +1,6 @@
 <view wx:if="{{canShow== 1}}" class="">
 	<view class="containerBase">
-		<zego-pusher id="zegoPusher" pusher="{{pusher}}" />
+		<zego-pusher id="zegoPusher" pusher="{{pusher}}" bind:pusherEvent="onPusherEvent"/>
 		<zego-player
 		 wx:for="{{zegoPlayerList}}"
 		 wx:key="playerId"

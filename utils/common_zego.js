@@ -94,7 +94,7 @@ export const initSDK = (context, pushAtr, playAtr) => {
     }
   })
   zg.on("roomStateChanged", (roomID, state, errorCode, extendedData) => {
-    console.warn("roomStateChanged", roomID, state, errorCode, extendedData)
+    console.warn("roomStateChanged", roomID, state, errorCode, extendedData, new Date())
     if (state === "RECONNECTED") {
       console.log("房间重连完成，进行恢复推拉流")
       context.setData({
@@ -145,7 +145,7 @@ export const initSDK = (context, pushAtr, playAtr) => {
     console.log("playQualityUpdate", streamID, playStats)
   })
   zg.on("roomOnlineUserCountUpdate", (roomID, userCount) => {
-    console.error("roomOnlineUserCountUpdate", roomID, userCount)
+    console.warn("roomOnlineUserCountUpdate", roomID, userCount)
   })
   zg.on("recvReliableMessage", (roomID, userCount, trans_type) => {
     console.error("recvReliableMessage", roomID, userCount, trans_type)

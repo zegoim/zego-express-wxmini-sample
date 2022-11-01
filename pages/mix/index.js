@@ -113,6 +113,8 @@ Page({
                                         }
                                 });
                         }
+                        this.data.mixStreamID = 'xcx-mixS-' + new Date().getTime();
+                        this.data.mixTaskID = 'xcx-mixT-' + new Date().getTime();
                         const outputList = [{
                                 target: this.data.mixStreamID,
                         }]
@@ -148,6 +150,8 @@ Page({
                                         url
                                 })
                                 this.setData({
+                                        mixStreamID: this.data.mixStreamID,
+                                        mixTaskID: this.data.mixTaskID,
                                         mixPlayerUrls: _mixPlayerUrls
                                 })
                         } catch (err) {

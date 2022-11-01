@@ -43,17 +43,19 @@
     "showES6CompileOption": false,
     "disableUseStrict": false,
     "useCompilerPlugins": false,
-    "minifyWXML": true
+    "minifyWXML": true,
+    "ignoreDevUnusedFiles": false,
+    "ignoreUploadUnusedFiles": false
   },
   "compileType": "miniprogram",
-  "libVersion": "2.22.0",
+  "libVersion": "2.27.1",
   "appid": "wx2b8909dae7727f25",
   "projectname": "zego-express-wxmini-sample",
   "simulatorType": "wechat",
   "simulatorPluginLibVersion": {},
-  "condition": {},
   "editorSetting": {
     "tabIndent": "insertSpaces",
     "tabSize": 2
-  }
+  },
+  "condition": {}
 }

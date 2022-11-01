@@ -82,7 +82,7 @@ export const initSDK = (context) => {
                 console.log("playQualityUpdate", streamID, playStats);
         });
         zg.on("roomOnlineUserCountUpdate", (roomID, userCount) => {
-                        console.error("roomOnlineUserCountUpdate", roomID, userCount)
+                        console.warn("roomOnlineUserCountUpdate", roomID, userCount)
         });
         zg.on("recvReliableMessage", (roomID, userCount,trans_type) => {
                 console.error("recvReliableMessage", roomID, userCount,trans_type);
@@ -105,12 +105,13 @@ export const playAll = async (streamList, context) => {
         for (let i = 0; i < streamList.length; i++) {
                 /** 开始拉流，返回拉流地址 */
                 try {
+                        console.error('type', context.data.playSource)
                         let {
                                 streamID,
                                 url
                         } = await zg.startPlayingStream(
                                 streamList[i].streamID, {
-                                        sourceType: "BGP"
+                                        sourceType: context.data.playSource || "BGP"
                                 }
                         );
                         console.log("streamID", streamID, url);

@@ -21,13 +21,13 @@ Page({
                 role: '',
                 roomUserList: [],
                 handupStop: false,
-                secret: '',
+                cdnURL: '',
         },
         bindKeyInput(e) {
                 this.setData({ roomID: e.detail.value });
         },
-        bindSecretInput(e) {
-                this.setData({ secret: e.detail.value });
+        bindCdnURLInput(e) {
+                this.setData({ cdnURL: e.detail.value });
         },
         async openRoom(e) {
                 if (!this.data.roomID) {
@@ -37,6 +37,11 @@ Page({
                                 showCancel: false,
                         });
                         return;
+                }
+                if (e.target.dataset && e.target.dataset.role == 2) {
+                        this.setData({
+                                playSource: 'CDN'
+                        })
                 }
                 if (this.data.connectType !== 1) {
                         try {
@@ -66,6 +71,7 @@ Page({
                 if (e.target.dataset && e.target.dataset.role == 1 && this.data.livePusherUrl === '') {
                         startPush(this);
                 }
+
                 console.log('role', e.target.dataset.role)
                 this.setData({
                         role: e.target.dataset.role == 1 ? 'anchor' : 'audience'
@@ -95,9 +101,10 @@ Page({
         async addCdnPublish() {
                 const result = await zg.addPublishCdnUrl(
                         this.data.pushStreamID,
+                        this.data.cdnURL
                         //The calculation of the signature is recommended to be placed in the background server
-                        md5(zegoAppID + Math.ceil(new Date().getTime() / 1000).toString() + this.data.secret),
-                        'rtmp://wsdemo.zego.im/livestream/'+this.data.pushStreamID,
+                        // md5(zegoAppID + Math.ceil(new Date().getTime() / 1000).toString() + this.data.cdnURL),
+                        // 'rtmp://wsdemo.zego.im/livestream/'+this.data.pushStreamID,
                 );
                 if (result.errorCode == 0) {
                         console.warn('add push target success');
@@ -110,8 +117,9 @@ Page({
         async removeCdnPublish() {
                 const result = await zg.removePublishCdnUrl(
                         this.data.pushStreamID,
+                        this.data.cdnURL
                         //The calculation of the signature is recommended to be placed in the background server
-                        'rtmp://wsdemo.zego.im/livestream/'+this.data.pushStreamID,
+                        // 'rtmp://wsdemo.zego.im/livestream/'+this.data.pushStreamID,
                 );
                 console.warn('result',result);
                 if (result.errorCode == 0) {

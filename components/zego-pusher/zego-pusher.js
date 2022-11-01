@@ -42,6 +42,7 @@ Component({
       }
     },
     onPushStateChange(e) {
+      // console.warn('onPushStateChange', this.data.pusher.id, e.detail.code)
       zgInstance.updatePlayerState(this.data.pusher.id, e)
 
       /**
@@ -54,10 +55,18 @@ Component({
         this.setData({
           state: "NO_PUBLISH"
         })
+        this.triggerEvent('pusherEvent', { name: 'statusChange', code })
+      } else if (code === -1307) {
+        // 兼容部分android机型在断网后重推可能出现推流失败的情况
+        const platform = wx.getSystemInfoSync().platform;
+        if (platform === 'android') {
+          zgInstance.getPusherInstance().stop()
+        }
       }
     },
     // live-pusher 绑定网络状态事件，透传网络状态事件给 SDK
     onPushNetStateChange(e) {
+      // console.warn('onPushNetStateChange', this.data.pusher.id, e.detail.info)
       zgInstance.updatePlayerNetStatus(this.data.pusher.id, e)
     },
     // live-pusher 音量监听，
@@ -80,22 +89,26 @@ Component({
         zgInstance.getPusherInstance().stop()
         // 延迟1s确保停推完成再重新推流
         setTimeout(async () => {
-          console.warn('rePush', streamID, options)
+          console.warn('rePush', streamID, options, this.data.state)
           try {
             await zgInstance.getPusherInstance().start(streamID, options)
+            // this.pausePlayer();
             this.resumePlayer()
             console.warn("rePush res", streamID, options);
           } catch (error) {
-            // 小米手机切换网络重新推流，可能出现自动重推失败。
             console.warn("rePush failed!!!", error, error + "");
-            wx.showModal({
-              title: "异常提示",
-              content: "检测到推流异常，是否重新推流",
-              showCancel: true,
-              success: ()=>{
-                this.rePush()
-              },
-            })
+            const platform = wx.getSystemInfoSync().platform;
+            if (platform === 'android') {
+              // 小米手机切换网络重新推流，可能出现自动重推失败。
+              wx.showModal({
+                title: "异常提示",
+                content: "检测到推流异常，是否重新推流",
+                showCancel: true,
+                success: ()=>{
+                  this.rePush()
+                },
+              })
+            }
           }
           resolve()
         }, 1000);

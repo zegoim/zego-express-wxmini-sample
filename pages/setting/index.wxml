@@ -19,7 +19,7 @@
 
     <view class="items">
         <label>Token</label>
-        <input bindinput="inputChange" value="{{_token}}" data-name="token" maxlength="255"/>
+        <input bindinput="inputChange" value="{{_token}}" data-name="token" maxlength="1024"/>
     </view>
 
 </view>
@@ -29,5 +29,6 @@
     <view class="buttonGroup">
         <button bindtap="submit" class="btn-block">确定</button>
         <button bindtap="reset" class="btn-block"> 重置</button>
+        
     </view>
 </view>
