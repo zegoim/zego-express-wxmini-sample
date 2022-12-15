@@ -22,12 +22,15 @@ Component({
    * 组件的初始数据
    */
   methods: {
+    setZgInstance(instance) {
+      zgInstance = instance
+    },
     async startPush(instance, pushStreamID, publishOption, config) {
       try {
         // 获取页面上的zego实例
         zgInstance = instance
         // 创建 pusher
-        zgInstance.createPusher()
+        zgInstance.getPusherInstance() || zgInstance.createPusher()
         // 设置属性
         zgInstance.zegoWechatMini.setPusherAttributes(config)
         // 开始推流

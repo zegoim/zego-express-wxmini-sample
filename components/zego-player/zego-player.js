@@ -29,7 +29,9 @@ Component({
   },
   data: {
     player: {},
-    state: "NO_PLAY"
+    state: "NO_PLAY",
+    streamID: '',
+    showExitFullScreen: false
   },
   /**
    * 组件的方法列表
@@ -44,7 +46,7 @@ Component({
         // 获取页面上的zego实例
         zgInstance = instance
         // 等待 getPlayerInstance 创建 live-player 的上下文后，将组件内的this绑定到 player的上下文上。
-        const res = await zgInstance.getPlayerInstance(streamID).play()
+        const res = await zgInstance.getPlayerInstance(streamID, this).play()
         console.warn("初次拉流开始", streamID, res)
       } catch (error) {
         console.warn("初次拉流失败 ", streamID, error)
@@ -60,29 +62,48 @@ Component({
       // console.info('onPushNetStateChange', e.currentTarget.id, e.detail.code)
       zgInstance.updatePlayerNetStatus(e.currentTarget.id, e)
     },
+
+    /**
+     * 停止拉流
+     */
+    stopPlayer() {
+      zgInstance.getPlayerInstance(this.data.playerId, this).stop();
+    },
     /**
      * 暂停渲染
      */
     pausePlayer() {
-      zgInstance.getPlayerInstance(this.data.playerId).pause();
+      zgInstance.getPlayerInstance(this.data.playerId, this).pause();
     },
     /**
      * 恢复渲染
      */
     resumePlayer() {
-      zgInstance.getPlayerInstance(this.data.playerId).resume();
+      zgInstance.getPlayerInstance(this.data.playerId, this).resume();
     },
+    // 退出全屏
+    exitFullScreen() {
+      if(!this.data.playerList[0]) return
+      const _this = this;
+      zgInstance.getPlayerInstance(this.data.playerId).exitFullScreen({
+        success(){
+          _this.setData({
+            showExitFullScreen: false
+          })
+        }
+      });
+  },
     /**
      * 重新拉流
      */
     rePlay() {
       return new Promise(resolve => {
-        const playInstance = zgInstance.getPlayerInstance(this.data.playerId);
+        const playInstance = zgInstance.getPlayerInstance(this.data.playerId, this);
         console.warn('rePlay', playInstance)
         playInstance.stop()
         setTimeout(async () => {
           try {
-            await zgInstance.getPlayerInstance(this.data.playerId).play()
+            await zgInstance.getPlayerInstance(this.data.playerId, this).play()
             this.resumePlayer()
           } catch (error) { 
             console.warn("rePlay failed!!!", error, error + "");

@@ -63,7 +63,6 @@ export function sharePage(param) {
   
   return {
           title: '即构音视频云',
-          path: getCurrentPages ().pop ().route + '?' + paramArr.join ('&'),
-          imageUrl: '/resource/share.png'
+          path: getCurrentPages ().pop ().route + '?' + paramArr.join ('&')
   }
 }

@@ -108,6 +108,8 @@ Page({
                 if (e.detail.code === 5000) {
                         this.setData({ handupStop: true })
                         // this.data.livePusher && (this.data.livePusher! as wx.LivePusherContext).stop();
+                } else if(e.detail.code === 1103) { //推流：硬编码启动失败, 采用软编码
+                        this.data.livePusher.resume()
                 }
                 zg.updatePlayerState (this.data.pushStreamID, e);
         },

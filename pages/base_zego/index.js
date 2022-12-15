@@ -4,7 +4,7 @@ import {
 import {
         initSDK,
         authCheck,
-        startPush,
+        startPush
 
 } from '../../utils/common_zego';
 import {
@@ -44,6 +44,20 @@ Page({
                 playerList: [], // live-player的属性列表，sdk进行管理
                 zegoPlayerList: [], // 组件列表
                 isRecovering: false,
+                volume: 10,
+                showExitFullScreen: false,
+                snapshotUrl: '',
+                wxObject: {
+                        success(data) {
+                                console.warn('success: ', data)
+                        },
+                        fail(err) {
+                                console.error(err)
+                        },
+                        complete(data) {
+                                console.warn('complete:', data)
+                        }
+                }
         },
         bindKeyInput(e) {
                 this.setData({
@@ -145,17 +159,23 @@ Page({
         },
 
         publishStream() {
+                this.startPreview()
+                debugger;
                 zg.getPusherInstance().start(this.data.pushStreamID);
+                const zegoPusher = this.selectComponent("#zegoPusher")
+                zegoPusher.setZgInstance(zg)
         },
         // 停止推流
         stopPushStream() {
+                this.stopPreview()
                 zg.getPusherInstance().stop();
 
         },
         //停止拉流
         stopPullStream() {
-                this.data.playerList && this.data.playerList.forEach(i => {
-                        zg.getPlayerInstance(i.id).stop();
+                this.data.zegoPlayerList.forEach(zegoPlayerAttr=>{
+                        const zegoPlayer = this.selectComponent(`#${zegoPlayerAttr.componentID}`)
+                        zegoPlayer.stopPlayer();
                 })
         },
         //  //切换拉流
@@ -228,16 +248,21 @@ Page({
         },
         onNetworkStatus() {
                 const sys = wx.getSystemInfoSync();
+                let i = 0, timer;
                 if (sys.platform === 'ios') {
                         wx.onNetworkStatusChange(res => {
                                 console.warn("网络变化", res.isConnected, res.networkType, this.data.connectType, zg, new Date())
                                 if (res.isConnected && this.data.connectType === 1 && zg) {
                                         console.warn('data', this.data);
                                         console.warn('roomID', this.data.roomID);
-                                        setTimeout(() => {
+                                        timer = setTimeout(() => {
+                                                clearTimeout(timer)
                                                 console.warn('connectType', this.data.connectType)
                                                 this.forceRecoverPushAndPlay()
-                                        }, 2000)
+                                        }, 3000 * i)
+                                        i = 1
+                                } else {
+                                        i = 0;
                                 }
                         })
                 }
@@ -301,32 +326,20 @@ Page({
                         cb()
                 })
         },
-
+        createPusher() {
+                zg.createPusher()
+        },
+        startPreview() {
+                zg.getPusherInstance().startPreview(this.data.wxObject)
+        },
+        stopPreview() {
+                zg.getPusherInstance().stopPreview(this.data.wxObject)
+        },
         pausePush() {
-                zg.getPusherInstance().pause({
-                        success: () => {
-                                console.warn(" success")
-                        },
-                        fail: (e) => {
-                                console.warn(" fail " + e)
-                        },
-                        complete: () => {
-                                console.warn("complete")
-                        }
-                })
+                zg.getPusherInstance().pause(this.data.wxObject)
         },
         resumePush() {
-                zg.getPusherInstance().resume({
-                        success: () => {
-                                console.warn(" success")
-                        },
-                        fail: (e) => {
-                                console.warn(" fail " + e)
-                        },
-                        complete: () => {
-                                console.warn("complete")
-                        }
-                })
+                zg.getPusherInstance().resume(this.data.wxObject)
         },
 
         onPusherEvent(data) {
@@ -350,5 +363,106 @@ Page({
                                 break;
                 }
                         
+        },
+        volumeChange(data) {
+                this.setData({
+                        volume: data.detail.value
+                })
+        },
+        playBGM() {
+                zg.getPusherInstance().playBGM({
+                        url: "https://zego-public.oss-cn-shanghai.aliyuncs.com/sdk-doc/assets/bike.mp3",
+                        ...this.data.wxObject
+                })
+        },
+        pauseBGM() {
+                zg.getPusherInstance().pauseBGM(this.data.wxObject)
+        },
+        resumeBGM() {
+                zg.getPusherInstance().resumeBGM(this.data.wxObject)
+        },
+        stopBGM() {
+                zg.getPusherInstance().stopBGM(this.data.wxObject)
+        },
+        setBGMVolume() {
+                const volume =  this.data.volume/10
+                if(!/^(0(.\d+)?|1(\.0+)?)$/.test(volume)) return alert('音量值只能为0-1.0之间的值')
+                zg.getPusherInstance().setBGMVolume({
+                        volume: this.data.volume/10,
+                        ...this.data.wxObject
+                })
+        },
+        setMICVolume() {
+                const volume =  this.data.volume/10
+                if(!/^(0(.\d+)?|1(\.0+)?)$/.test(volume)) return alert('音量值只能为0-1.0之间的值')
+                zg.getPusherInstance().setMICVolume({
+                        volume,
+                        ...this.data.wxObject
+                })
+        },
+        switchCamera() {
+                zg.getPusherInstance().switchCamera(this.data.wxObject)
+        },
+        toggleTorch() {
+                zg.getPusherInstance().toggleTorch(this.data.wxObject);
+        },
+        snapshotPush() {
+                const _this = this
+                zg.getPusherInstance().snapshot({
+                        quality: "raw",
+                        ...this.data.wxObject,
+                        success(data) {
+                                _this.setData({
+                                        snapshotUrl: data.tempImagePath
+                                })
+                        }
+                });
+        },
+        pauseAllPlayers() {
+                this.data.zegoPlayerList.forEach(zegoPlayerAttr=>{
+                        const zegoPlayer = this.selectComponent(`#${zegoPlayerAttr.componentID}`)
+                        zegoPlayer.pausePlayer();
+                })
+        },
+        resumeAllPlayers() {
+                this.data.zegoPlayerList.forEach(zegoPlayerAttr=>{
+                        const zegoPlayer = this.selectComponent(`#${zegoPlayerAttr.componentID}`)
+                        zegoPlayer.resumePlayer();
+                })
+        },
+        mutePlayStreamAudio() {
+                this.data.playerList && this.data.playerList.forEach(i => {
+                        zg.getPlayerInstance(i.id).mute(this.data.wxObject);
+                })
+        },
+        // 第一个拉流窗口全屏
+        requestFullScreen() {
+                if(!this.data.playerList[0]) return
+                const _this = this;
+                zg.getPlayerInstance(this.data.playerList[0].id).requestFullScreen({
+                        success(){
+                                const zegoPlayer = _this.selectComponent(`#${_this.data.zegoPlayerList[0].componentID}`)
+                                zegoPlayer.setData({
+                                        showExitFullScreen: true
+                                })
+                        },
+                        complete(data) {
+                                console.warn('requestFullScreen complete:', data)
+                        }
+                });
+        },
+        snapshotPull() {
+                if(!this.data.playerList[0]) return
+                const _this = this;
+                zg.getPlayerInstance(this.data.playerList[0].id).snapshot({
+                        quality: "raw",
+                        ...this.data.wxObject,
+                        success(data) {
+                                _this.setData({
+                                        snapshotUrl: data.tempImagePath
+                                })
+                        }
+                });
         }
+        
 });

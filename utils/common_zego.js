@@ -37,6 +37,7 @@ export const initSDK = (context, pushAtr, playAtr) => {
           }
           // 添加到组件列表中
           context.data.zegoPlayerList.push(zegoPlayerAttr)
+          console.warn(1111111,context.data.zegoPlayerList.length)
           // 更新，并渲染组件列表
           context.setData({
             zegoPlayerList: context.data.zegoPlayerList
@@ -181,11 +182,12 @@ export const playAll = async (streamList, context) => {
     }
   }
 }
-
 export const startPush = async (context, publishOption, config) => {
   try {
     /** 开始推流，返回推流地址 */
-    zg.createPusher()
+    if(!zg.getPusherInstance()) {
+      zg.createPusher()
+    }
     zg.zegoWechatMini.setPusherAttributes(config)
     await zg.getPusherInstance().start(context.data.pushStreamID, publishOption)
   } catch (error) {

@@ -24,7 +24,7 @@ export const initSDK = (context) => {
 
         // console.log(this);
         zg.on("roomStreamUpdate", (roomID, updateType, streamList) => {
-                console.log("roomStreamUpdate", roomID, updateType, streamList);
+                console.warn("roomStreamUpdate", roomID, updateType, streamList);
                 if (updateType === "ADD") {
                         context.setData({
                                 streamList: streamList
@@ -62,7 +62,7 @@ export const initSDK = (context) => {
                 });
         });
         zg.on("roomStateUpdate", (roomID, state, errorCode, extendedData) => {
-                console.log("roomStateUpdate", roomID, state, errorCode, extendedData);
+                console.warn("roomStateUpdate", roomID, state, errorCode, extendedData);
                 if (state === "DISCONNECTED") {
                         context.setData({
                                 connectType: 0,

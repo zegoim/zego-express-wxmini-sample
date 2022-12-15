@@ -9,6 +9,7 @@
 		 playerList="{{playerList}}"
 		/>
 	</view>
+	<image wx:if="{{snapshotUrl}}" src="{{snapshotUrl}}" class="snapshotImg"></image>
 	<view class="index-container">
 		<view class='input-container'>
 			<input
@@ -28,20 +29,14 @@
 						<button bindtap="openRoom" data-role="0" hover-class="none" class="openRoom">
 								加入房间(不推流)
 						</button>
-						<!-- <button bindtap="resumeAllPlayers" hover-class="none" class="btn">
-							恢复播放
-						</button> -->
-						<!-- <button bindtap="pauseAllPlayers" hover-class="none" class="btn">
-							暂停播放
-						</button> -->
-						<!-- <button bindtap="mutePlayStreamAudio" data-role="0" hover-class="none" class="checkInfo">
-							mutePlayStreamAudio
-						</button> -->
 						<button bindtap="openRoom" data-role="1" data-option="audio" hover-class="none" class="openRoom">
 								加入房间(推纯音频)
 						</button>
 						<button bindtap="openRoom" data-role="1" data-option="video" hover-class="none" class="openRoom">
 								加入房间(推纯视频)
+						</button>
+						<button bindtap="stopPushStream" data-role="1" data-option="video" hover-class="none" class="openRoom">
+								停止预览推流
 						</button>
 						<button bindtap="pausePush" data-role="1" data-option="video" hover-class="none" class="openRoom">
 								暂停推流
@@ -50,6 +45,63 @@
 								恢复推流
 						</button>
 						<button bindtap="logout" hover-class="none">退出房间</button>
+				</view>
+				<view>推流组件实例的其他接口</view>
+				<view>
+					<text>音量值：{{volume/10}}</text>
+					<slider bindchange="volumeChange" value="{{volume}}" left-icon="cancel" max="10" right-icon="success_no_circle"/>
+				</view>
+				<view class="button-container">
+						<button bindtap="playBGM" data-role="1" hover-class="none" class="openRoom">
+								播放背景音乐
+						</button>
+						<button bindtap="stopBGM" data-role="1" hover-class="none" class="openRoom">
+								停止背景音乐
+						</button>
+						<button bindtap="pauseBGM" data-role="1" hover-class="none" class="openRoom">
+								暂停播放背景音乐
+						</button>
+						<button bindtap="resumeBGM" data-role="1" hover-class="none" class="openRoom">
+								恢复播放背景音乐
+						</button>
+						<button bindtap="setBGMVolume" data-role="1" hover-class="none" class="openRoom">
+								设置背景音乐音量大小
+						</button>
+				</view>
+				<view class="button-container">
+						<button bindtap="setMICVolume" data-role="1" hover-class="none" class="openRoom">
+								设置麦克风音量大小
+						</button>
+						<button bindtap="switchCamera" data-role="1" hover-class="none" class="openRoom">
+								切换前后摄像头
+						</button>
+						<button bindtap="toggleTorch" data-role="1" hover-class="none" class="openRoom">
+								切换手电筒
+						</button>
+						<button bindtap="snapshotPush" data-role="1" hover-class="none" class="openRoom">
+								推流截图
+						</button>
+				</view>
+				<view>拉流组件实例的其他接口</view>
+				<view class="button-container">
+						<button bindtap="stopPullStream" data-role="1" hover-class="none" class="openRoom">
+								停止拉流
+						</button>
+						<button bindtap="pauseAllPlayers" hover-class="none" class="openRoom">
+							暂停播放
+						</button>
+						<button bindtap="resumeAllPlayers" hover-class="none" class="openRoom">
+							恢复播放
+						</button>
+						<button bindtap="mutePlayStreamAudio" data-role="0" hover-class="none" class="openRoom">
+							拉流静音
+						</button> 
+						<button bindtap="requestFullScreen" data-role="0" hover-class="none" class="openRoom">
+							全屏
+						</button> 
+						<button bindtap="snapshotPull" data-role="1" hover-class="none" class="openRoom">
+								拉流截图
+						</button>
 				</view>
 		</view>
 </view>

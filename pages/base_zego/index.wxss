@@ -33,6 +33,10 @@ button[type='primary'] {
   background: rgba(13, 112, 255, 0.5);
   color: #fff;
 }
+.snapshotImg{
+  width:100rpx;
+  height:100rpx;
+}
 /* .testpusher{
   width: 200rpx;
   height: 200rpx;

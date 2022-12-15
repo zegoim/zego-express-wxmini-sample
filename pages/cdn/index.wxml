@@ -1,6 +1,6 @@
 <view wx:if="{{canShow== 1}}">
   <view class="containerBase">
-    <live-pusher wx:if="{{livePusherUrl}}" url="{{livePusherUrl}}" aspect="3:4" bindstatechange="onPushStateChange" bindnetstatus="onPushNetStateChange" waiting-image="https://storage.zego.im/downloads/pause_publish.png"></live-pusher>
+    <live-pusher wx:if="{{livePusherUrl}}" url="{{livePusherUrl}}" aspect="3:4" bindstatechange="onPushStateChange" autopush bindnetstatus="onPushNetStateChange" waiting-image="https://storage.zego.im/downloads/pause_publish.png"></live-pusher>
     <live-player wx:for="{{livePlayerList}}" wx:key="streamID" id="{{item.streamID}}" src="{{item.url}}" mode="RTC" autoplay bindstatechange="onPlayStateChange" bindnetstatus="onPlayNetStateChange"></live-player>
   </view>
   <view class="index-container">
@@ -10,6 +10,11 @@
     </view>
     <view class='input-container'>
       <input value="{{cdnURL}}" bindinput="bindCdnURLInput" placeholder="请输入转推CDN地址" placeholder-style='color: #b3b3b3; font-size: 14px;' class="room-input" />
+      <text class="tip"></text>
+    </view>
+    <view class='input-container'>
+      <input value="{{token}}"  bindinput="changeToken" maxlength="-1" data-role="token" placeholder="请输入 token"
+        placeholder-style='color: #b3b3b3; font-size: 14px;' class="room-input" />
       <text class="tip"></text>
     </view>
     <view class="button-container">
@@ -30,6 +35,9 @@
       </button>
       <button bindtap="openRoom" data-role="2"  hover-class="none" class="openRoom">
         加入房间(拉流CDN)
+      </button>
+      <button bindtap="renewToken" data-role="1" hover-class="none" class="openRoom">
+        更新token
       </button>
       <!-- <button bindtap="logout" hover-class="none">退出房间</button> -->
     </view>

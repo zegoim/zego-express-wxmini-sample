@@ -10,7 +10,7 @@
     "enhance": true,
     "postcss": false,
     "preloadBackgroundData": false,
-    "minified": false,
+    "minified": true,
     "newFeature": true,
     "coverView": true,
     "nodeModules": true,
@@ -45,7 +45,7 @@
     "useCompilerPlugins": false,
     "minifyWXML": true,
     "ignoreDevUnusedFiles": false,
-    "ignoreUploadUnusedFiles": false
+    "ignoreUploadUnusedFiles": true
   },
   "compileType": "miniprogram",
   "libVersion": "2.27.1",

@@ -21,7 +21,7 @@ Page({
                 role: '',
                 roomUserList: [],
                 handupStop: false,
-                cdnURL: '',
+                cdnURL: 'rtmp://wsdemo.zego.im/livestream/',
         },
         bindKeyInput(e) {
                 this.setData({ roomID: e.detail.value });
@@ -46,15 +46,7 @@ Page({
                 if (this.data.connectType !== 1) {
                         try {
                                 /** 获取token, userID */
-                                const res = getTokenAndUserID();
-                                if (!res) {
-                                  console.error("userID and Token haven't been set.")
-                                  return;
-                                }
-                                this.setData({
-                                    token: res.token,
-                                    userID: res.userID
-                                });
+                                this.setToken()
                                 /** 开始登录房间 */
                                 let isLogin = await zg.loginRoom(this.data.roomID, this.data.token, { userID: this.data.userID, userName: 'nick' + this.data.userID }, { userUpdate: true });
                                 isLogin ? console.log('login success') : console.error('login fail');
@@ -134,7 +126,7 @@ Page({
         },
         // live-pusher 绑定推流事件，透传推流事件给 SDK
         onPushStateChange(e) {
-                console.log('onPushStateChange', e.detail.code, e.detail.message);
+                console.warn('onPushStateChange', e.detail.code, e.detail.message);
                 if (e.detail.code === 5000) {
                         this.setData({ handupStop: true })
                         // this.data.livePusher && (this.data.livePusher! as wx.LivePusherContext).stop();
@@ -151,7 +143,7 @@ Page({
         },
         //live-player 绑定拉流事件，透传拉流事件给 SDK
         onPlayStateChange(e) {
-                console.log('onPlayStateChange', e.detail.code, e.detail.message)
+                console.warn('onPlayStateChange', e.detail.code, e.detail.message)
                 zg.updatePlayerState(e.currentTarget.id, e);
         },
         async onReady() {
@@ -210,12 +202,14 @@ Page({
                 // 刷新全局变量
                 zegoAppID = getApp().globalData.zegoAppID;
                 server = getApp().globalData.server;
+                this.setToken()
         },
         onHide() {
                 this.logout();
         },
         onUnload() {
                 this.logout();
+                wx.offNetworkStatusChange()
         },
         onLoad() {
                 // 监听网络状态
@@ -225,9 +219,27 @@ Page({
                 wx.onNetworkStatusChange(res => {
                         console.log('net', res);
                         if (res.isConnected && this.data.connectType === 0 && zg) {
-                                console.log('connectType', this.data.connectType);
+                                console.warn('connectType', this.data.connectType);
                                 this.reLogin();
                         }
                 })
         },
+        changeToken() {
+                this.setData({ token: e.detail.value });
+        },
+        //更新鉴权token
+        renewToken() {
+                zg.renewToken(this.data.token);
+        },
+        setToken() {
+                const res = getTokenAndUserID();
+                if (!res) {
+                        console.error("userID and Token haven't been set.")
+                        return;
+                }
+                this.setData({
+                        token: res.token,
+                        userID: res.userID
+                });
+        }
 });

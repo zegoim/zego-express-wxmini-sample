@@ -55,15 +55,7 @@ Page({
                 if (this.data.connectType !== 1) {
                         try {
                                 /** 获取token, userID */
-                                const res = getTokenAndUserID();
-                                if (!res) {
-                                  console.error("userID and Token haven't been set.")
-                                  return;
-                                }
-                                this.setData({
-                                    token: res.token,
-                                    userID: res.userID
-                                });
+                                this.setToken()
                                 let isLogin = await zg.loginRoom(this.data.roomID, this.data.token, {
                                         userID: this.data.userID,
                                         userName: 'nick' + this.data.userID
@@ -274,6 +266,7 @@ Page({
                 // 刷新全局变量
                 zegoAppID = getApp().globalData.zegoAppID;
                 server = getApp().globalData.server;
+                this.setToken()
         },
         onUnload() {
                 this.logout();
@@ -306,4 +299,22 @@ Page({
                         }
                 })
         },
+        changeToken() {
+                this.setData({ token: e.detail.value });
+        },
+        //更新鉴权token
+        renewToken() {
+                zg.renewToken(this.data.token);
+        },
+        setToken() {
+                const res = getTokenAndUserID();
+                if (!res) {
+                        console.error("userID and Token haven't been set.")
+                        return;
+                }
+                this.setData({
+                        token: res.token,
+                        userID: res.userID
+                });
+        }
 });

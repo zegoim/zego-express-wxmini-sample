@@ -20,6 +20,8 @@
 	 bindmetadatachange="binddatachange"
 	 bindstatechange="onPlayStateChange"
 	 bindnetstatus="onPlayNetStateChange"
-	/>
+	>
+	<button class="exit" wx:if="{{showExitFullScreen}}" bindtap="exitFullScreen">退出全屏</button>
+	</live-player>
 </view>
 

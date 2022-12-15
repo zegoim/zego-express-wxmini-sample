@@ -41,7 +41,7 @@ Page({
                 handupStop: false,
                 mirror: true,
                 num: 0,
-                livePlaying: []
+                livePlaying: [],
         },
         bindKeyInput(e) {
                 this.setData({
@@ -209,12 +209,11 @@ Page({
                         this.setData({
                                 connectType: 1
                         });
-                        console.log('pushStream: ', this.data.pushStreamID, this.data.livePusherUrl, this.data.role);
+                        console.warn('pushStream: ', this.data.pushStreamID, this.data.livePusherUrl, this.data.role);
                         if (this.data.role == 1) {
                                 const {
                                         url
                                 } = await zg.startPublishingStream(this.data.pushStreamID);
-                                console.log('url', this.data.livePusherUrl, url);
                                 if (this.data.livePusherUrl !== url) {
                                         this.setData({
                                                 livePusherUrl: url,
@@ -256,9 +255,9 @@ Page({
                 console.error(zg);
         },
         bindaudiovolumenotify(e) {
-                console.log('===========')
-                console.error(e)
-                console.log(new Date())
+                // console.log('===========')
+                // console.error(e)
+                // console.log(new Date())
         },
         onNetworkStatus() {
 

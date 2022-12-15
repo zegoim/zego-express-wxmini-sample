@@ -1,1 +1,8 @@
 /* components/zego-player/zego-player.wxss */
+.exit{
+  position:fixed;
+  bottom:20rpx;
+  right:0;
+  width: 200rpx;
+  height: 80rpx;
+}
