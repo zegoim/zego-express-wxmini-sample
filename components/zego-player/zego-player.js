@@ -63,6 +63,11 @@ Component({
       zgInstance.updatePlayerNetStatus(e.currentTarget.id, e)
     },
 
+    // live-player 音量监听，
+    bindaudiovolumenotify(e) {
+      zgInstance.updateAudioVolumeNotify(this.data.playerId, e)
+    },
+
     /**
      * 停止拉流
      */
