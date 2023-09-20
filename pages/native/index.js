@@ -1,7 +1,7 @@
 
 import { wxp } from '../../app';
 import { getTokenAndUserID } from '../../utils/server';
-import { initSDK, authCheck, startPush } from '../../utils/common';
+import { initSDK, authCheck, startPush, republish } from '../../utils/common';
 
 let { zegoAppID, server } = getApp ().globalData;
 let zg;
@@ -27,7 +27,7 @@ Page({
                         isWhiteness: 6,       // 美白程度，取值范围 [0,9]
                         muted: false,         // 推流是否静音
                         showLog: false,       // 是否显示 log
-                        frontCamera: true,    // 前后置摄像头，false 表示后置
+                        frontCamera: false,    // 前后置摄像头，false 表示后置
                         enableCamera: true,   // 是否开启摄像头
                         isMirror: false,      // 画面是否镜像
                         orientation: 'vertical',
@@ -36,6 +36,7 @@ Page({
                 playConfig: {
                         fullScreen: false
                 },
+                isRelogin: false,
         },
         // 输入的房间 ID
         bindKeyInput(e) {
@@ -67,6 +68,7 @@ Page({
                                 let isLogin = await zg.loginRoom (this.data.roomID, this.data.token, {userID: this.data.userID, userName: 'nick' + this.data.userID}, { userUpdate: true });
                                 isLogin ? console.log('login success') : console.error('login fail');
                                 this.setData({
+                                        isRelogin: true,
                                         connectType: 1
                                 });
                         } catch (error) {
@@ -209,21 +211,11 @@ Page({
                         let isLogin = await zg.loginRoom (this.data.roomID, this.data.token, {userID: this.data.userID, userName: 'nick' + this.data.userID});
                         isLogin ? console.log('login success') : console.error('login fail');
                         this.setData({
-                                connectType: 1
+                                connectType: 1,
+                                isRelogin: true
                         });
                         console.log('pushStream: ', this.data.pushStreamID, this.data.livePusherUrl);
-                        if (this.data.role == 1) {
-                                const { url } = await zg.startPublishingStream(this.data.pushStreamID);
-                                console.log('url', this.data.livePusherUrl, url);
-                                if (this.data.livePusherUrl !== url) {
-                                        this.setData({
-                                                livePusherUrl: url,
-                                        }, () => {
-                                               // this.data.livePusher.stop();
-                                                this.data.livePusher.start();
-                                        });
-                                }
-                        }
+                        republish(this)
                 } catch(error) {
                         console.error('error: ', error);
                 }

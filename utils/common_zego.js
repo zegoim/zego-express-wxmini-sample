@@ -37,7 +37,6 @@ export const initSDK = (context, pushAtr, playAtr) => {
           }
           // 添加到组件列表中
           context.data.zegoPlayerList.push(zegoPlayerAttr)
-          console.warn(1111111,context.data.zegoPlayerList.length)
           // 更新，并渲染组件列表
           context.setData({
             zegoPlayerList: context.data.zegoPlayerList
@@ -90,7 +89,13 @@ export const initSDK = (context, pushAtr, playAtr) => {
     console.warn("roomStateUpdate", roomID, state, errorCode, extendedData)
     if (state === "DISCONNECTED") {
       context.setData({
-        connectType: 0
+        connectType: 0,
+        zegoPlayerList: []
+      })
+    } else if (state === "CONNECTED") {
+      console.log("房间重连完成，进行恢复推拉流")
+      context.setData({
+        connectType: 1
       })
     }
   })
@@ -120,6 +125,9 @@ export const initSDK = (context, pushAtr, playAtr) => {
     zegoPusher.setData({
       state
     })
+    if(state === "PUBLISHING" && context.data.isPlayBGM) {
+      context.playBGM();
+    }
   })
   zg.on("playerStateUpdate", (result) => {
     const {

@@ -2,7 +2,7 @@ import {
         initSDK,
         authCheck,
         startPush,
-
+        republish
 } from '../../utils/common';
 import {
         wxp
@@ -17,11 +17,11 @@ let zg;
 Page({
         data: {
                 roomID: '127', // 房间ID
-                token: '', // 服务端校验token
+                token: '04AAAAAGTOx4cAEHhuNjNwejBvdTIzcGcyM3AA0H8dd+5nXt713RYh5YcKnXeMUN4iu9Gd9Bzjjfj9grj53MKY3Kz9Sy5zzzhgnAljXrOnowKln9L0BONnyuxVXk54V23SJtK/rWHwm/fL5IDtA5hn09424tNHhhWP6E9tfVjSa0GkzZvZIhqwdzoP9pcs+vWUMFRuZi8vZFY6zFjv8tr+9Jp0iXmvYSq23R/AkoIJCkR/fwKFnonty057ccimLwHH9RwalTFo+6pnhNvxaHnXNJfka5z/zbqz9EFRRXMrMfFMbqw83MsdvG2/c7Y=', // 服务端校验token
                 pushStreamID: 'xcx-streamID-' + new Date().getTime(), // 推流ID
                 livePusherUrl: '', // 推流地址
                 livePusher: null, // live-pusher 的 Context，内部只有一个对象
-                userID: 'choui', // 用户ID,
+                userID: 'sample1690883706342', // 用户ID,
                 livePlayerList: [],
                 connectType: -1, // -1为初始状态，1为连接，0断开连接
                 canShow: -1,
@@ -30,7 +30,8 @@ Page({
                 handupStop: false,
                 mirror: true,
                 num: 0,
-                livePlaying: []
+                livePlaying: [],
+                isRelogin: false
         },
         bindKeyInput(e) {
                 if (e.target.dataset && e.target.dataset.role == "roomID") {
@@ -90,8 +91,9 @@ Page({
                                 isLogin ? console.log('login success') : console.error('login fail');
                                 
                                 this.setData({
-                                        connectType: 1
-                                });
+                                        connectType: 1,
+                                        isRelogin: true,
+                                })
                         } catch (error) {
                                 console.error('error: ', error);
                                 return;
@@ -185,30 +187,16 @@ Page({
         async reLogin() {
                 try {
                         await zg.logoutRoom(); 
-                        console.error("登录房间roomid22" + this.data.roomID)
                         let isLogin = await zg.loginRoom(this.data.roomID, this.data.token, {
                                 userID: this.data.userID,
                                 userName: 'nick' + this.data.userID
                         });
                         isLogin ? console.log('login success') : console.error('login fail');
                         this.setData({
-                                connectType: 1
+                                connectType: 1,
+                                isRelogin: true
                         });
-                        console.log('pushStream: ', this.data.pushStreamID, this.data.livePusherUrl, this.data.role);
-                        if (this.data.role == 1) {
-                                const {
-                                        url
-                                } = await zg.startPublishingStream(this.data.pushStreamID);
-                                console.log('url', this.data.livePusherUrl, url);
-                                if (this.data.livePusherUrl !== url) {
-                                        this.setData({
-                                                livePusherUrl: url,
-                                        }, () => {
-                                                // this.data.livePusher.stop();
-                                                this.data.livePusher.start();
-                                        });
-                                }
-                        }
+                        republish(this)
                 } catch (error) {
                         console.error('error: ', error);
                 }

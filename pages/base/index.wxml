@@ -1,6 +1,6 @@
 <view wx:if="{{canShow== 1}}" class="">
   <view class="containerBase">
-    <live-pusher class="testpusher" wx:if="{{livePusherUrl}}" url="{{livePusherUrl}}" aspect="3:4" bindstatechange="onPushStateChange" autopush mode="SD" min-bitrate="800" max-bitrate="1500" 
+    <live-pusher class="testpusher" wx:if="{{livePusherUrl}}" url="{{livePusherUrl}}" aspect="3:4" bindstatechange="onPushStateChange" autopush mode="FHD" min-bitrate="800" max-bitrate="1500" 
     bindaudiovolumenotify="bindaudiovolumenotify"  bindnetstatus="onPushNetStateChange" waiting-image="https://storage.zego.im/downloads/pause_publish.png"   ></live-pusher>
       <live-player  wx:for="{{livePlayerList}}" wx:key="streamID" id="{{item.streamID}}" src="{{item.url}}" mode="RTC" autoplay enable-metadata="true" bindmetadatachange="binddatachange"  bindstatechange="onPlayStateChange" bindnetstatus="onPlayNetStateChange"></live-player>
     <!-- <live-player  id="{{livePlaying.streamID}}"  src="{{livePlaying.url}}" mode="RTC" autoplay enable-metadata="true" bindmetadatachange="binddatachange"  bindstatechange="onPlayStateChange" bindnetstatus="onPlayNetStateChange"></live-player> -->

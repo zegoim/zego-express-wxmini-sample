@@ -47,6 +47,7 @@ Page({
                 volume: 10,
                 showExitFullScreen: false,
                 snapshotUrl: '',
+                isPlayBGM: false,
                 wxObject: {
                         success(data) {
                                 console.warn('success: ', data)
@@ -135,7 +136,8 @@ Page({
                         })
 
                         this.setData({
-                                zegoPlayerList: []
+                                zegoPlayerList: [],
+                                isPlayBGM: false
                         })
                         /** 登出房间 */
                         if (zg && this.data.connectType === 1) await zg.logoutRoom();
@@ -160,7 +162,6 @@ Page({
 
         publishStream() {
                 this.startPreview()
-                debugger;
                 zg.getPusherInstance().start(this.data.pushStreamID);
                 const zegoPusher = this.selectComponent("#zegoPusher")
                 zegoPusher.setZgInstance(zg)
@@ -169,6 +170,9 @@ Page({
         stopPushStream() {
                 this.stopPreview()
                 zg.getPusherInstance().stop();
+                this.setData({
+                        isPlayBGM: false
+                })
 
         },
         //停止拉流
@@ -227,6 +231,7 @@ Page({
                 // 刷新全局变量
                 zegoAppID = getApp().globalData.zegoAppID;
                 server = getApp().globalData.server;
+                console.error(this.data.pusher)
         },
         onHide() {
                 console.warn("onHide")
@@ -252,6 +257,12 @@ Page({
                 if (sys.platform === 'ios') {
                         wx.onNetworkStatusChange(res => {
                                 console.warn("网络变化", res.isConnected, res.networkType, this.data.connectType, zg, new Date())
+                                if (res.isConnected && this.data.isPlayBGM) {
+                                        // const timer = setTimeout(()=>{
+                                        //         clearTimeout(timer)
+                                        //         zg.getPusherInstance() && this.playBGM();
+                                        // },200)
+                                }
                                 if (res.isConnected && this.data.connectType === 1 && zg) {
                                         console.warn('data', this.data);
                                         console.warn('roomID', this.data.roomID);
@@ -336,7 +347,8 @@ Page({
                 zg.getPusherInstance().stopPreview(this.data.wxObject)
         },
         pausePush() {
-                zg.getPusherInstance().pause(this.data.wxObject)
+                zg.getPusherInstance().context.pause(this.data.wxObject)
+
         },
         resumePush() {
                 zg.getPusherInstance().resume(this.data.wxObject)
@@ -370,18 +382,30 @@ Page({
                 })
         },
         playBGM() {
+                this.setData({
+                        isPlayBGM: true
+                })
                 zg.getPusherInstance().playBGM({
                         url: "https://zego-public.oss-cn-shanghai.aliyuncs.com/sdk-doc/assets/bike.mp3",
                         ...this.data.wxObject
                 })
         },
         pauseBGM() {
+                this.setData({
+                        isPlayBGM: false
+                })
                 zg.getPusherInstance().pauseBGM(this.data.wxObject)
         },
         resumeBGM() {
+                this.setData({
+                        isPlayBGM: true
+                })
                 zg.getPusherInstance().resumeBGM(this.data.wxObject)
         },
         stopBGM() {
+                this.setData({
+                        isPlayBGM: false
+                })
                 zg.getPusherInstance().stopBGM(this.data.wxObject)
         },
         setBGMVolume() {

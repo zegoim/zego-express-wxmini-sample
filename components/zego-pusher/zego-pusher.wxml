@@ -3,7 +3,7 @@
 	<live-pusher
 	 wx:if="{{pusher.url}}"
 	 url="{{pusher.url}}"
-	 mode="{{pusher.mode}}"
+	 mode="{{pusher.mode || 'SD'}}"
 	 autopush="{{pusher.autopush}}"
 	 enable-camera="{{pusher.enableCamera}}"
 	 enable-mic="{{pusher.enableMic}}"

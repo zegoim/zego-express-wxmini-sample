@@ -2,7 +2,7 @@
 import { wxp } from '../../app';
 import { getTokenAndUserID } from '../../utils/server';
 import { format } from '../../utils/util';
-import { initSDK, authCheck, startPush } from '../../utils/common';
+import { initSDK, authCheck, startPush, republish } from '../../utils/common';
 
 let { zegoAppID, server } = getApp().globalData;
 let zg;
@@ -183,6 +183,7 @@ Page({
                                 isLogin ? console.log('login success') : console.error('login fail');
         
                                 this.setData({
+                                        isRelogin: true,
                                         connectType: 1
                                 });
                         } catch (error) {
@@ -253,21 +254,11 @@ Page({
                         isLogin ? console.log('login success') : console.error('login fail');
                         this.setData({
                                 connectType: 1,
-                                roomUserList:[]
+                                roomUserList:[],
+                                isRelogin: true,
                         });
                         console.log('pushStream: ', this.data.pushStreamID, this.data.livePusherUrl);
-                        if (this.data.role == 1) {
-                                const { url } = await zg.startPublishingStream(this.data.pushStreamID);
-                                console.log('url', this.data.livePusherUrl, url);
-                                if (this.data.livePusherUrl !== url) {
-                                        this.setData({
-                                                livePusherUrl: url,
-                                        }, () => {
-                                                //this.data.livePusher.stop();
-                                                this.data.livePusher.start();
-                                        });
-                                }
-                        }
+                        republish(this)
                 } catch (error) {
                         console.error('error: ', error);
                 }

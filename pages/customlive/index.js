@@ -14,6 +14,7 @@ Page({
                 playUrl: '',
                 playContext: null,
                 canShow: -1,
+                playerId: "",
                 roomUserList: []
         },
         onShareAppMessage() {
@@ -57,6 +58,7 @@ Page({
                 this.setData({
                         pushStart: !this.data.pushStart
                 });
+                console.error(this.data.pushStart)
                 if (this.data.pushStart) {
                         this.setData({
                                 pushUrl: this.data.streamUrl,
@@ -65,6 +67,7 @@ Page({
                                 this.data.pushContext.start();
                         });
                 } else {
+                        console.error(this.data.pushContext)
                         this.data.pushContext.stop();
                         this.setData({
                                 pushUrl: ''
@@ -78,9 +81,11 @@ Page({
                         playStart: !this.data.playStart
                 });
                 if (this.data.playStart) {
+                        const id = "player-"+Date.now();
                         this.setData({
                                 playUrl: this.data.streamUrl,
-                                playContext: wx.createLivePlayerContext("live-player")
+                                playerId: id,
+                                playContext: wx.createLivePlayerContext(id)
                         }, () => {
                                 this.data.playContext.play();
                         });

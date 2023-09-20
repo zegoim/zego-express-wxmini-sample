@@ -4,7 +4,8 @@ import {
 import {
         initSDK,
         authCheck,
-        startPush
+        startPush,
+        republish
 } from '../../utils/common';
 import {
         wxp
@@ -29,7 +30,8 @@ Page({
                 roomUserList: [],
                 handupStop: false,
                 bgmStart: false,
-                bgmPaused: false
+                bgmPaused: false,
+                isRelogin: false
         },
         bindKeyInput(e) {
                 this.setData({
@@ -63,7 +65,8 @@ Page({
                                 });
                                 isLogin ? console.log('login success') : console.error('login fail');
                                 this.setData({
-                                        connectType: 1
+                                        connectType: 1,
+                                        isRelogin: true,
                                 });
                         } catch (error) {
                                 console.error('error: ', error);
@@ -200,23 +203,11 @@ Page({
                         let isLogin = await zg.loginRoom (this.data.roomID, this.data.token, {userID: this.data.userID, userName: 'nick' + this.data.userID}, { userUpdate: true });
                         isLogin ? console.log('login success') : console.error('login fail');
                         this.setData({
-                                connectType: 1
+                                connectType: 1,
+                                isRelogin: true,
                         });
                         console.log('pushStream: ', this.data.pushStreamID, this.data.livePusherUrl);
-                        if (this.data.role == 1) {
-                                const {
-                                        url
-                                } = await zg.startPublishingStream(this.data.pushStreamID);
-                                console.log('url', this.data.livePusherUrl, url);
-                                if (this.data.role == 1) {
-                                        this.setData({
-                                                livePusherUrl: url,
-                                        }, () => {
-                                                //this.data.livePusher.stop();
-                                                this.data.livePusher.start();
-                                        });
-                                }
-                        }
+                        republish(this)
                 } catch (error) {
                         console.error('error: ', error);
                 }
@@ -253,5 +244,5 @@ Page({
                                 this.reLogin();
                         }
                 })
-        },
+        }
 });

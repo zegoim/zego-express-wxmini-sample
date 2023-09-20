@@ -13,6 +13,16 @@
       <text class="tip"></text>
     </view>
     <view class='input-container'>
+      <text>拉流cdn地址</text>
+      <input value="{{pullCdnURL}}" bindinput="bindPullCdnURLInput" placeholder="请输入CDN地址" placeholder-style='color: #b3b3b3; font-size: 14px;' class="room-input" />
+      <text class="tip"></text>
+    </view>
+    <view class='input-container'>
+      <text>拉流id，拉流类型：{{playSource}}</text>
+      <input value="{{pullIDInput}}" bindinput="bindPullIDInput" placeholder="请输入拉流ID" placeholder-style='color: #b3b3b3; font-size: 14px;' class="room-input" />
+      <text class="tip"></text>
+    </view>
+    <view class='input-container'>
       <input value="{{token}}"  bindinput="changeToken" maxlength="-1" data-role="token" placeholder="请输入 token"
         placeholder-style='color: #b3b3b3; font-size: 14px;' class="room-input" />
       <text class="tip"></text>
@@ -32,6 +42,12 @@
       </button>
       <button bindtap="publishCdn" data-role="0"  hover-class="none" class="openRoom">
         推流cdn
+      </button>
+      <button bindtap="pullByCdnUrl" class="openRoom">
+        {{isPullByCdnUrl?'停止cdn地址拉流':'cdn地址拉流'}}
+      </button>
+      <button bindtap="pullByID" class="openRoom">
+        {{isPullByID?'停止流id拉流':'流id拉流'}}
       </button>
       <button bindtap="openRoom" data-role="2"  hover-class="none" class="openRoom">
         加入房间(拉流CDN)

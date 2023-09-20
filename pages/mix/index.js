@@ -2,12 +2,13 @@ import {
         wxp
 } from '../../app';
 import {
-  getTokenAndUserID
+        getTokenAndUserID
 } from '../../utils/server';
 import {
         initSDK,
         authCheck,
-        startPush
+        startPush,
+        republish
 } from '../../utils/common';
 
 let {
@@ -35,7 +36,9 @@ Page({
                 mixStreamStart: false,
                 mixStreamID: 'xcx-mixS-' + new Date().getTime(),
                 mixTaskID: 'xcx-mixT-' + new Date().getTime(),
-                mixPlayerUrls: []
+                mixPlayerUrls: [],
+                isRelogin: false,
+                isMixing: false
         },
         // 输入的房间 ID
         bindKeyInput(e) {
@@ -62,6 +65,7 @@ Page({
                                 });
                                 isLogin ? console.log('login success') : console.error('login fail');
                                 this.setData({
+                                        isRelogin: true,
                                         connectType: 1
                                 });
                         } catch (error) {
@@ -82,73 +86,7 @@ Page({
                         mixStreamStart: !this.data.mixStreamStart
                 })
                 if (this.data.mixStreamStart) {
-                        const inputList = [{
-                                streamID: this.data.pushStreamID,
-                                contentType: 'video',
-                                layout: {
-                                        top: 0,
-                                        left: 0,
-                                        bottom: 480,
-                                        right: 640,
-                                }
-                        }];
-                        if (this.data.livePlayerList.length > 0) {
-                                const playerStream = this.data.livePlayerList[0]
-                                inputList.push({
-                                        streamID: playerStream.streamID,
-                                        contentType: 'video',
-                                        layout: {
-                                                top: 480,
-                                                left: 0,
-                                                bottom: 960,
-                                                right: 640
-                                        }
-                                });
-                        }
-                        this.data.mixStreamID = 'xcx-mixS-' + new Date().getTime();
-                        this.data.mixTaskID = 'xcx-mixT-' + new Date().getTime();
-                        const outputList = [{
-                                target: this.data.mixStreamID,
-                        }]
-                        const outputConfig = {
-                                outputBitrate: 800 * 1000,
-                                outputFPS: 15,
-                                outputWidth: 640,
-                                outputHeight: 960,
-                        }
-                        const mixParam = {
-                                taskID: this.data.mixTaskID,
-                                inputList: inputList,
-                                outputList,
-                                outputConfig
-                        };
-                        console.log('mixParam', mixParam);
-                        try {
-                                const result = await zg.startMixerTask(mixParam)
-                                console.log('mixPlayInfoList: ', result);
-                                const _mixPlayerUrls = []
-                                if (result.errorCode !== 0) {
-                                        console.error('mix fail', result);
-                                }
-                                const {
-                                        streamID,
-                                        url
-                                } = await zg.startPlayingStream(this.data.mixStreamID, {
-                                        isMix: true
-                                })
-                                console.log('>>>[liveroom-room] startPlayingStream, streamID: ', streamID, ' url: ', url);
-                                _mixPlayerUrls.push({
-                                        streamID,
-                                        url
-                                })
-                                this.setData({
-                                        mixStreamID: this.data.mixStreamID,
-                                        mixTaskID: this.data.mixTaskID,
-                                        mixPlayerUrls: _mixPlayerUrls
-                                })
-                        } catch (err) {
-                                console.log('err: ', err);
-                        };
+                        this.startMixing()
                 } else {
                         try {
                                 const {
@@ -160,7 +98,8 @@ Page({
                                                 zg.stopPlayingStream(item.streamID);
                                         })
                                         this.setData({
-                                                mixPlayerUrls: []
+                                                mixPlayerUrls: [],
+                                                isMixing: false
                                         })
                                 }
                         } catch (error) {
@@ -168,6 +107,80 @@ Page({
                         }
 
                 }
+        },
+        async startMixing() {
+                const inputList = [{
+                        streamID: this.data.pushStreamID,
+                        contentType: 'video',
+                        layout: {
+                                top: 0,
+                                left: 0,
+                                bottom: 480,
+                                right: 640,
+                        }
+                }];
+                if (this.data.livePlayerList.length > 0) {
+                        const playerStream = this.data.livePlayerList[0]
+                        inputList.push({
+                                streamID: playerStream.streamID,
+                                contentType: 'video',
+                                layout: {
+                                        top: 480,
+                                        left: 0,
+                                        bottom: 960,
+                                        right: 640
+                                }
+                        });
+                }
+                this.data.mixStreamID = 'xcx-mixS-' + new Date().getTime();
+                this.data.mixTaskID = 'xcx-mixT-' + new Date().getTime();
+                const outputList = [{
+                        target: this.data.mixStreamID,
+                }]
+                const outputConfig = {
+                        outputBitrate: 800 * 1000,
+                        outputFPS: 15,
+                        outputWidth: 640,
+                        outputHeight: 960,
+                }
+                const mixParam = {
+                        taskID: this.data.mixTaskID,
+                        inputList: inputList,
+                        outputList,
+                        outputConfig
+                };
+                console.log('mixParam', mixParam);
+                try {
+                        const result = await zg.startMixerTask(mixParam)
+                        console.log('mixPlayInfoList: ', result);
+                        const _mixPlayerUrls = []
+                        if (result.errorCode !== 0) {
+                                console.error('mix fail', result);
+                        }
+                        const {
+                                streamID,
+                                url
+                        } = await zg.startPlayingStream(this.data.mixStreamID, {
+                                isMix: true
+                        })
+                        console.log('>>>[liveroom-room] startPlayingStream, streamID: ', streamID, ' url: ', url);
+                        _mixPlayerUrls.push({
+                                streamID,
+                                url
+                        })
+
+                        this.setData({
+                                mixStreamID: this.data.mixStreamID,
+                                mixTaskID: this.data.mixTaskID,
+                                mixPlayerUrls: _mixPlayerUrls,
+                                isMixing: true
+                        })
+                } catch (err) {
+                        console.log('err: ', err);
+                        this.setData({
+                                isMixing: false
+                        })
+                };
         },
         async logout() {
                 try {
@@ -191,7 +204,8 @@ Page({
                                         zg.stopPlayingStream(item.streamID);
                                 });
                                 this.setData({
-                                        mixPlayerUrls: []
+                                        mixPlayerUrls: [],
+                                        isMixing: false
                                 });
                         }
                         if (zg && this.data.connectType === 1) await zg.logoutRoom(this.data.roomID);
@@ -236,22 +250,13 @@ Page({
                         });
                         isLogin ? console.log('login success') : console.error('login fail');
                         this.setData({
-                                connectType: 1
+                                connectType: 1,
+                                isRelogin: true
                         });
                         console.log('pushStream: ', this.data.pushStreamID, this.data.livePusherUrl);
-                        if (this.data.role == 1) {
-                                const {
-                                        url
-                                } = await zg.startPublishingStream(this.data.pushStreamID);
-                                console.log('url', this.data.livePusherUrl, url);
-                                if (this.data.livePusherUrl !== url) {
-                                        this.setData({
-                                                livePusherUrl: url,
-                                        }, () => {
-                                                //this.data.livePusher.stop();
-                                                this.data.livePusher.start();
-                                        });
-                                }
+                        await republish(this)
+                        if (this.data.isMixing) {
+                                this.startMixing();
                         }
                 } catch (error) {
                         console.error('error: ', error);
@@ -260,9 +265,9 @@ Page({
         onShow() {
                 console.log('server: ', server);
                 authCheck(this);
-                if (zg && this.data.roomID) {
-                        this.reLogin();
-                }
+                // if (zg && this.data.roomID) {
+                //         this.reLogin();
+                // }
                 // 刷新全局变量
                 zegoAppID = getApp().globalData.zegoAppID;
                 server = getApp().globalData.server;
@@ -273,7 +278,7 @@ Page({
                 wx.offNetworkStatusChange()
         },
         onHide() {
-                this.logout();
+                // this.logout();
         },
         onLoad() {
                 // 监听网络状态

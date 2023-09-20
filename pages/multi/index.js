@@ -91,6 +91,7 @@ Page({
                                 });
                                 isLogin ? console.log('login success') : console.error('login fail');
                                 this.setData({
+                                        isRelogin: true,
                                         connectType: 1
                                 });
                         } catch (error) {
@@ -280,6 +281,7 @@ Page({
                         });
                         isLogin ? console.log('login success') : console.error('login fail');
                         this.setData({
+                                isRelogin: true,
                                 connectType: 1
                         });
                         console.log('pushStream: ', this.data.pushStreamID, this.data.livePusherUrl, this.data.role);
