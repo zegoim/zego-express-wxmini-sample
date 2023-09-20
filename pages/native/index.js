@@ -31,7 +31,6 @@ Page({
                         enableCamera: true,   // 是否开启摄像头
                         isMirror: false,      // 画面是否镜像
                         orientation: 'vertical',
-                        audioReverbType: 0
                 },
                 playConfig: {
                         fullScreen: false
