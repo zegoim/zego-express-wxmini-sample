@@ -1,7 +1,7 @@
 <view wx:if="{{canShow== 1}}">
   <view class="live-wrapper">
     <view class="containerBase">
-      <live-pusher wx:if="{{livePusherUrl}}" url="{{livePusherUrl}}" autopush mode="RTC" aspect="{{pushConfig.aspect}}"
+      <live-pusher wx:if="{{livePusherUrl}}" url="{{livePusherUrl}}" autopush mode="{{pushConfig.mode}}" aspect="{{pushConfig.aspect}}"
       device-position="{{pushConfig.frontCamera ? 'front' : 'back' }}"
       min-bitrate="{{pushConfig.minBitrate}}" max-bitrate="{{pushConfig.maxBitrate}}" enable-camera="{{pushConfig.enableCamera}}" muted="{{pushConfig.muted}}" beauty="{{pushConfig.isBeauty}}" whiteness="{{pushConfig.isWhiteness}}" mirror="{{pushConfig.isMirror}}" orientation="{{pushConfig.orientation}}"  debug="{{pushConfig.showLog}}" bindstatechange="onPushStateChange" bindnetstatus="onPushNetStateChange" binderror="onPushError" bindaudiovolumenotify="onPushAudiovolumenotify" waiting-image="https://storage.zego.im/downloads/pause_publish.png"></live-pusher>
       <live-player wx:for="{{livePlayerList}}" wx:key="streamID" src="{{item.url}}" id="{{item.streamID}}" mode="RTC" autoplay bindstatechange="onPlayStateChange" bindnetstatus="onPlayNetStateChange" binderror="onPlayError" bindaudiovolumenotify="onPlayAudiovolumenotify" >
