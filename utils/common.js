@@ -25,6 +25,8 @@ export const initSDK = (context) => {
   // console.log(this);
   zg.on("roomStreamUpdate", (roomID, updateType, streamList) => {
     console.warn("roomStreamUpdate", roomID, updateType, streamList);
+    // console.warn("stream not auto play")
+    // return
     if (updateType === "ADD") {
       context.setData({
         streamList: streamList
@@ -96,8 +98,8 @@ export const initSDK = (context) => {
           playerContext.play();
         }
       }
-      if (!context.data.isRelogin || context.data.needRepublish) {
-        if ( context.data.livePusher && context.data.livePusherUrl && context.data.role == 1) {
+      if (!context.data.isRelogin || context.data.needRepublish || context.data.publishNeedReDispatch) {
+        if (context.data.livePusher && context.data.livePusherUrl && (context.data.role == 1 || context.data.publishNeedReDispatch)) {
           !context.data.needRepublish && context.data.pushStreamID && zg.stopPublishingStream(context.data.pushStreamID);
           republish(context)
         }
@@ -227,9 +229,33 @@ export const startPush = async (context, publishOption) => {
     );
   } catch (error) {
     console.error("error", error);
+    // const isOffline = await isNetworkOffline()
+    // console.error("roomState", context.data.connectType)
+    if (error.code && [1102017, 1000002].includes(error.code) && context.data.connectType === 1) {
+      // console.error("startPush publishNeedReDispatch")
+      context.setData({
+        publishNeedReDispatch: true
+      })
+    }
   }
 };
 
+export const startPlay = async (context, playStreamID) => {
+  try {
+    let {
+      streamID,
+      url
+    } = await zg.startPlayingStream(
+      playStreamID, {
+        sourceType: "BGP"
+      }
+    );
+    console.log("pullStream streamID", streamID, url);
+    setPlayUrl(streamID, url, context);
+  } catch (error) {
+    console.error("pullStream error", error);
+  }
+}
 export const setPlayUrl = (streamID, url, context) => {
   if (!url) {
     console.log(">>>[liveroom-room] setPlayUrl, url is null");
@@ -357,13 +383,15 @@ export const authCheck = async (context) => {
 };
 
 export async function republish(context) {
-  if(context.data.role != 1) return
+  console.error("republish", context.data.publishNeedReDispatch)
+  if(context.data.role != 1 && !context.data.publishNeedReDispatch) return
   const {
     url
   } = await zg.startPublishingStream(context.data.pushStreamID);
   console.log('url', context.data.livePusherUrl, url);
   context.setData({
-    livePusherUrl: ""
+    livePusherUrl: "",
+    publishNeedReDispatch: false
   }, () => {
     context.data.livePusher && context.data.livePusher.stop();
     context.setData({

@@ -5,7 +5,9 @@ import {
   initSDK,
   authCheck,
   startPush,
-  republish
+  republish,
+  setPlayUrl,
+  startPlay
 } from '../../utils/common';
 import {
   wxp
@@ -47,7 +49,9 @@ Page({
     livePlaying: [],
     isRelogin: false,
     publishTimer: null,
-    needRepublish: false
+    needRepublish: false,
+    publishNeedReDispatch: false,
+    pullIDInput: "",
   },
   bindKeyInput(e) {
     this.setData({
@@ -187,6 +191,23 @@ Page({
     this.setData({
       livePlayerList: []
     });
+  },
+  bindPullIDInput(e) {
+    this.setData({
+            pullIDInput: e.detail.value
+    });
+},
+  async pullStream() {  
+    if (this.data.pullIDInput) {
+      startPlay(this, this.data.pullIDInput )
+    } else {
+        wxp.showModal({
+          title: '提示',
+          content: '请输入拉流ID',
+          showCancel: false,
+        });
+    }
+    
   },
   //  //切换拉流
   async onReady() {

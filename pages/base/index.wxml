@@ -10,6 +10,10 @@
       <input value="{{roomID}}" bindinput="bindKeyInput" placeholder="请输入房间 ID" placeholder-style='color: #b3b3b3; font-size: 14px;' class="room-input" />
       <text class="tip"></text>
     </view>
+    <view class='input-container'>
+      <input value="{{pullIDInput}}" bindinput="bindPullIDInput" placeholder="请输入拉流ID" placeholder-style='color: #b3b3b3; font-size: 14px;' class="room-input" />
+      <text class="tip"></text>
+    </view>
     <view class="button-container">
       <button bindtap="openRoom" data-role="1" hover-class="none" class="openRoom">
         加入房间(推流)
@@ -24,12 +28,13 @@
        <button bindtap="stopPushStream" data-role="1" hover-class="none" class="openRoom">
         停止推流
       </button>
+      <button bindtap="pullStream" data-role="0"  hover-class="none" class="openRoom">
+        拉流（流ID）
+      </button> 
       <button bindtap="stopPullStream" data-role="0"  hover-class="none" class="openRoom">
         停止拉流
       </button>
-      <button bindtap="switchPullStream" data-role="0"  hover-class="none" class="openRoom">
-        切换拉流
-      </button> 
+      
       
       <button bindtap="logout" hover-class="none">退出房间</button>
     </view>
