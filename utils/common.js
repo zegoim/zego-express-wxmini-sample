@@ -165,10 +165,10 @@ export const initSDK = (context) => {
     }
   });
   zg.on("publishQualityUpdate", (streamID, publishStats) => {
-    console.log("publishQualityUpdate", streamID, publishStats);
+    console.log("publishQualityUpdate", streamID, JSON.stringify(publishStats));
   });
   zg.on("playQualityUpdate", (streamID, playStats) => {
-    console.log("playQualityUpdate", streamID, playStats);
+    console.log("playQualityUpdate", streamID, JSON.stringify(playStats));
   });
   zg.on("roomOnlineUserCountUpdate", (roomID, userCount) => {
     console.warn("roomOnlineUserCountUpdate", roomID, userCount)
@@ -178,6 +178,9 @@ export const initSDK = (context) => {
   });
   zg.on("tokenWillExpire", (roomID) => {
     console.error("tokenWillExpire", roomID);
+  });
+  zg.on("mixerRelayCDNStateUpdate", (taskID, infoList) => {
+    console.warn("mixerRelayCDNStateUpdate", taskID, JSON.stringify(infoList));
   });
 
   return zg;

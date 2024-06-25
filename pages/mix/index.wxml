@@ -1,7 +1,7 @@
 <view wx:if="{{canShow== 1}}">
   <view class="live-wrapper">
     <view class="containerBase">
-      <live-pusher wx:if="{{livePusherUrl}}" url="{{livePusherUrl}}" autopush aspect="3:4" bindstatechange="onPushStateChange" bindnetstatus="onPushNetStateChange" waiting-image="https://storage.zego.im/downloads/pause_publish.png"></live-pusher>
+      <live-pusher wx:if="{{livePusherUrl}}" url="{{livePusherUrl}}" autopush fps="{{fps}}" bindstatechange="onPushStateChange" bindnetstatus="onPushNetStateChange" waiting-image="https://storage.zego.im/downloads/pause_publish.png" enable-camera="{{enableCamera}}"></live-pusher>
       <live-player wx:for="{{livePlayerList}}" wx:key="streamID" id="{{item.streamID}}" src="{{item.url}}" mode="RTC" autoplay bindstatechange="onPlayStateChange" bindnetstatus="onPlayNetStateChange"></live-player>    </view>
     <view class="containerBase">
       <live-player wx:for="{{mixPlayerUrls}}" wx:key="streamID" id="{{item.streamID}}" src="{{item.url}}" mode="RTC" autoplay bindstatechange="onPlayStateChange" bindnetstatus="onPlayNetStateChange"></live-player>
@@ -9,14 +9,35 @@
   </view>
   <view class="index-container">
     <view class='input-container'>
+      <input value="{{pushStreamID}}" bindinput="bindPushStreamInput" placeholder="请输入推流 ID" placeholder-style='color: #b3b3b3; font-size: 14px;' class="room-input" />
       <input value="{{roomID}}" bindinput="bindKeyInput" placeholder="请输入房间 ID" placeholder-style='color: #b3b3b3; font-size: 14px;' class="room-input" />
-      <text class="tip"></text>
+    </view>
+    <!-- <view class='input-container'> -->
+      <!-- <text class="tip"></text>
+    </view> -->
+    <view class='input-container'>
+      <input value="{{bgColor}}" bindinput="bindBgColorInput" placeholder="请输入混流背景颜色" placeholder-style='color: #b3b3b3; font-size: 14px;' class="room-input" />
+      <!-- <text class="tip"></text>
+    </view> -->
+    <!-- <view class='input-container'> -->
+      <input value="{{bgImg}}" bindinput="bindBgImgInput" placeholder="请输入混流背景图片" placeholder-style='color: #b3b3b3; font-size: 14px;' class="room-input" />
+      <!-- <text class="tip"></text> -->
     </view>
     <view class='input-container'>
+      <!-- <input bindinput="bindWidthInput" placeholder="请输入推流 width" placeholder-style='color: #b3b3b3; font-size: 14px;' class="room-input" />
+      <input bindinput="bindHeightInput" placeholder="请输入推流 height" placeholder-style='color: #b3b3b3; font-size: 14px;' class="room-input" />
+      <input bindinput="bindBitrateInput" placeholder="请输入推流码率" placeholder-style='color: #b3b3b3; font-size: 14px;' class="room-input" /> -->
+      <input bindinput="bindFpsInput" placeholder="请输入推流帧率" placeholder-style='color: #b3b3b3; font-size: 14px;' class="room-input" />
+    </view>
+    <view class='input-container'>
+      <textarea maxlength="-1" value="{{mixContent}}" bindinput="bindMixerInput" placeholder="请输入混流内容" placeholder-style='color: #b3b3b3; font-size: 14px;'></textarea>
+      <text class="tip"></text>
+    </view>
+    <!-- <view class='input-container'>
       <input value="{{token}}"  bindinput="changeToken" maxlength="-1" data-role="token" placeholder="请输入 token"
         placeholder-style='color: #b3b3b3; font-size: 14px;' class="room-input" />
       <text class="tip"></text>
-    </view>
+    </view> -->
     <view class="button-container">
       <button bindtap="openRoom" data-role="1"  hover-class="none" class="util-btn">
         加入房间(推流)
@@ -24,12 +45,23 @@
       <button bindtap="openRoom" data-role="0"  hover-class="none" class="util-btn">
         加入房间(不推流)
       </button>
-      <button bindtap="mixStream"  class="util-btn">
-        {{mixStreamStart?'停止混流':'开始混流'}}
+      <button bindtap="publishStream" data-role="1" hover-class="none" class="util-btn">
+        推流
       </button>
-      <button bindtap="renewToken" data-role="1" hover-class="none" class="openRoom">
+       <button bindtap="stopPushStream" data-role="1" hover-class="none" class="util-btn">
+        停止推流
+      </button>
+      <button bindtap="logout" hover-class="none"  class="util-btn">退出房间</button>
+      <button bindtap="mixStream"  class="util-btn">开始混流</button>
+      <button bindtap="stopMixStream"  class="util-btn">停止混流</button>
+      <button bindtap="autoMixStream"  class="util-btn">开始自动混流</button>
+      <button bindtap="stopAutoMixStream"  class="util-btn">停止自动混流</button>
+      <!-- <button bindtap="toggleCamera"  class="util-btn">
+        {{enableCamera?'关闭':'打开'}}摄像头
+      </button> -->
+      <!-- <button bindtap="renewToken" data-role="1" hover-class="none" class="openRoom">
         更新token
-      </button>
+      </button> -->
       <!-- <button bindtap="logout" class="util-btn" hover-class="none">退出房间</button> -->
     </view>
   </view>
