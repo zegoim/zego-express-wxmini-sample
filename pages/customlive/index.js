@@ -53,15 +53,17 @@ Page({
                         console.error('复制失败：', err);
                 }
         },
-        pushStream() {
-                this.checkUrl(this.data.streamUrl);
+        pushStream() {     
+                if(!this.checkUrl(this.data.streamUrl)) {
+                  return
+                }
                 this.setData({
                         pushStart: !this.data.pushStart
                 });
                 console.error(this.data.pushStart)
                 if (this.data.pushStart) {
                         this.setData({
-                                pushUrl: this.data.streamUrl,
+                                pushUrl: this.data.streamUrl, // 设置错误的url会崩溃， 如'rtmp://'
                                 pushContext: wx.createLivePusherContext()
                         }, () => {
                                 this.data.pushContext.start();
@@ -76,7 +78,9 @@ Page({
                 }
         },
         playStream() {
-                this.checkUrl(this.data.streamUrl);
+                if(!this.checkUrl(this.data.streamUrl)) {
+                  return
+                }
                 this.setData({
                         playStart: !this.data.playStart
                 });
@@ -105,16 +109,18 @@ Page({
                                 icon: 'none',
                                 duration: 2000
                         });
-                        return;
+                        return false;
                 }
-                if (!url.startsWith('rtmp://') && !url.endsWith('.flv')) {
+                const urlRegx = /([\w]*?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/
+                if (!urlRegx.test(url) || (!url.startsWith('rtmp://') && !url.endsWith('.flv')) ) {
                         wxp.showToast({
                                 title: '地址格式不正确',
                                 icon: 'none',
                                 duration: 2000
                         });
-                        return;
+                        return false;
                 }
+                return true
         },
         onPushStateChange(e) {
                 console.warn('onPushStateChange: ', e.detail.code);
