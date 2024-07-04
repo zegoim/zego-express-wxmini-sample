@@ -369,7 +369,7 @@ export async function republish(context) {
     context.setData({
       livePusherUrl: url
     }, () => {
-      // context.data.livePusher.start();
+      context.data.livePusher.start();
     });
   });
 }
