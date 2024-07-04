@@ -251,6 +251,19 @@ Page({
                 wx.onAudioInterruptionBegin(this.audioInterruptBegin)
                 wx.onAudioInterruptionEnd(this.audioInterruptEnd)
         },
+        getPlatform() {
+          const sys = wx.getSystemInfoSync();
+          const arr = sys.system.split(" ")
+          const versionStr = arr[1]
+          let majorVersion
+          if(versionStr?.includes(".")) {
+            majorVersion = parseInt(versionStr.split(".")[0])
+          }
+          return {
+            platform: sys.platform,
+            majorVersion
+          }
+        },
         onNetworkStatus() {
                 const sys = wx.getSystemInfoSync();
                 let i = 0, timer;
@@ -291,7 +304,7 @@ Page({
          * 在房间状态重连时进行调用
          */
         forceRecoverPushAndPlay(rePush = false) {
-                console.warn("forceRecoverPushAndPlay")
+                console.warn("forceRecoverPushAndPlay", rePush)
                 if(this.data.connectType !== 1) {
                         console.warn("未登录房间")
                         return
@@ -308,8 +321,16 @@ Page({
                 console.warn('是否需要恢复推流', zegoPusher, rePush, zegoPusher?.data.state);
                 const promiseList = []
                 if (zegoPusher && (rePush || ["NO_PUBLISH", "PUBLISH_REQUESTING"].includes(zegoPusher.data.state))) {
-                        console.warn(' 重新推流', this.data.pushStreamID);
-                        promiseList.push(zegoPusher.rePush())
+                    console.warn(' 重新推流', this.data.pushStreamID);
+                    promiseList.push(zegoPusher.rePush())
+                } else {
+                    const {platform, majorVersion} = this.getPlatform()
+                    // 兼容 iphone12 iOS 17.3.1 微信8.0.49，使用QQ视频后无法恢复音视频采集进行推流
+                    if(platform === "ios" && majorVersion === 17) {
+                        console.warn('不重新推流，进行暂停和恢复摄像头麦克风采集',platform , majorVersion);
+                        this.pausePush()
+                        this.resumePush()
+                    }
                 }
                 this.data.zegoPlayerList.forEach(item => {
                         // 获取拉流组件，进行重新拉流
@@ -347,8 +368,7 @@ Page({
                 zg.getPusherInstance().stopPreview(this.data.wxObject)
         },
         pausePush() {
-                zg.getPusherInstance().context.pause(this.data.wxObject)
-
+                zg.getPusherInstance().pause(this.data.wxObject)
         },
         resumePush() {
                 zg.getPusherInstance().resume(this.data.wxObject)

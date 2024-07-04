@@ -53,8 +53,11 @@ Component({
        * https://developers.weixin.qq.com/community/develop/doc/00084e597a4670609b7de188756000?highLine=5001
        */
       const {code} = e.detail
+      /**
+      * 5001 系统电话打断或者微信音视频电话打断
+      */
       if(code === 5001) {
-        console.warn("推流被停止 5001")
+        console.warn("推流被停止 " + code)
         this.setData({
           state: "NO_PUBLISH"
         })
@@ -69,7 +72,7 @@ Component({
     },
     // live-pusher 绑定网络状态事件，透传网络状态事件给 SDK
     onPushNetStateChange(e) {
-      // console.warn('onPushNetStateChange', this.data.pusher.id, e.detail.info)
+      console.warn('onPushNetStateChange', this.data.pusher.id, e.detail.info)
       zgInstance.updatePlayerNetStatus(this.data.pusher.id, e)
     },
     // live-pusher 音量监听，
