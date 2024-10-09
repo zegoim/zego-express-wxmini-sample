@@ -471,6 +471,46 @@ Page({
                 zegoAppID = getApp().globalData.zegoAppID;
                 server = getApp().globalData.server;
                 this.setToken()
+                const taskID = 'mixTask-' + new Date().getTime();
+                const mixStreamID = 'mixStream-' + new Date().getTime();
+                this.setData({
+                        mixContent: `
+                                {
+                                        "taskID": "${taskID}" ,
+                                        "inputList": [
+                                                {
+                                                "streamID": "${this.data.pushStreamID}",
+                                                "layout": { 
+                                                        "top": 0, 
+                                                        "left": 0, 
+                                                        "bottom": 200, 
+                                                        "right": 200 
+                                                },
+                                                "imageInfo": {
+                                                        "url": "preset-id://1739272706_live_20230412_3.png",
+                                                },
+                                                "volume": 100,
+                                                "contentType": "VIDEO",
+                                                "isAudioFocus": false
+                                                }
+                                        ],
+                                        "outputList": [
+                                                {
+                                                        "target": "${mixStreamID}",
+                                                        "videoConfig": {
+                                                                "videoCodecID": "H.264"
+                                                        }
+                                                }
+                                        ],
+                                        "outputConfig": {
+                                                "outputBitrate": 300,
+                                                "outputFPS": 15,
+                                                "outputWidth": 400,
+                                                "outputHeight": 400
+                                        }
+                                }
+                        `
+                })
         },
         onUnload() {
                 this.logout();

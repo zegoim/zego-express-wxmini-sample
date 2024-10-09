@@ -4,16 +4,19 @@ export const wxp = {}
 
 App({
   globalData: {
-    
+    zegoAppID: 123, // 填写自己账号下的AppID
+    server: '', // 填写自己账号下的server
+    userID: '', // userID
+    token: '' // 从ZEGO管理控制台生成的token，可以填写到此处
     // zegoAppID: 1739272706,
     // server: 'wss://webliveroom2375819786-api.imzego.com/ws',
     // userID: 'sample1728443764098',
     // token: '04AAAAAGeJy3oAEGRiNmx1YnpzaHBuNXRvc24A0IHnCtK/uxYtqIWmiJRF53qvVNPDSx7XrKiKBZP5PzvPfJzBMOs+h9vywa1JG/yPmfg1FGDTXS+yCyEz9r6hSo/ATSmspFtahWUjxBhKncdPioQ2ZZEtADdiM2+CioZPXpdGgPV2RiXLUwvvaLBPgjU0Msm11faWeh+egZj4AbLsnbVbNHZ2JgRj7hVyyXSFJ81w0bfF+DoPDgp9yaYor+Mp6SWsGhRmpeqfIxTOhL3nt4BKP55YUGqAlcwyi/v4nRzRSGfOw8uvOkHng5E59cY='
 
-    zegoAppID: 2375819786,
-    server: 'wss://webliveroom2375819786-api.imzego.com/ws',
-    userID: 'sample1728443369869',
-    token: '04AAAAAGeJyfUAEGl6NHg1ODJmZ2IyMW9rNmcA0LwGv0SxShGq72BT0Bflf3PF6Px0VKpH+SZTnTohwMsWRjQl8OmikWrKcx/nvgtTIjHHKXe7CX0QSBj7UxnG5IFvtaylZLQGPhTj0iEbF8VJ9EFoXW5lFdnjxJU1B6+4qm5Op/5Scinc4T8WkDMHSUbXRr9jLzD+VlTb/ztPnzX7a/dKTrjb+OXjMNDSfACypgsWtih7pk2BjVem0r7nPletK489bxywRS07SsFqTKOg7dSmi8MqOZ0DHljCqVJX8ysERRV2DXVzhCAMvXpXyPQ='
+    // zegoAppID: 2375819786,
+    // server: 'wss://webliveroom2375819786-api.imzego.com/ws',
+    // userID: 'sample1728454381724',
+    // token: '04AAAAAGeJ9PgAEDBkNXN3cmZjbmJwenI4YXMA0P1i+aZkWUNPHsPstGDMZguuGnPnF8VX+jRuSvDEOHJcNG8FS1m5bLoq6R2A8EWKBTvdfJz0SEVCtYASNIkwgNlbWNI0EmZeF/HaKti8ldni4EJpR2276cI1vp+UT1nGKrQ54pMNLmz4LfhE45X52YimcW7yCzCY0T9kbHoUZOagyBNMWbOXZ+bFHUyX4+AANVOBRpzskZ7dILuPabpplARIMw8g5Ic1rQkzw/QCZOhJIp7NWVO/aiJ8uJ0pBC61COrBn3jNbWGiUF7uekHZj/g='
     // zegoAppID: 803294704, // 填写自己账号下的AppID
     // server: 'wss://webliveroom803294704-api.imzego.com/ws', // 填写自己账号下的server
     // userID: 'sample1727678905598', // userID
