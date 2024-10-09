@@ -17,7 +17,8 @@
     border-top: 1px slategrey solid
   }
   .input-container{
-    text-align: center
+    text-align: center;
+    display: flex;
   }
   .button-container{
     border-top: 1px slategrey solid
@@ -28,7 +29,7 @@
   }
   .util-btn {
     display: inline-block;
-    width: 48vw;
+    /* width: 24vw; */
     margin: 7rpx;
-    font-size:34rpx;
+    font-size:18rpx;
   }

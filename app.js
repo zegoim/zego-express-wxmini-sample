@@ -27,6 +27,10 @@ App({
     // server: 'wss://webliveroom3606078772-api.imzego.com/ws', // 填写自己账号下的server
     // userID: 'sample1728390619092', // userID sample1728389078866
     // token: '04AAAAAGeI++IAEDRzd2llcHc5NG5tYTgxMmEA0NsQfNcmbNv45lAGWdu7Dr0RBW0P0LQuScfPpP9DibO13XpStKbk7KVAeJY73vrBFMEk4N03s+cJuXhJVgnlJ6ulhELF7aAdBzar8Cx6slief/AELHOTjIZ9kiHjR0RxQmse3gtJNHg1x8fIpUnEm1L+SK3YtHUCF4bBflaaE1+klMJvRUg83Ab+IgFtL0L8AdlimqA56BTRFmjans1Y22UWLkkUZidj5PwqgKT/iQ+a0dYwavVUTiR32NJzTHB4vEcbYqBLlbsG4hhPDdxCiKE='
+    // zegoAppID: 245697902, // 填写自己账号下的AppID
+    // server: 'wss://webliveroom245697902-api.zego.im/ws', // 填写自己账号下的server
+    // userID:  '', //'sample1719385603291', // userID
+    // token: '', //'04AAAAAGuiGhQAEGN2cDVuMjcwcTNlaXAwZ3gA0PEoyydl66sp7OI8Jfk3rU/G1/t8HqRzQpwEMuvtMkD2I+v/CWUOBJ/Potb6xF9hgORHCzN1u7V3lEey0oYK23QhjZpEPVoftSe7BEOqDqLZJFxfloIaN44ki0OSiO8DCQgvRVyuQRDUW/3V4aGNOvHezz2Vr1cFPvRccf+Kx2LLGyNq0dBiKDrl+voOoc9Mi67yKDgpXVfaYX6DBQcq4l1AFM9LVz1w5pxjsQYpZZ2Znh6sOXDisuhYSfIbAPspqkj7Oel8rt6qgsVE03O481A=' // 从ZEGO管理控制台生成的token，可以填写到此处
   },
   
   onLaunch() {

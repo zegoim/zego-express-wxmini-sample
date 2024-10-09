@@ -47,7 +47,8 @@ Page({
     livePlaying: [],
     isRelogin: false,
     publishTimer: null,
-    needRepublish: false
+    needRepublish: false,
+    enableCamera: true,
   },
   bindKeyInput(e) {
     this.setData({
@@ -168,6 +169,11 @@ Page({
     zg.updatePlayerState(e.currentTarget.id, e);
   },
 
+  toggleCamera() {
+          this.setData({
+                  enableCamera: !this.data.enableCamera
+          })
+  },
   publishStream() {
     startPush(this);
   },
