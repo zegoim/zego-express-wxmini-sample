@@ -30,7 +30,7 @@
   "license": "ISC",
   "dependencies": {
     "miniprogram-api-promise": "^1.0.4",
-    "zego-express-engine-miniprogram": "^2.11.0"
+    "zego-express-engine-miniprogram": "3.6.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",

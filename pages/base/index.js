@@ -22,7 +22,7 @@ let {
   server
 } = getApp().globalData;
 
-console.error(new ZegoExpressEngine(zegoAppID, server))
+console.log(new ZegoExpressEngine(zegoAppID, server))
 // import {
 //         ZegoExpressEngine
 // } from '../../libs/ZegoExpressMiniProgram';

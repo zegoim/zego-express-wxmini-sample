@@ -235,7 +235,7 @@ export const setPlayUrl = (streamID, url, context) => {
     console.log(">>>[liveroom-room] setPlayUrl, url is null");
     return;
   }
-  console.log("setPlayUrl", streamID, url);
+  console.warn("setPlayUrl 拉流地址", streamID, url);
   for (let i = 0; i < context.data.livePlayerList.length; i++) {
     if (
       context.data.livePlayerList[i]["streamID"] === streamID &&

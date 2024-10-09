@@ -141,8 +141,14 @@ Page({
         updateStreamExtra() {
                 zg.setStreamExtraInfo(this.data.pushStreamID, 'setStreamExtraInfo test, send at ' + new Date().toLocaleString())
         },
-        setRoomExtraInfo() {
-                zg.setRoomExtraInfo(this.data.roomID, '2', 'ReliableMessage test002')
+        async setRoomExtraInfo() {
+                try {
+                        const res = await zg.setRoomExtraInfo(this.data.roomID, '2', this.data.inputMessage || 'ReliableMessage test002')
+                        console.warn('setRoomExtraInfo success ' + res)
+                } catch (error) {
+                        console.warn('setRoomExtraInfo fail ' + JSON.stringify(error))
+                }
+                
         },
         async sendCustomCommand() {
                 console.error(this.data.roomUserList);
