@@ -208,6 +208,7 @@ Page({
                 }
                 let mixParam;
                 try {
+                        console.error("mixContent", this.data.mixContent)
                         mixParam = JSON.parse(this.data.mixContent)
                 } catch (error) {
                         console.warn(error)
@@ -485,9 +486,6 @@ Page({
                                                         "left": 0, 
                                                         "bottom": 200, 
                                                         "right": 200 
-                                                },
-                                                "imageInfo": {
-                                                        "url": "preset-id://1739272706_live_20230412_3.png",
                                                 },
                                                 "volume": 100,
                                                 "contentType": "VIDEO",

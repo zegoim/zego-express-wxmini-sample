@@ -126,15 +126,18 @@ Page({
                 });
         },
         bgmStartEvent() {
-                this.data.livePusher && this.data.livePusher.playBGM({
-                        url: 'https://zego-sdkdemospace.oss-cn-shanghai.aliyuncs.com/demo/bgm.mp3',
-                        success: function (res) {
-                                console.log('suc', res)
-                        },
-                        fail: function (err) {
-                                console.log('fail', err)
-                        }
-                });
+                if (this.data.livePusher) {
+                        console.error("playBGM")
+                        this.data.livePusher.playBGM({
+                                url: 'https://zego-sdkdemospace.oss-cn-shanghai.aliyuncs.com/demo/bgm.mp3',
+                                success: function (res) {
+                                        console.error('playBGM suc', res)
+                                },
+                                fail: function (err) {
+                                        console.error('playBGM fail', err)
+                                }
+                        });
+                }
         },
         handleBgm() {
                 if (!this.data.livePusher.pauseBGM) {
@@ -167,7 +170,7 @@ Page({
         },
         // live-pusher 绑定推流事件，透传推流事件给 SDK
         onPushStateChange(e) {
-                console.error('onPushStateChange', e.detail.code, e.detail.message);
+                // console.error('onPushStateChange', e.detail.code, e.detail.message);
                 if (e.detail.code === 5000) {
                         this.setData({
                                 handupStop: true
@@ -208,6 +211,7 @@ Page({
                         });
                         console.log('pushStream: ', this.data.pushStreamID, this.data.livePusherUrl);
                         republish(this)
+                        console.error("reLogin", this.data.bgmStart, this.data.livePusher)
                 } catch (error) {
                         console.error('error: ', error);
                 }
@@ -238,11 +242,16 @@ Page({
                 this.onNetworkStatus();
         },
         onNetworkStatus() {
-                wx.onNetworkStatusChange(res => {
-                        if (res.isConnected && this.data.connectType === 1 && zg) {
-                                console.log('connectType', this.data.connectType);
-                                this.reLogin();
-                        }
-                })
+                const sys = wx.getSystemInfoSync();
+                let i = 0, timer;
+                if (sys.platform === 'ios') {
+                        wx.onNetworkStatusChange(res => {
+                                console.warn("网络变化", res.isConnected, res.networkType, this.data.connectType, zg, new Date())
+                                if (res.isConnected && this.data.connectType === 1 && zg) {
+                                        console.error('connectType reLogin', this.data.connectType);
+                                        this.reLogin();
+                                }
+                        })
+                }
         }
 });

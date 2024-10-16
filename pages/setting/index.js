@@ -121,8 +121,8 @@ Page({
   
     reset() {
       this.setData({
-          _appID: 123,
-          _serverURL: '',
+          _appID: globalData.zegoAppID || 123,
+          _serverURL: globalData.server || '',
           _token: '',
           _userID: ''
       });

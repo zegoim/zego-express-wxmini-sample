@@ -130,6 +130,10 @@ export const initSDK = (context) => {
     if (result.state === "NO_PUBLISH" && needRepublish && context.data.connectType === 1) {
       republish(context)
     }
+    if (result.state === "PUBLISHING" && context.data.bgmStart) {
+      console.error("publisherStateUpdate bgmStartEvent")
+      context.bgmStartEvent()
+    }
     context.setData({
       needRepublish: result.state === "NO_PUBLISH" && needRepublish && context.data.connectType !== 1
     })

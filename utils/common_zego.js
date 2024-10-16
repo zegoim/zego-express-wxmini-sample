@@ -18,6 +18,7 @@ export const initSDK = (context, pushAtr, playAtr) => {
   zg.setDebugVerbose(false)
   authCheck(context)
 
+  // zg.zegoWebRTM.stateCenter.roomRetryTime = 180;
   zg.initContext({
     wxContext: context,
     pushAtr,
