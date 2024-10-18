@@ -3,6 +3,7 @@ import {
 } from '../../utils/server';
 import {
         initSDK,
+        destroySDK,
         authCheck,
         startPush,
         republish
@@ -197,7 +198,7 @@ Page({
                 zg.updatePlayerState(e.currentTarget.id, e);
         },
         async onReady() {
-                console.log('onReady')
+                console.error('onReady')
                 zg = initSDK(this);
         },
         async reLogin() {
@@ -219,9 +220,9 @@ Page({
         onShow() {
                 console.log('server: ', server);
                 authCheck(this);
-                if (zg && this.data.roomID) {
-                        this.reLogin();
-                }
+                // if (zg && this.data.roomID) {
+                //         this.reLogin();
+                // }
                 // 刷新全局变量
                 zegoAppID = getApp().globalData.zegoAppID;
                 server = getApp().globalData.server;
@@ -235,6 +236,7 @@ Page({
         },
         onUnload() {
                 this.logout();
+                destroySDK();
                 wx.offNetworkStatusChange()
         },
         onLoad() {
@@ -244,14 +246,14 @@ Page({
         onNetworkStatus() {
                 const sys = wx.getSystemInfoSync();
                 let i = 0, timer;
-                if (sys.platform === 'ios') {
+                // if (sys.platform === 'ios') {
                         wx.onNetworkStatusChange(res => {
                                 console.warn("网络变化", res.isConnected, res.networkType, this.data.connectType, zg, new Date())
-                                if (res.isConnected && this.data.connectType === 1 && zg) {
-                                        console.error('connectType reLogin', this.data.connectType);
-                                        this.reLogin();
-                                }
+                        //         if (res.isConnected && this.data.connectType === 1 && zg) {
+                        //                 console.error('connectType reLogin', this.data.connectType);
+                        //                 this.reLogin();
+                        //         }
                         })
-                }
+                // }
         }
 });

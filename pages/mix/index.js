@@ -6,6 +6,7 @@ import {
 } from '../../utils/server';
 import {
         initSDK,
+        destroySDK,
         authCheck,
         startPush,
         republish
@@ -125,6 +126,20 @@ Page({
                 this.startMixing()
         },
         async stopMixStream() {
+                if (!this.data.mixContent) {
+                        wxp.showModal({
+                                title: '提示',
+                                content: '请输入混流信息',
+                                showCancel: false,
+                        });
+                        return;
+                }
+                let mixParam;
+                try {
+                        mixParam = JSON.parse(this.data.mixContent)
+                } catch (error) {
+                        console.warn(error)
+                }
                 try {
                         const {
                                 errorCode
@@ -136,12 +151,15 @@ Page({
                                 })
                                 this.setData({
                                         mixPlayerUrls: [],
-                                        isMixing: false
+                                        isMixing: false,
+                                        mixContent: JSON.stringify(mixParam)
                                 })
                         }
                 } catch (error) {
                         console.error('error: ', error);
                 }
+
+                this.setMixContent()
         },
         async startMixing() {
                 // const inputList = [{
@@ -368,6 +386,7 @@ Page({
                 } catch (err) {
                         console.error('startAutoMixerTask fail: ', JSON.stringify(err));
                 }
+                this.setMixContent()
         },
         publishStream() {
                 startPush(this);
@@ -472,6 +491,42 @@ Page({
                 zegoAppID = getApp().globalData.zegoAppID;
                 server = getApp().globalData.server;
                 this.setToken()
+                this.setMixContent();
+        },
+        onUnload() {
+                this.logout();
+                destroySDK();
+                wx.offNetworkStatusChange()
+        },
+        onHide() {
+                // this.logout();
+        },
+        onLoad() {
+                // 监听网络状态
+                this.onNetworkStatus();
+        },
+        onNetworkStatus() {
+                wx.onNetworkStatusChange(res => {
+                        console.error('net', res);
+                        if (res.isConnected && this.data.connectType === 1 && zg) {
+                                console.log('connectType', this.data.connectType);
+                                this.reLogin();
+                                const urls = this.data.mixPlayerUrls
+                                this.setData({
+                                        mixPlayerUrls: urls.map(item => ({
+                                                ...item,
+                                                url: ''
+                                        })),
+                                }, () => {
+                                        this.setData({
+                                                mixPlayerUrls: urls,
+                                        })
+                                })
+                        }
+                })
+        },
+
+        setMixContent() {
                 const taskID = 'mixTask-' + new Date().getTime();
                 const mixStreamID = 'mixStream-' + new Date().getTime();
                 this.setData({
@@ -508,37 +563,6 @@ Page({
                                         }
                                 }
                         `
-                })
-        },
-        onUnload() {
-                this.logout();
-                wx.offNetworkStatusChange()
-        },
-        onHide() {
-                // this.logout();
-        },
-        onLoad() {
-                // 监听网络状态
-                this.onNetworkStatus();
-        },
-        onNetworkStatus() {
-                wx.onNetworkStatusChange(res => {
-                        console.error('net', res);
-                        if (res.isConnected && this.data.connectType === 1 && zg) {
-                                console.log('connectType', this.data.connectType);
-                                this.reLogin();
-                                const urls = this.data.mixPlayerUrls
-                                this.setData({
-                                        mixPlayerUrls: urls.map(item => ({
-                                                ...item,
-                                                url: ''
-                                        })),
-                                }, () => {
-                                        this.setData({
-                                                mixPlayerUrls: urls,
-                                        })
-                                })
-                        }
                 })
         },
         changeToken() {

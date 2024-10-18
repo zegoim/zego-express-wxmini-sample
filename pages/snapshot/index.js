@@ -2,7 +2,7 @@
 import { getTokenAndUserID } from '../../utils/server';
 import { format } from '../../utils/util';
 import { wxp } from '../../app';
-import { initSDK, authCheck, startPush, republish } from '../../utils/common';
+import { initSDK, destroySDK, authCheck, startPush, republish } from '../../utils/common';
 
 let { zegoAppID, server } = getApp ().globalData;
 let zg;
@@ -279,6 +279,7 @@ Page({
         },
         onUnload() {
                 this.logout();
+                destroySDK();
                 wx.offNetworkStatusChange()
         },
         onLoad() {
@@ -292,7 +293,7 @@ Page({
                         console.error('connectType', this.data.connectType);
                         if (res.isConnected && this.data.connectType === 1 && zg) {
                                 console.log('connectType', this.data.connectType);
-                                this.reLogin();
+                                // this.reLogin();
                         }
                 })
         },

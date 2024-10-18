@@ -3,6 +3,7 @@ import {
 } from '../../utils/server';
 import {
   initSDK,
+  destroySDK,
   authCheck,
   startPush,
   republish
@@ -201,6 +202,7 @@ Page({
     if (zg) {
       console.log('sdk version: ', zg.getVersion());
     }
+    console.warn(typeof wx.getDeviceInfo)
   },
 
   async reLogin() {
@@ -252,6 +254,7 @@ Page({
   },
   onUnload() {
     this.logout();
+    destroySDK();
     wx.offNetworkStatusChange()
   },
   onLoad() {
@@ -272,7 +275,7 @@ Page({
       if (res.isConnected && this.data.connectType === 1 && zg) {
         console.warn('data', this.data);
         console.warn('roomID', this.data.roomID);
-        this.reLogin();
+        // this.reLogin();
 
       }
     })

@@ -55,7 +55,7 @@
       <button bindtap="renewToken" data-role="1" hover-class="none" class="openRoom">
         更新token
       </button>
-      <!-- <button bindtap="logout" hover-class="none">退出房间</button> -->
+      <button bindtap="logout" hover-class="none">退出房间</button>
     </view>
   </view>
 </view>

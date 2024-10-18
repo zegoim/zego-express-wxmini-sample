@@ -13,6 +13,11 @@ let zg;
 export const initSDK = (context) => {
   if (!_checkParam(app.globalData.zegoAppID, app.globalData.server)) return false;
   /** 初始化SDK，userID 为用户自定义ID，全局唯一 */
+  if (zg) {
+    console.warn("zg exist");
+    return
+  }
+  console.warn("initSDK")
   zg = new ZegoExpressEngine(app.globalData.zegoAppID, app.globalData.server);
 
   console.log('version', zg.getVersion());
@@ -96,25 +101,33 @@ export const initSDK = (context) => {
           playerContext.play();
         }
       }
+      console.error("roomStateUpdate",context.data.isRelogin, context.data.needRepublish )
       if (!context.data.isRelogin || context.data.needRepublish) {
         if ( context.data.livePusher && context.data.livePusherUrl && context.data.role == 1) {
-          !context.data.needRepublish && context.data.pushStreamID && zg.stopPublishingStream(context.data.pushStreamID);
-          republish(context)
+          if (context.data.needRepublish) {
+            zg.stopPublishingStream(context.data.pushStreamID);
+            republish(context)
+          } else {
+            context.data.livePusher.stop()
+            context.data.livePusher.start()
+          }
+          // !context.data.needRepublish && context.data.pushStreamID && zg.stopPublishingStream(context.data.pushStreamID);
+          // republish(context)
         }
-        playStreamList.length && context.setData({
-          livePlayerList: []
-        }, () => {
-          context.setData({
-            livePlayerList: playStreamList
-          }, () => {
-            for (let i = 0; i < context.data.livePlayerList.length; i++) {
-              const playerContext = context.data.livePlayerList[i].playerContext;
-              if (playerContext) {
-                playerContext.play()
-              }
-            }
-          })
-        });
+        // playStreamList.length && context.setData({
+        //   livePlayerList: []
+        // }, () => {
+        //   context.setData({
+        //     livePlayerList: playStreamList
+        //   }, () => {
+        //     for (let i = 0; i < context.data.livePlayerList.length; i++) {
+        //       const playerContext = context.data.livePlayerList[i].playerContext;
+        //       if (playerContext) {
+        //         playerContext.play()
+        //       }
+        //     }
+        //   })
+        // });
       }
       context.setData({
         connectType: 1,
@@ -122,6 +135,21 @@ export const initSDK = (context) => {
       });
     }
   });
+  zg.on("roomStateChanged", (roomID, state, errorCode, extendedData) => {
+    console.warn("roomStateChanged", roomID, state, errorCode, extendedData, new Date())
+    if (state === "RECONNECTED") {
+      console.log("房间重连完成，进行恢复推拉流")
+      context.setData({
+        connectType: 1
+      })
+      // context.forceRecoverPushAndPlay()
+    } else if(state === "RECONNECTING") {
+      console.log("房间重连中")
+      context.setData({
+        connectType: 0
+      })
+    }
+  })
   zg.on("publisherStateUpdate", (result) => {
     console.error("publishStateUpdate", result);
     // 根据错误码，房间状态为登陆情况进行重试
@@ -132,6 +160,7 @@ export const initSDK = (context) => {
     }
     if (result.state === "PUBLISHING" && context.data.bgmStart) {
       console.error("publisherStateUpdate bgmStartEvent")
+      context.data.livePusher.stopBGM()
       context.bgmStartEvent()
     }
     context.setData({
@@ -190,6 +219,11 @@ export const initSDK = (context) => {
   return zg;
 };
 
+export const destroySDK = () => {
+  console.warn("destroySDK")
+  zg.destroyEngine();
+  zg = null;
+}
 export const playAll = async (streamList, context) => {
   console.log("streamList", streamList);
   if (streamList.length === 0) {

@@ -26,6 +26,7 @@
       <button bindtap="openRoom" data-role="0"  hover-class="none" class="openRoom">
         加入房间(不推流)
       </button>
+      <button bindtap="logout" hover-class="none" class="openRoom">退出房间</button>
       <button bindtap="sendMsg" hover-class="none" class="openRoom">广播发送</button>
       <button bindtap="sendBarrageMsg" hover-class="none" class="openRoom">弹幕发送</button>
       <button bindtap="sendCustomCommand" hover-class="none" class="openRoom">指定发送</button>

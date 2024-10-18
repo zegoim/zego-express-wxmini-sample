@@ -1,7 +1,7 @@
 
 import { wxp } from '../../app';
 import { getTokenAndUserID } from '../../utils/server';
-import { initSDK, authCheck, startPush, republish } from '../../utils/common';
+import { initSDK, destroySDK, authCheck, startPush, republish } from '../../utils/common';
 
 let { zegoAppID, server } = getApp ().globalData;
 let zg;
@@ -234,6 +234,7 @@ Page({
         },
         onUnload() {
                 this.logout();
+                destroySDK();
                 wx.offNetworkStatusChange()
         },
         onLoad() {

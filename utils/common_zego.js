@@ -12,6 +12,11 @@ let zg
 
 export const initSDK = (context, pushAtr, playAtr) => {
   if (!_checkParam(app.globalData.zegoAppID, app.globalData.server)) return false
+  if (zg) {
+    console.warn("zg exist");
+    return
+  }
+  console.warn("initSDK")
   /** 初始化SDK，userID 为用户自定义ID，全局唯一 */
   zg = new ZegoExpressEngine(app.globalData.zegoAppID, app.globalData.server)
   console.log("version", zg.getVersion())
@@ -165,6 +170,12 @@ export const initSDK = (context, pushAtr, playAtr) => {
   })
 
   return zg
+}
+
+export const destroySDK = () => {
+  console.warn("destroySDK")
+  zg.destroyEngine();
+  zg = null;
 }
 
 export const playAll = async (streamList, context) => {

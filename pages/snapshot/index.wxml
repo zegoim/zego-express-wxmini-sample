@@ -22,7 +22,7 @@
       </button>
       <button bindtap="snapshot" data-type="1"  class="util-btn">推流截图</button>
       <button bindtap="snapshot" data-type="0"  class="util-btn">拉流截图</button>
-      <!-- <button bindtap="logout" hover-class="none" class="util-btn">退出房间</button> -->
+      <button bindtap="logout" hover-class="none" class="util-btn">退出房间</button>
     </view>
   </view>
 </view>

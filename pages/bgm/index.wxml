@@ -15,6 +15,7 @@
       <button bindtap="openRoom" data-role="0"  hover-class="none" class="util-btn">
         加入房间(不推流)
       </button>
+      <button bindtap="logout" hover-class="none" class="util-btn">退出房间</button>
       <button bindtap="playOrStopBgm"  class="util-btn">
         {{bgmStart?'停止背景音':'播放背景音'}}
       </button>

@@ -1,5 +1,6 @@
 import {
         initSDK,
+        destroySDK,
         authCheck,
         startPush,
         republish
@@ -214,6 +215,7 @@ Page({
         },
         onUnload() {
                 this.logout();
+                destroySDK();
                 wx.offNetworkStatusChange()
         },
         onLoad() {

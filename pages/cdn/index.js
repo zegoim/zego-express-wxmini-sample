@@ -356,6 +356,7 @@ Page({
         },
         onUnload() {
                 this.logout();
+                destroySDK();
                 wx.offNetworkStatusChange()
         },
         onLoad() {
@@ -367,7 +368,7 @@ Page({
                         console.log('net', res);
                         if (res.isConnected && this.data.connectType === 0 && zg) {
                                 console.warn('connectType', this.data.connectType);
-                                this.reLogin();
+                                // this.reLogin();
                         }
                 })
         },

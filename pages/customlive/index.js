@@ -111,8 +111,8 @@ Page({
                         });
                         return false;
                 }
-                const urlRegx = /([\w]*?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/
-                if (!urlRegx.test(url) || (!url.startsWith('rtmp://') && !url.endsWith('.flv')) ) {
+                // const urlRegx = /([\w]*?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/
+                if ((!url.startsWith('rtmp://') && !url.endsWith('.flv')) ) {
                         wxp.showToast({
                                 title: '地址格式不正确',
                                 icon: 'none',

@@ -2,7 +2,7 @@
 import { wxp } from '../../app';
 import { getTokenAndUserID } from '../../utils/server';
 import { format } from '../../utils/util';
-import { initSDK, authCheck, startPush, republish } from '../../utils/common';
+import { initSDK, destroySDK, authCheck, startPush, republish } from '../../utils/common';
 
 let { zegoAppID, server } = getApp().globalData;
 let zg;
@@ -106,7 +106,7 @@ Page({
                         time: new Date().format("hh:mm:ss"),
                         content: this.data.inputMessage,
                 };
-                console.log('>>> currentMessage', this.data.inputMessage);
+                console.warn('>>> sendMsg', this.data.inputMessage + " " + message.time + " " + new Date().getTime());
                 this.setData({
                         messageList: [...this.data.messageList, message],
                         scrollToView: message.ID,
@@ -219,6 +219,11 @@ Page({
                                 });
                                 this.setData({ livePlayerList: [] });
                         }
+                        if (this.data.messageList.length > 0) {
+                                this.setData({
+                                        messageList: []
+                                })
+                        }
                         // 退出登录
                         if (zg && this.data.connectType === 1) await zg.logoutRoom(this.data.roomID);
                 } catch (error) {
@@ -250,7 +255,7 @@ Page({
         async onReady() {
                 zg = initSDK(this);
                 console.log("message sdk version: ", zg.getVersion());
-                console.log(zg);
+                console.error("message ready" + new Date());
                 zg && this.bindCallback();
         },
         async reLogin() {
@@ -280,10 +285,12 @@ Page({
                 server = getApp().globalData.server;
         },
         onHide() {
-                this.logout();
+                // this.logout();
         },
         onUnload() {
+                console.warn("onUnload")
                 this.logout();
+                destroySDK()
                 wx.offNetworkStatusChange()
         },
         onLoad() {
@@ -295,7 +302,7 @@ Page({
                 wx.onNetworkStatusChange(res => {     
                         if (res.isConnected && this.data.connectType === 1 && zg) {
                                 console.log('connectType', this.data.connectType);
-                                this.reLogin();
+                                // this.reLogin();
                         }
                 })
         },
