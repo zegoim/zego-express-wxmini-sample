@@ -15,7 +15,7 @@ export const initSDK = (context) => {
   /** 初始化SDK，userID 为用户自定义ID，全局唯一 */
   if (zg) {
     console.warn("zg exist");
-    return
+    return zg;
   }
   console.warn("initSDK")
   zg = new ZegoExpressEngine(app.globalData.zegoAppID, app.globalData.server);
@@ -267,6 +267,7 @@ export const startPush = async (context, publishOption) => {
       }
     );
   } catch (error) {
+    // console.warn(`startPush 失败`, error);
     console.error("error", error);
   }
 };

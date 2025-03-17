@@ -14,7 +14,7 @@ export const initSDK = (context, pushAtr, playAtr) => {
   if (!_checkParam(app.globalData.zegoAppID, app.globalData.server)) return false
   if (zg) {
     console.warn("zg exist");
-    return
+    return zg
   }
   console.warn("initSDK")
   /** 初始化SDK，userID 为用户自定义ID，全局唯一 */
