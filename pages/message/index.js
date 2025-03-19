@@ -157,9 +157,9 @@ Page({
                 });
                 try {
                         const res = await zg.sendCustomCommand(this.data.roomID, this.data.inputMessage, toUserList);
-                        console.warn('send custom success ' + res)
+                        console.error('send custom success ' + res, this.data.inputMessage, toUserList)
                 } catch (error) {
-                        console.error(JSON.stringify(error))
+                        console.error('send custom failed ',JSON.stringify(error))
                 }
         },
         async openRoom(e) {

@@ -5,7 +5,8 @@ import {
         initSDK,
         authCheck,
         startPush,
-        setPlayUrl
+        setPlayUrl,
+        destroySDK
 } from '../../utils/common';
 import {
         wxp

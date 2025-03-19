@@ -13,8 +13,8 @@ let zg
 export const initSDK = (context, pushAtr, playAtr) => {
   if (!_checkParam(app.globalData.zegoAppID, app.globalData.server)) return false
   if (zg) {
-    console.warn("zg exist");
-    return zg
+    console.error("zg already exist");
+    return undefined
   }
   console.warn("initSDK")
   /** 初始化SDK，userID 为用户自定义ID，全局唯一 */
@@ -82,10 +82,10 @@ export const initSDK = (context, pushAtr, playAtr) => {
       })
     } else if (updateType === "ADD") {
       userList.forEach((user) => {
-        if (user.userID !== context.data.userID) {
-          roomUserList.push(user)
+        if (user.userID !== context.data.userID && roomUserList.findIndex((item) => item.userID === user.userID) === -1) {
+          roomUserList.push(user);
         }
-      })
+      });
     }
     context.setData({
       roomUserList
@@ -97,11 +97,6 @@ export const initSDK = (context, pushAtr, playAtr) => {
       context.setData({
         connectType: 0,
         zegoPlayerList: []
-      })
-    } else if (state === "CONNECTED") {
-      console.log("房间重连完成，进行恢复推拉流")
-      context.setData({
-        connectType: 1
       })
     }
   })

@@ -4,8 +4,7 @@ import {
 import {
         initSDK,
         authCheck,
-        startPush
-
+        destroySDK
 } from '../../utils/common_zego';
 import {
         wxp
@@ -243,6 +242,7 @@ Page({
                 wx.offNetworkStatusChange()
                 wx.offAudioInterruptionBegin(this.audioInterruptBegin)
                 wx.offAudioInterruptionEnd(this.audioInterruptEnd)
+                destroySDK();
         },
         onLoad() {
                 // 监听网络状态

@@ -6,7 +6,8 @@ import {
         getTokenAndUserID
 } from '../../utils/server';
 import {
-        _checkParam
+        _checkParam,
+        destroySDK
 } from '../../utils/common';
 import {
         wxp
@@ -320,6 +321,7 @@ Page({
         onUnload() {
                 this.logout();
                 wx.offNetworkStatusChange()
+                destroySDK();
         },
         onLoad() {
                 // 监听网络状态
@@ -372,7 +374,12 @@ Page({
                         } else if (updateType === "ADD") {
                                 userList.forEach((user) => {
                                         if (user.userID !== context.data.userID) {
-                                                roomUserList.push(...userList);
+                                                userList.forEach((user) => {
+                                                        const i = roomUserList.findIndex((item) => item.userID === user.userID);
+                                                        if (i === -1) {
+                                                                roomUserList.push(user);
+                                                        }
+                                                });
                                         }
                                 });
                         }

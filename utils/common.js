@@ -14,8 +14,8 @@ export const initSDK = (context) => {
   if (!_checkParam(app.globalData.zegoAppID, app.globalData.server)) return false;
   /** 初始化SDK，userID 为用户自定义ID，全局唯一 */
   if (zg) {
-    console.warn("zg exist");
-    return zg;
+    console.error("zg already exist");
+    return undefined
   }
   console.warn("initSDK")
   zg = new ZegoExpressEngine(app.globalData.zegoAppID, app.globalData.server);
@@ -57,7 +57,7 @@ export const initSDK = (context) => {
       });
     } else if (updateType === "ADD") {
       userList.forEach((user) => {
-        if (user.userID !== context.data.userID) {
+        if (user.userID !== context.data.userID && roomUserList.findIndex((item) => item.userID === user.userID) === -1) {
           roomUserList.push(user);
         }
       });
