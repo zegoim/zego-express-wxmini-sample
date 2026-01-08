@@ -48,16 +48,17 @@ Page({
                 snapshotUrl: '',
                 isPlayBGM: false,
                 wxObject: {
-                        success(data) {
-                                console.warn('success: ', data)
-                        },
-                        fail(err) {
-                                console.error(err)
-                        },
-                        complete(data) {
-                                console.warn('complete:', data)
-                        }
+                  success(data) {
+                          console.info('success: ', data)
+                  },
+                  fail(err) {
+                          console.error(err)
+                  },
+                  complete(data) {
+                          console.warn('complete:', data)
+                  }
                 }
+             
         },
         bindKeyInput(e) {
                 this.setData({
@@ -127,13 +128,14 @@ Page({
         async logout() {
                 try {
                         if (this.data.pusher && this.data.pusher.url) {
-                                zg.getPusherInstance().stop()
+                                const zegoPusher = this.selectComponent("#zegoPusher")
+                                zegoPusher.stopPush()
                         }
 
                         this.data.playerList && this.data.playerList.forEach(i => {
                                 zg.getPlayerInstance(i.id).stop()
                         })
-
+                      
                         this.setData({
                                 zegoPlayerList: [],
                                 isPlayBGM: false
@@ -159,16 +161,11 @@ Page({
                 calcQualityGradeFunc.removeStreamRefer(this.data.livePlayerList[0].streamID);
         },
 
-        publishStream() {
-                this.startPreview()
-                zg.getPusherInstance().start(this.data.pushStreamID);
-                const zegoPusher = this.selectComponent("#zegoPusher")
-                zegoPusher.setZgInstance(zg)
-        },
         // 停止推流
         stopPushStream() {
                 this.stopPreview()
-                zg.getPusherInstance().stop();
+                const zegoPusher = this.selectComponent("#zegoPusher")
+                zegoPusher.stopPush()
                 this.setData({
                         isPlayBGM: false
                 })
@@ -178,7 +175,7 @@ Page({
         stopPullStream() {
                 this.data.zegoPlayerList.forEach(zegoPlayerAttr=>{
                         const zegoPlayer = this.selectComponent(`#${zegoPlayerAttr.componentID}`)
-                        zegoPlayer.stopPlayer();
+                        zegoPlayer.stopPlay();
                 })
         },
         //  //切换拉流
@@ -230,7 +227,7 @@ Page({
                 // 刷新全局变量
                 zegoAppID = getApp().globalData.zegoAppID;
                 server = getApp().globalData.server;
-                console.error(this.data.pusher)
+                // console.error(this.data.pusher)
         },
         onHide() {
                 console.warn("onHide")

@@ -1,5 +1,4 @@
 // components/zegoPusher.js
-let zgInstance
 Component({
   /**
    * 组件的属性列表
@@ -14,7 +13,6 @@ Component({
     }
   },
   data: {
-    state: "NO_PUBLISH",
     streamID: "",
     options: {}
   },
@@ -22,19 +20,28 @@ Component({
    * 组件的初始数据
    */
   methods: {
-    setZgInstance(instance) {
-      zgInstance = instance
+    setZgInstance(zgInstance) {
+      this.zgInstance = zgInstance
     },
-    async startPush(instance, pushStreamID, publishOption, config) {
+    /**
+     * 开始推流
+     * @param {Object} instance - ZEGO SDK 实例
+     * @param {String} pushStreamID - 推流ID
+     * @param {Object} publishOption - 推流配置项
+     * @param {Object} config - 推流器属性配置
+     * @returns {Promise} 推流结果
+     */
+    async startPush(zgInstance, pushStreamID, publishOption, config) {
       try {
         // 获取页面上的zego实例
-        zgInstance = instance
+        this.zgInstance = zgInstance
         // 创建 pusher
-        zgInstance.getPusherInstance() || zgInstance.createPusher()
+        const zegoPusher = this.zegoPusher = zgInstance.getPusherInstance() ?? zgInstance.createPusher()
+
         // 设置属性
-        zgInstance.zegoWechatMini.setPusherAttributes(config)
+        zgInstance.setPusherAttributes(config)
         // 开始推流
-        const res = (await zgInstance.getPusherInstance()).start(pushStreamID, publishOption)
+        const res = await zegoPusher.start(pushStreamID, publishOption)
         console.log("startPush res", res, publishOption);
         this.setData({
           streamID: pushStreamID,
@@ -44,9 +51,12 @@ Component({
         console.error("error in startPush", error)
       }
     },
+    stopPush() {
+      this.zegoPusher?.stop()
+    },
     onPushStateChange(e) {
       // console.warn('onPushStateChange', this.data.pusher.id, e.detail.code)
-      zgInstance.updatePlayerState(this.data.pusher.id, e)
+      this.zgInstance?.updatePlayerState(this.data.pusher.id, e)
 
       /**
        * 电话接入终止推流
@@ -66,18 +76,18 @@ Component({
         // 兼容部分android机型在断网后重推可能出现推流失败的情况
         const platform = wx.getSystemInfoSync().platform;
         if (platform === 'android') {
-          zgInstance.getPusherInstance().stop()
+          this.zegoPusher?.stop()
         }
       }
     },
     // live-pusher 绑定网络状态事件，透传网络状态事件给 SDK
     onPushNetStateChange(e) {
       console.warn('onPushNetStateChange', this.data.pusher.id, e.detail.info)
-      zgInstance.updatePlayerNetStatus(this.data.pusher.id, e)
+      this.zgInstance?.updatePlayerNetStatus(this.data.pusher.id, e)
     },
     // live-pusher 音量监听，
     bindaudiovolumenotify(e) {
-      zgInstance.updateAudioVolumeNotify(this.data.pusher.id, e)
+      this.zgInstance?.updateAudioVolumeNotify(this.data.pusher.id, e)
     },
     onPushError(e) {
       console.log("onPushError e", e)
@@ -92,14 +102,13 @@ Component({
           streamID,
           options
         } = this.data
-        zgInstance.getPusherInstance().stop()
+        this.zegoPusher?.stop()
         // 延迟1s确保停推完成再重新推流
         setTimeout(async () => {
-          console.warn('rePush', streamID, options, this.data.state)
+          console.warn('rePush', streamID, options)
           try {
-            await zgInstance.getPusherInstance().start(streamID, options)
-            // this.pausePlayer();
-            this.resumePlayer()
+            await this.zegoPusher?.start(streamID, options)
+            this.resumePusher()
             console.warn("rePush res", streamID, options);
           } catch (error) {
             console.warn("rePush failed!!!", error, error + "");
@@ -123,8 +132,8 @@ Component({
     /**
      * 恢复渲染
      */
-    resumePlayer() {
-      zgInstance.getPusherInstance(this.data.playerId).resume();
+    resumePusher() {
+      this.zegoPusher?.resume();
     },
   }
 })

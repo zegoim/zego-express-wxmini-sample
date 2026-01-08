@@ -1,4 +1,4 @@
-let zgInstance
+
 // components/zego-player/zego-player.js
 Component({
   /**
@@ -31,7 +31,7 @@ Component({
     player: {},
     state: "NO_PLAY",
     streamID: '',
-    showExitFullScreen: false
+    showExitFullScreen: false,
   },
   /**
    * 组件的方法列表
@@ -44,10 +44,11 @@ Component({
           return 
         }
         // 获取页面上的zego实例
-        zgInstance = instance
+        const zgInstance = this.zgInstance = instance
         // 等待 getPlayerInstance 创建 live-player 的上下文后，将组件内的this绑定到 player的上下文上。
-        const res = await zgInstance.getPlayerInstance(streamID, this).play()
-        console.warn("初次拉流开始", streamID, res)
+        const zegoPlayer = this.zegoPlayer = zgInstance.getPlayerInstance(streamID, this);
+        const res = await zegoPlayer.play()
+        // console.warn("初次拉流开始", streamID, res)
       } catch (error) {
         console.warn("初次拉流失败 ", streamID, error)
       }
@@ -55,42 +56,42 @@ Component({
     //live-player 绑定拉流事件，透传拉流事件给 SDK
     onPlayStateChange(e) {
       // console.warn("onPlayStateChange", e.currentTarget.id, e.detail.code, e.detail.message)
-      zgInstance.updatePlayerState(e.currentTarget.id, e)
+      this.zgInstance?.updatePlayerState(e.currentTarget.id, e)
     },
     // live-player 绑定网络状态事件，透传网络状态事件给 SDK
     onPlayNetStateChange(e) {
       // console.info('onPushNetStateChange', e.currentTarget.id, e.detail.code)
-      zgInstance.updatePlayerNetStatus(e.currentTarget.id, e)
+      this.zgInstance?.updatePlayerNetStatus(e.currentTarget.id, e)
     },
 
     // live-player 音量监听，
     bindaudiovolumenotify(e) {
-      zgInstance.updateAudioVolumeNotify(this.data.playerId, e)
+      this.zgInstance?.updateAudioVolumeNotify(this.data.playerId, e)
     },
 
     /**
      * 停止拉流
      */
-    stopPlayer() {
-      zgInstance.getPlayerInstance(this.data.playerId, this).stop();
+    stopPlay() {
+      this.zegoPlayer?.stop();
     },
     /**
      * 暂停渲染
      */
     pausePlayer() {
-      zgInstance.getPlayerInstance(this.data.playerId, this).pause();
+      this.zegoPlayer?.pause();
     },
     /**
      * 恢复渲染
      */
     resumePlayer() {
-      zgInstance.getPlayerInstance(this.data.playerId, this).resume();
+      this.zegoPlayer?.resume();
     },
     // 退出全屏
     exitFullScreen() {
       if(!this.data.playerList[0]) return
       const _this = this;
-      zgInstance.getPlayerInstance(this.data.playerId).exitFullScreen({
+      this.zegoPlayer?.exitFullScreen({
         success(){
           _this.setData({
             showExitFullScreen: false
@@ -103,12 +104,11 @@ Component({
      */
     rePlay() {
       return new Promise(resolve => {
-        const playInstance = zgInstance.getPlayerInstance(this.data.playerId, this);
+        this.stopPlay()
         console.warn('rePlay', playInstance)
-        playInstance.stop()
         setTimeout(async () => {
           try {
-            await zgInstance.getPlayerInstance(this.data.playerId, this).play()
+            await this.zegoPlayer?.play()
             this.resumePlayer()
           } catch (error) { 
             console.warn("rePlay failed!!!", error, error + "");

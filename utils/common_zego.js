@@ -197,18 +197,6 @@ export const playAll = async (streamList, context) => {
     }
   }
 }
-export const startPush = async (context, publishOption, config) => {
-  try {
-    /** 开始推流，返回推流地址 */
-    if(!zg.getPusherInstance()) {
-      zg.createPusher()
-    }
-    zg.zegoWechatMini.setPusherAttributes(config)
-    await zg.getPusherInstance().start(context.data.pushStreamID, publishOption)
-  } catch (error) {
-    console.error("error", error)
-  }
-}
 
 export const setPlayUrl = (streamID, url, context) => {
   if (!url) {
