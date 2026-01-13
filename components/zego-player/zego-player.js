@@ -105,7 +105,7 @@ Component({
     rePlay() {
       return new Promise(resolve => {
         this.stopPlay()
-        console.warn('rePlay', playInstance)
+        console.warn('rePlay', this.zegoPlayer)
         setTimeout(async () => {
           try {
             await this.zegoPlayer?.play()

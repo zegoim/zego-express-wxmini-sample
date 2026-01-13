@@ -13,6 +13,7 @@ Component({
     }
   },
   data: {
+    state:"NO_PUBLISH",
     streamID: "",
     options: {}
   },
@@ -52,7 +53,10 @@ Component({
       }
     },
     stopPush() {
-      this.zegoPusher?.stop()
+      if(this.zegoPusher){
+        this.zegoPusher.stop()
+        this.zegoPusher = undefined
+      }
     },
     onPushStateChange(e) {
       // console.warn('onPushStateChange', this.data.pusher.id, e.detail.code)

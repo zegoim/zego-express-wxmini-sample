@@ -130,7 +130,7 @@ Page({
                 if (this.data.livePusher) {
                         console.error("playBGM")
                         this.data.livePusher.playBGM({
-                                url: 'https://zego-sdkdemospace.oss-cn-shanghai.aliyuncs.com/demo/bgm.mp3',
+                                url: 'https://zego-public.oss-cn-shanghai.aliyuncs.com/sdk-doc/assets/bike.mp3',
                                 success: function (res) {
                                         console.error('playBGM suc', res)
                                 },
