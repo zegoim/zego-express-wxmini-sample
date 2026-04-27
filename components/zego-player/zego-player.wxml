@@ -1,28 +1,6 @@
-<!--components/zego-player/zego-player.wxml-->
+<!-- components/zego-player/zego-player.wxml -->
 <view>
-	<live-player
-	 wx:if="{{player.url}}"
-	 id="{{player.id}}"
-	 src="{{player.url}}"
-	 mode="RTC"
-	 autoplay
-	 mute-audio="{{player.muteAudio}}"
-	 mute-video="{{player.muteVideo}}"
-	 orientation="{{player.orientation}}"
-	 object-fit="{{player.objectFit}}"
-	 min-cache="{{player.minCache}}"
-	 max-cache="{{player.maxCache}}"
-	 sound-mode="{{player.soundMode}}"
-	 enable-recv-message="{{player.enableRecvMessage}}"
-	 auto-pause-if-navigate="{{player.autoPauseIfNavigate}}"
-	 auto-pause-if-open-native="{{player.autoPauseIfOpenNative}}"
-	 enable-metadata="true"
-	 bindmetadatachange="binddatachange"
-	 bindstatechange="onPlayStateChange"
-	 bindnetstatus="onPlayNetStateChange"
-   	 bindaudiovolumenotify="bindaudiovolumenotify"
-	>
-	<button class="exit" wx:if="{{showExitFullScreen}}" bindtap="exitFullScreen">退出全屏</button>
-	</live-player>
+				<live-player wx:if="{{player.url}}" id="{{player.id}}" src="{{player.url}}" mode="RTC" mute-audio="{{player.muteAudio}}" mute-video="{{player.muteVideo}}" orientation="{{player.orientation}}" object-fit="{{player.objectFit}}" min-cache="{{player.minCache}}" max-cache="{{player.maxCache}}" sound-mode="{{player.soundMode}}" enable-recv-message="{{player.enableRecvMessage}}" auto-pause-if-navigate="{{player.autoPauseIfNavigate}}" auto-pause-if-open-native="{{player.autoPauseIfOpenNative}}" enable-metadata="true" bindmetadatachange="binddatachange" bindstatechange="onPlayStateChange" bindnetstatus="onPlayNetStateChange" bindaudiovolumenotify="bindaudiovolumenotify">
+								<button class="exit" wx:if="{{showExitFullScreen}}" bindtap="exitFullScreen">退出全屏</button>
+				</live-player>
 </view>
-
