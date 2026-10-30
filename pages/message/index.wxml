@@ -16,14 +16,10 @@
       <input value="{{roomID}}" bindinput="bindKeyInput" placeholder="请输入房间 ID" placeholder-style='color: #b3b3b3; font-size: 14px;' class="room-input" />
       <input value="{{message}}" bindinput="bindMessageInput" confirm-type='send' bindconfirm="sendMsg" placeholder="说点什么吧～" placeholder-style='color: #b3b3b3; font-size: 14px;' class="msg-input" />
     </view>
-    <view>
-    
-    </view>
+    <view></view>
     <view class="button-container">
-      <button bindtap="openRoom" data-role="1"  hover-class="none" class="openRoom">
-        加入房间(推流)
-      </button>
-      <button bindtap="openRoom" data-role="0"  hover-class="none" class="openRoom">
+      <button bindtap="openRoom" data-role="1" hover-class="none" class="openRoom">加入房间(推流)</button>
+      <button bindtap="openRoom" data-role="0" hover-class="none" class="openRoom">
         加入房间(不推流)
       </button>
       <button bindtap="logout" hover-class="none" class="openRoom">退出房间</button>
@@ -32,6 +28,7 @@
       <button bindtap="sendCustomCommand" hover-class="none" class="openRoom">指定发送</button>
       <button bindtap="updateStreamExtra" hover-class="none" class="openRoom">更新流附加信息</button>
       <button bindtap="setRoomExtraInfo" hover-class="none" class="openRoom">发送可靠消息</button>
+      <button bindtap="sendTransparentMessage" hover-class="none" class="openRoom">发送透传消息</button>
       <!-- <button bindtap="logout" hover-class="none" class="openRoom">退出房间</button> -->
     </view>
   </view>

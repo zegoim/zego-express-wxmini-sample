@@ -32,7 +32,8 @@ Page({
                 mirror: true,
                 num: 0,
                 livePlaying: [],
-                isRelogin: false
+                isRelogin: false,
+                forceTokenAuth: false,
         },
         bindKeyInput(e) {
                 if (e.target.dataset && e.target.dataset.role == "roomID") {
@@ -87,6 +88,7 @@ Page({
                                         userID: this.data.userID,
                                         userName: 'nick' + this.data.userID
                                 }, {
+                                        forceTokenAuth: this.data.forceTokenAuth,
                                         userUpdate: true
                                 });
                                 isLogin ? console.log('login success') : console.error('login fail');
@@ -140,6 +142,14 @@ Page({
         binddatachange(e) {
                 console.log(e)
         },
+        forceAuthChange(e) {
+                console.error('forceAuthChange', e.detail.value)
+                const ver = parseInt(e.detail.value)
+
+                this.setData({
+                        forceTokenAuth: ver === 1
+                })
+        },
         // live-pusher 绑定网络状态事件，透传网络状态事件给 SDK
         onPushNetStateChange(e) {
                 console.error('onPushNetStateChange', e)
@@ -191,6 +201,9 @@ Page({
                         let isLogin = await zg.loginRoom(this.data.roomID, this.data.token, {
                                 userID: this.data.userID,
                                 userName: 'nick' + this.data.userID
+                        }, {
+                                forceTokenAuth: this.data.forceTokenAuth,
+                                userUpdate: true
                         });
                         isLogin ? console.log('login success') : console.error('login fail');
                         this.setData({
@@ -211,7 +224,7 @@ Page({
 
         },
         onHide() {
-                this.logout();
+                // this.logout();
         },
         onUnload() {
                 this.logout();

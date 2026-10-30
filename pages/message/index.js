@@ -1,7 +1,7 @@
 
 import { wxp } from '../../app';
 import { getTokenAndUserID } from '../../utils/server';
-import { format } from '../../utils/util';
+import { format, encodeString, decodeString } from '../../utils/util';
 import { initSDK, destroySDK, authCheck, startPush, republish } from '../../utils/common';
 
 let { zegoAppID, server } = getApp().globalData;
@@ -21,7 +21,9 @@ Page({
                 scrollToView: "",
                 messageList: [],
                 inputMessage: "",
-                roomUserList: []
+                roomUserList: [],
+                publishState: 'NO_PUBLISH',
+                needRepublish: false
         },
         async bindCallback() {
                 zg.on('playerStateUpdate', (result) => {
@@ -86,6 +88,9 @@ Page({
                                 showCancel: false,
                         })
                 });
+                zg.on('recvRoomTransparentMessage', (roomID, message) => {
+                        console.warn('recvRoomTransparentMessage', roomID, message.sendUser.userID, decodeString(message.content));
+                });
   
         },
         bindKeyInput(e) {
@@ -126,16 +131,16 @@ Page({
                         time: new Date().format("hh:mm:ss"),
                         content: this.data.inputMessage,
                 };
-                console.log('>>> barrageMessage', this.data.inputMessage);
+                console.warn('>>> barrageMessage', this.data.inputMessage);
                 this.setData({
                         messageList: [...this.data.messageList, message],
                         scrollToView: message.ID,
                 });
                 try {
                         const isSent = await zg.sendBarrageMessage(this.data.roomID, this.data.inputMessage)
-                        console.log('>>> barrageMessage success, ', isSent);
+                        console.warn('>>> barrageMessage success, ', isSent);
                 } catch (error) {
-                        console.log('>>> barrageMessage, error: ', error);
+                        console.error('>>> barrageMessage, error: ', error);
                 };
         },
         updateStreamExtra() {
@@ -162,6 +167,23 @@ Page({
                         console.error('send custom failed ',JSON.stringify(error))
                 }
         },
+        async sendTransparentMessage() {
+
+                try {
+                        const ts = Math.ceil(new Date().getTime() / 1000);
+                        const res = await zg.sendTransparentMessage(this.data.roomID, {
+                                sendMode: 0,
+                                sendType: 1,
+                                content: encodeString('world'),
+                                recvUserList: [],
+                                timeOut: 20,
+                        });
+                        console.warn('sendTransparentMessage', res);
+                } catch (error) {
+                        console.error('sendTransparentMessage', error);
+                }
+        },
+
         async openRoom(e) {
                 if (!this.data.roomID) {
                         wxp.showModal({
@@ -211,7 +233,10 @@ Page({
                         if (this.data.livePusherUrl) {
                                 zg.stopPublishingStream(this.data.pushStreamID);
                                 this.data.livePusher.stop();
-                                this.setData({ livePusherUrl: '' });
+                                this.setData({ 
+                                        livePusherUrl: '',
+                                        livePusher: null
+                                 });
                         }
                         if (this.data.livePlayerList.length > 0) {
                                 this.data.livePlayerList.forEach(async (item) => {
@@ -246,10 +271,12 @@ Page({
         },
         // live-player 绑定网络状态事件，透传网络状态事件给 SDK
         onPlayNetStateChange(e) {
+                
                 zg.updatePlayerNetStatus(e.currentTarget.id, e);
         },
         //live-player 绑定拉流事件，透传拉流事件给 SDK
         onPlayStateChange(e) {
+                console.error('onPlayStateChange', e.detail.code, e.detail.message);
                 zg.updatePlayerState(e.currentTarget.id, e);
         },
         async onReady() {
@@ -277,9 +304,9 @@ Page({
         onShow() {
                 console.log('server: ', server);
                 authCheck(this);
-                if (zg && this.data.roomID) {
-                        this.reLogin();
-                }
+                // if (zg && this.data.roomID) {
+                //         this.reLogin();
+                // }
                 // 刷新全局变量
                 zegoAppID = getApp().globalData.zegoAppID;
                 server = getApp().globalData.server;

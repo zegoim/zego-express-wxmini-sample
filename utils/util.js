@@ -66,3 +66,10 @@ export function sharePage(param) {
           path: getCurrentPages ().pop ().route + '?' + paramArr.join ('&')
   }
 }
+export function encodeString(str) {
+  return Uint8Array.from(Array.from(unescape(encodeURIComponent(str))).map((val) => val.charCodeAt(0)));
+}
+
+export function decodeString(u8arr) {
+  return decodeURIComponent(escape(String.fromCharCode(...Array.from(u8arr))));
+}

@@ -4,7 +4,9 @@ import {
 import {
         initSDK,
         authCheck,
+        startPush,
         destroySDK
+
 } from '../../utils/common_zego';
 import {
         wxp
@@ -227,7 +229,14 @@ Page({
                 // 刷新全局变量
                 zegoAppID = getApp().globalData.zegoAppID;
                 server = getApp().globalData.server;
-                // console.error(this.data.pusher)
+                // 拉流被其他应用（如qq）通话打断后回到页面未能自动恢复播放
+                this.data.zegoPlayerList.forEach(item => {
+                        const zegoPlayer = this.selectComponent(`#${item.componentID}`)
+                        if (zegoPlayer && ["PLAYING"].includes(zegoPlayer.data.state)) {
+                                // 恢复渲染
+                                zegoPlayer.resumePlayer();
+                        }
+                })
         },
         onHide() {
                 console.warn("onHide")
@@ -289,11 +298,11 @@ Page({
                 }
         },
         audioInterruptBegin() {
-                console.warn("开始中断播放")
+                console.warn("开始中断播放", new Date())
         },
 
         audioInterruptEnd() {
-                console.warn("结束中断播放")
+                console.warn("结束中断播放", new Date())
                 this.forceRecoverPushAndPlay()
         },
         /**

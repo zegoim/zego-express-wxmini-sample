@@ -169,6 +169,10 @@ export const initSDK = (context, pushAtr, playAtr) => {
 
 export const destroySDK = () => {
   console.warn("destroySDK")
+  if (!zg) {
+    console.warn("zg is null");
+    return;
+  }
   zg.destroyEngine();
   zg = null;
 }

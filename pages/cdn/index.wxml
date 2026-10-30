@@ -1,7 +1,7 @@
 <view wx:if="{{canShow== 1}}">
   <view class="containerBase">
     <live-pusher wx:if="{{livePusherUrl}}" url="{{livePusherUrl}}" aspect="3:4" bindstatechange="onPushStateChange" autopush bindnetstatus="onPushNetStateChange" waiting-image="https://storage.zego.im/downloads/pause_publish.png"></live-pusher>
-    <live-player wx:for="{{livePlayerList}}" wx:key="streamID" id="{{item.streamID}}" src="{{item.url}}" mode="RTC" autoplay bindstatechange="onPlayStateChange" bindnetstatus="onPlayNetStateChange"></live-player>
+    <live-player wx:for="{{livePlayerList}}" wx:key="streamID" id="{{item.streamID}}" src="{{item.url}}" autoplay bindstatechange="onPlayStateChange" bindnetstatus="onPlayNetStateChange"></live-player>
   </view>
   <view class="index-container">
     <view class='input-container'>
@@ -23,33 +23,26 @@
       <text class="tip"></text>
     </view>
     <view class='input-container'>
-      <input value="{{token}}"  bindinput="changeToken" maxlength="-1" data-role="token" placeholder="请输入 token"
-        placeholder-style='color: #b3b3b3; font-size: 14px;' class="room-input" />
+      <input value="{{token}}" bindinput="changeToken" maxlength="-1" data-role="token" placeholder="请输入 token" placeholder-style='color: #b3b3b3; font-size: 14px;' class="room-input" />
       <text class="tip"></text>
     </view>
     <view class="button-container">
-      <button bindtap="openRoom" data-role="1" hover-class="none" class="openRoom">
-        加入房间(推流)
-      </button>
-      <button bindtap="openRoom" data-role="0"  hover-class="none" class="openRoom">
+      <button bindtap="openRoom" data-role="1" hover-class="none" class="openRoom">加入房间(推流)</button>
+      <button bindtap="openRoom" data-role="0" hover-class="none" class="openRoom">
         加入房间(不推流)
       </button>
-      <button bindtap="addCdnPublish" data-role="0"  hover-class="none" class="openRoom">
+      <button bindtap="addCdnPublish" data-role="0" hover-class="none" class="openRoom">
         增加转推cdn
       </button>
-      <button bindtap="removeCdnPublish" data-role="0"  hover-class="none" class="openRoom">
+      <button bindtap="removeCdnPublish" data-role="0" hover-class="none" class="openRoom">
         删除转推cdn
       </button>
-      <button bindtap="publishCdn" data-role="0"  hover-class="none" class="openRoom">
-        推流cdn
-      </button>
+      <button bindtap="publishCdn" data-role="0" hover-class="none" class="openRoom">推流cdn</button>
       <button bindtap="pullByCdnUrl" class="openRoom">
         {{isPullByCdnUrl?'停止cdn地址拉流':'cdn地址拉流'}}
       </button>
-      <button bindtap="pullByID" class="openRoom">
-        {{isPullByID?'停止流id拉流':'流id拉流'}}
-      </button>
-      <button bindtap="openRoom" data-role="2"  hover-class="none" class="openRoom">
+      <button bindtap="pullByID" class="openRoom">{{isPullByID?'停止流id拉流':'流id拉流'}}</button>
+      <button bindtap="openRoom" data-role="2" hover-class="none" class="openRoom">
         加入房间(拉流CDN)
       </button>
       <button bindtap="renewToken" data-role="1" hover-class="none" class="openRoom">

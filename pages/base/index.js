@@ -16,14 +16,14 @@ import {
 
 } from '../../utils/calc';
 let calcQualityGradeFunc = new CalcQualityGrade();
-let ZegoExpressEngine = require("zego-express-engine-miniprogram").ZegoExpressEngine; // 以 npm 的方式引用
+// let ZegoExpressEngine = require("zego-express-engine-miniprogram").ZegoExpressEngine; // 以 npm 的方式引用
 
 let {
   zegoAppID,
   server
 } = getApp().globalData;
 
-// console.error(new ZegoExpressEngine(zegoAppID, server))
+// console.log(new ZegoExpressEngine(zegoAppID, server))
 // import {
 //         ZegoExpressEngine
 // } from '../../libs/ZegoExpressMiniProgram';
@@ -149,7 +149,7 @@ Page({
   // live-player 绑定网络状态事件，透传网络状态事件给 SDK
   onPlayNetStateChange(e) {
     // let netQuaily = calcQualityGradeFunc.calcNetQualityGrade(e.currentTarget.id, e.detail.info.audioBitrate, e.detail.info.videoBitrate, e.detail.info.videoFPS)
-    console.error(Date.now() - last)
+    // console.error(Date.now() - last)
     zg.updatePlayerNetStatus(e.currentTarget.id, e);
     last = Date.now();
   },

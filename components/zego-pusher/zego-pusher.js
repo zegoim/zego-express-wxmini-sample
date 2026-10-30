@@ -15,7 +15,8 @@ Component({
   data: {
     state:"NO_PUBLISH",
     streamID: "",
-    options: {}
+    options: {},
+    config: {},
   },
   /**
    * 组件的初始数据
@@ -43,10 +44,11 @@ Component({
         zgInstance.setPusherAttributes(config)
         // 开始推流
         const res = await zegoPusher.start(pushStreamID, publishOption)
-        console.log("startPush res", res, publishOption);
+        console.warn("startPush res", res, publishOption, this.zegoPusher);
         this.setData({
           streamID: pushStreamID,
-          options: publishOption || {}
+          options: publishOption || {},
+          config: config
         })
       } catch (error) {
         console.error("error in startPush", error)
@@ -59,9 +61,8 @@ Component({
       }
     },
     onPushStateChange(e) {
-      // console.warn('onPushStateChange', this.data.pusher.id, e.detail.code)
+      // console.warn('onPushStateChange', this.data.pusher.id, e.detail.code, new Date())
       this.zgInstance?.updatePlayerState(this.data.pusher.id, e)
-
       /**
        * 电话接入终止推流
        * https://developers.weixin.qq.com/community/develop/doc/00084e597a4670609b7de188756000?highLine=5001
@@ -82,15 +83,18 @@ Component({
         if (platform === 'android') {
           this.zegoPusher?.stop()
         }
-      }
+      } if (code === 4999) {
+        console.warn("state", this.data.state)
+      } 
     },
     // live-pusher 绑定网络状态事件，透传网络状态事件给 SDK
     onPushNetStateChange(e) {
-      console.warn('onPushNetStateChange', this.data.pusher.id, e.detail.info)
+      // console.warn('onPushNetStateChange', this.data.pusher.id, e.detail.info)
       this.zgInstance?.updatePlayerNetStatus(this.data.pusher.id, e)
     },
     // live-pusher 音量监听，
     bindaudiovolumenotify(e) {
+      // console.warn('bindaudiovolumenotify', this.data.pusher.id, e.detail.volume)
       this.zgInstance?.updateAudioVolumeNotify(this.data.pusher.id, e)
     },
     onPushError(e) {
@@ -109,8 +113,9 @@ Component({
         this.zegoPusher?.stop()
         // 延迟1s确保停推完成再重新推流
         setTimeout(async () => {
-          console.warn('rePush', streamID, options)
+          console.warn('rePush', streamID, options, this.zegoPusher)
           try {
+            this.zegoPusher?.setPusherAttributes(this.data.config)
             await this.zegoPusher?.start(streamID, options)
             this.resumePusher()
             console.warn("rePush res", streamID, options);
@@ -138,6 +143,6 @@ Component({
      */
     resumePusher() {
       this.zegoPusher?.resume();
-    },
+    }
   }
 })

@@ -49,7 +49,7 @@
     "condition": false
   },
   "compileType": "miniprogram",
-  "libVersion": "2.27.1",
+  "libVersion": "3.13.2",
   "appid": "wx2b8909dae7727f25",
   "projectname": "zego-express-wxmini-sample",
   "simulatorType": "wechat",

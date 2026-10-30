@@ -221,6 +221,10 @@ export const initSDK = (context) => {
 
 export const destroySDK = () => {
   console.warn("destroySDK")
+  if (!zg) {
+    console.warn("zg is null");
+    return;
+  }
   zg.destroyEngine();
   zg = null;
 }

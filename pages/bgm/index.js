@@ -232,7 +232,7 @@ Page({
                 }
         },
         onHide() {
-                this.logout();
+                // this.logout();
         },
         onUnload() {
                 this.logout();

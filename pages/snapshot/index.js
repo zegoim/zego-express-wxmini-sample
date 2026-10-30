@@ -275,7 +275,7 @@ Page({
                 server = getApp ().globalData.server;
         },
         onHide() {
-                this.logout();
+                // this.logout();
         },
         onUnload() {
                 this.logout();
